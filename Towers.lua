@@ -24,14 +24,14 @@ Towers = {
         projectileSpeed = 300,
         gridSize = 4
     },
-    SlowTower = {
+    IceTower = {
         dmg = 10,
         firerate = 1,
         range = 100,
         cost = 50,
         firstUpgrade = 30,
         upgrades = 4,
-        traits = {"none"},
+        traits = {"detection","slow"},
         projectile = "ice",
         projectileSpeed = 300,
         gridSize = 4
@@ -61,3 +61,5 @@ Towers = {
         gridSize = 4
     } --mby more towers in the future
 }
+
+return Towers

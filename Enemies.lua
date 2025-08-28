@@ -64,3 +64,5 @@ Enemy = {
     }
     -- more soon mby
 }
+
+return Enemy

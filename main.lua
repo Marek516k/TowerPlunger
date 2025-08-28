@@ -1,9 +1,23 @@
 Love = require("love")
+Enemy = require("Enemies")
+Towers = require("Towers")
+Upgrades = require("Upgrades")
+Level1 = require("Level1")
 
 function Love.load()
+    Love.window.setMode(1920, 1080, {resizable=false, vsync=true})
     Timer = 0
     Interval = 0.5
-    Love.window.setMode(1920, 1080, {resizable=false, vsync=true})
+    SelectedTower = nil
+    Money = 500
+    Health = 100
+    CurrentWave = 1
+    EnemiesAlive = 0
+    GameState = "building" -- "building", "inWave", "gameOver"
+    Wavetimer = 0
+    WaveInterval = 10
+    CurrentWave = 1
+
 
 end
 
@@ -26,18 +40,18 @@ function Love.keypressed(key)
         Love.window.setFullscreen(not Love.window.getFullscreen())
     end
     if key == "+" then
-        Tower = Cannon
+        SelectedTower = Towers[1]
     end
     if key == "ě" then
-        Tower = MachineGun
+        SelectedTower = Towers[2]
     end
     if key == "š" then
-        Tower = SlowTower
+        SelectedTower = Towers[3]
     end
     if key == "č" then
-        Tower = RailgunTower
+        SelectedTower = Towers[4]
     end
     if key == "ř" then
-        Tower = BombTower
+        SelectedTower = Towers[5]
     end
 end
