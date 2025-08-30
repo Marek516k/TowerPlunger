@@ -1,6 +1,7 @@
 
 Towers = {
     Cannon = {
+        image = love.graphics.newImage("Images/cannon.png"),
         dmg = 10,
         firerate = 1,
         range = 100,
