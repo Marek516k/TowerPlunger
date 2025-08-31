@@ -13,15 +13,27 @@ function NewButton(text, fn)
 end
 
 Buttons = {}
+
+Shop = {}
+for name, tower in pairs(Towers) do
+    table.insert(Shop, {
+        text = name .. " - $" .. tower.cost,
+        image = tower.image,
+        fn = function()
+            print("Koupil jsi věž: " .. name)
+            
+        end
+    })
+end
+
 Font = love.graphics.newFont(32)
 
 function love.load()
-    love.window.setMode(1920, 1080, {resizable=false, vsync=true})
-    Towers.Cannon.image = love.graphics.newImage("Images/cannon.png")
+    --love.window.setMode(1920, 1080, {resizable=false, vsync=true})
     Map = love.graphics.newImage("Images/Roundabout.png")
     Timer = 0
     Interval = 0.5
-    SelectedTower = nil
+    SelectedTower = Towers.Cannon
     Money = 500
     Health = 100
     CurrentWave = 1
@@ -50,7 +62,6 @@ function love.load()
         function ()
             love.event.quit(0)
         end))
-
 end
 
 function love.update(dt)
@@ -118,8 +129,51 @@ function love.draw()
 
             cursor_y = cursor_y + (Button_height + margin)
             love.graphics.setColor(1, 1, 1, 1)
-
         end
+    end
+
+    if GameState == "building" then
+        love.graphics.draw(Map, 0, 0)
+
+        local shopX = ww - 250
+        local shopY = 100
+        local shopW = 200
+        local buttonH = 100
+        local marginS = 20
+        local cursorS_y = 0
+
+        local mx, my = love.mouse.getPosition()
+
+        for i, Button in ipairs(Shop) do
+            Button.last = Button.now
+
+            local bx = shopX
+            local by = shopY + cursorS_y
+
+            love.graphics.setColor(0.8, 0.8, 0.8, 1)
+            love.graphics.rectangle("fill", bx, by, shopW, buttonH)
+
+            local hot = mx > bx and mx < bx + shopW and my > by and my < by + buttonH
+            if hot then
+                love.graphics.setColor(1, 1, 0, 0.3)
+                love.graphics.rectangle("fill", bx, by, shopW, buttonH)
+            end
+
+            love.graphics.setColor(1, 1, 1, 1)
+            love.graphics.draw(Button.image, bx + 10, by + 10, 0, 0.5, 0.5)
+
+            love.graphics.setColor(0, 0, 0, 1)
+            love.graphics.print(Button.text, bx + 80, by + 40)
+
+            Button.now = love.mouse.isDown(1)
+            if Button.now and not Button.last and hot then
+                Button.fn()
+            end
+
+            cursorS_y = cursorS_y + (buttonH + marginS)
+        end
+
+        love.graphics.setColor(1, 1, 1, 1)
     end
 
     if GameState == "gameover" then
@@ -135,27 +189,6 @@ function love.draw()
         )
         love.graphics.setColor(1,1,1,1)
     end
-
-    if GameState == "building" then
-        love.graphics.draw(Map, 0, 0)
-        local shopX = ww - 250  -- 250 px from right edge
-        local shopY = 100
-        local shopW = 200
-        local shopH = 100
-
-        -- button background
-        love.graphics.setColor(0.8,0.8,0.8,1)
-        love.graphics.rectangle("fill", shopX, shopY, shopW, shopH)
-
-        -- tower image
-        love.graphics.setColor(1,1,1,1)
-        love.graphics.draw(Towers.Cannon.image, shopX + 10, shopY + 10, 0, 0.5, 0.5)
-
-        -- tower text
-        love.graphics.setColor(0,0,0,1)
-        love.graphics.print("Cannon - $"..Towers.Cannon.cost, shopX + 80, shopY + 40)
-        love.graphics.setColor(1,1,1,1)
-    end
 end
 
 function love.keypressed(key)
@@ -166,7 +199,7 @@ function love.keypressed(key)
         love.window.setFullscreen(not love.window.getFullscreen())
     end
     if key == "+" then
-        SelectedTower = Towers[1]
+        SelectedTower = Towers.Cannon
     end
     if key == "ě" then
         SelectedTower = Towers[2]
@@ -178,6 +211,6 @@ function love.keypressed(key)
         SelectedTower = Towers[4]
     end
     if key == "ř" then
-        SelectedTower = Towers[5]
+        SelectedTower = Towers.BombTower
     end
 end
