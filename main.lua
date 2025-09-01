@@ -3,6 +3,8 @@ Enemy = require("Enemies")
 Towers = require("Towers")
 Upgrades = require("Upgrades")
 Level1 = require("Level1")
+Buttons = {}
+Shop = {}
 
 function NewButton(text, fn)
     return {text = text,
@@ -12,43 +14,47 @@ function NewButton(text, fn)
         }
 end
 
-Buttons = {}
-
-Shop = {}
 for name, tower in pairs(Towers) do
     table.insert(Shop, {
         text = name .. " - $" .. tower.cost,
         image = tower.image,
         fn = function()
-            print("Koupil jsi věž: " .. name)
-            
+            if Money >= tower.cost and not Bought then
+                Money = Money - tower.cost
+                SelectedTower = tower
+                Bought = true
+                Placed = false
+            end
         end
     })
 end
 
-Font = love.graphics.newFont(32)
-
 function love.load()
     --love.window.setMode(1920, 1080, {resizable=false, vsync=true})
     Map = love.graphics.newImage("Images/Roundabout.png")
+    TowersOnMap = {}
+    EnemiesOnMap = {}
+    Bought = false
     Timer = 0
     Interval = 0.5
     SelectedTower = Towers.Cannon
-    Money = 500
+    Money = 5000000
     Health = 100
     CurrentWave = 1
     EnemiesAlive = 0
+    GameState = "menu"
+    Wavetimer = 0
+    WaveInterval = 10
+    CurrentWave = 1
+    Placed = false
+    Font = love.graphics.newFont(32)
+
     States = {
         "menu",
         "building",
         "wave",
         "gameover"
     }
-    GameState = "menu"
-
-    Wavetimer = 0
-    WaveInterval = 10
-    CurrentWave = 1
 
     table.insert(Buttons, NewButton(
         "Start Game",
@@ -67,7 +73,7 @@ end
 function love.update(dt)
     Timer = Timer + dt
 
-    if GameState == "wave" and GameState ~= "gameover" then
+    if GameState == "wave" and not GameState == "gameover" then
         Wavetimer = Wavetimer + dt
         if Wavetimer > WaveInterval then
             GameState = GameState[1]
@@ -129,6 +135,7 @@ function love.draw()
 
             cursor_y = cursor_y + (Button_height + margin)
             love.graphics.setColor(1, 1, 1, 1)
+            
         end
     end
 
@@ -187,7 +194,14 @@ function love.draw()
             ww/2 - textW/2,
             wh/2 - textH/2
         )
+
         love.graphics.setColor(1,1,1,1)
+    end
+    if Bought and not Placed then
+        local mx, my = love.mouse.getPosition()
+        love.graphics.setColor(1, 1, 1, 0.7)
+        love.graphics.draw(SelectedTower.image, mx - SelectedTower.image:getWidth()/2, my - SelectedTower.image:getHeight()/2)
+        love.graphics.setColor(1, 1, 1, 1)
     end
 end
 
@@ -212,5 +226,15 @@ function love.keypressed(key)
     end
     if key == "ř" then
         SelectedTower = Towers.BombTower
+    end
+end
+
+function love.mousepressed(x, y, button)
+    if button == 1 and Bought and not Placed then
+        --spot for tower collision logic
+        table.insert(TowersOnMap, {tower = SelectedTower, x = x, y = y})
+        Placed = true
+        Bought = false
+        --spot for tower placing logic
     end
 end

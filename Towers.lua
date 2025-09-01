@@ -43,7 +43,7 @@ Towers = {
         pirceing = 0
     },
     RailgunTower = {
-        image = love.graphics.newImage("Images/railgun.png"),
+        image = love.graphics.newImage("Images/railguntower.png"),
         dmg = 100,
         firerate = 5,
         range = 100,
