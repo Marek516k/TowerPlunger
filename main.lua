@@ -30,10 +30,14 @@ for name, tower in pairs(Towers) do
 end
 
 function love.load()
-    --love.window.setMode(1920, 1080, {resizable=false, vsync=true})
+    love.window.setMode(1920, 1080, {resizable=false, vsync=true})
     Map = love.graphics.newImage("Images/Roundabout.png")
     TowersOnMap = {}
     EnemiesOnMap = {}
+    TemporaryPos = {
+        x = 0,
+        y = 0
+    }
     Bought = false
     Timer = 0
     Interval = 0.5
@@ -203,6 +207,14 @@ function love.draw()
         love.graphics.draw(SelectedTower.image, mx - SelectedTower.image:getWidth()/2, my - SelectedTower.image:getHeight()/2)
         love.graphics.setColor(1, 1, 1, 1)
     end
+
+    for i, Tower in ipairs(TowersOnMap) do
+        love.graphics.draw(Tower.tower.image, Tower.x - Tower.tower.image:getWidth()/2, Tower.y - Tower.tower.image:getHeight()/2)
+    end
+
+    --[[for i, Enemy in ipairs(EnemiesOnMap) do
+        love.graphics.draw(Enemy.image, Enemy.x, Enemy.y)
+    end --]]
 end
 
 function love.keypressed(key)
@@ -230,11 +242,36 @@ function love.keypressed(key)
 end
 
 function love.mousepressed(x, y, button)
-    if button == 1 and Bought and not Placed then
-        --spot for tower collision logic
-        table.insert(TowersOnMap, {tower = SelectedTower, x = x, y = y})
-        Placed = true
-        Bought = false
-        --spot for tower placing logic
+    if button == 1 and Bought then
+        local canPlace = true
+
+        local towerW = SelectedTower.image:getWidth()
+        local towerH = SelectedTower.image:getHeight()
+
+        local newX = x - towerW / 2
+        local newY = y - towerH / 2
+
+        for i, t in ipairs(TowersOnMap) do
+            local tW = t.tower.image:getWidth()
+            local tH = t.tower.image:getHeight()
+            local tX = t.x - tW / 2
+            local tY = t.y - tH / 2
+
+            if newX < tX + tW and
+               newX + towerW > tX and
+               newY < tY + tH and
+               newY + towerH > tY then
+                canPlace = false
+                break
+            end
+        end
+
+        if canPlace then
+            table.insert(TowersOnMap, {tower = SelectedTower, x = x, y = y})
+            Bought = false
+            Placed = true
+        else
+            -- future feedback feature
+        end
     end
 end
