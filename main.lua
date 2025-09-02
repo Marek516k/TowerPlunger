@@ -3,41 +3,37 @@ Enemy = require("Enemies")
 Towers = require("Towers")
 Upgrades = require("Upgrades")
 Level1 = require("Level1")
-Buttons = {}
-Shop = {}
-
-function NewButton(text, fn)
-    return {text = text,
-            fn = fn,
-            now = false,
-            last = false
-        }
-end
-
-for name, tower in pairs(Towers) do
-    table.insert(Shop, {
-        text = name .. " - $" .. tower.cost,
-        image = tower.image,
-        fn = function()
-            if Money >= tower.cost and not Bought then
-                Money = Money - tower.cost
-                SelectedTower = tower
-                Bought = true
-                Placed = false
-            end
-        end
-    })
-end
 
 function love.load()
+    Buttons = {}
+    Shop = {}
+
+    function NewButton(text, fn)
+        return {text = text,
+                fn = fn,
+                now = false,
+                last = false
+            }
+    end
+
+    for name, tower in pairs(Towers) do
+        table.insert(Shop, {
+            text = name .. " - $" .. tower.cost,
+            image = tower.image,
+            fn = function()
+                if Money >= tower.cost and not Bought then
+                    Money = Money - tower.cost
+                    SelectedTower = tower
+                    Bought = true
+                    Placed = false
+                end
+            end
+        })
+    end
+
     love.window.setMode(1920, 1080, {resizable=false, vsync=true})
-    Map = love.graphics.newImage("Images/Roundabout.png")
     TowersOnMap = {}
     EnemiesOnMap = {}
-    TemporaryPos = {
-        x = 0,
-        y = 0
-    }
     Bought = false
     Timer = 0
     Interval = 0.5
@@ -144,7 +140,7 @@ function love.draw()
     end
 
     if GameState == "building" then
-        love.graphics.draw(Map, 0, 0)
+        -- Draw Map for loop
 
         local shopX = ww - 250
         local shopY = 100
