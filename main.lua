@@ -5,6 +5,24 @@ Upgrades = require("Upgrades")
 Level1 = require("Level1")
 
 function love.load()
+    Grass = {}
+    Path = {}
+
+    for y,row in ipairs(Map1) do
+        for x = 1, #row do
+            local tile = row:sub(x,x)
+            if tile == "#" then
+                table.insert(Grass, {
+                    x = x,
+                    y = y})
+            elseif tile == "." then
+                table.insert(Path, {
+                    x = x,
+                    y = y})
+            end
+        end
+    end
+
     Buttons = {}
     Shop = {}
 
@@ -32,6 +50,8 @@ function love.load()
     end
 
     love.window.setMode(1920, 1080, {resizable=false, vsync=true})
+    GrassImage = love.graphics.newImage("Images/green.png")
+    PathImage = love.graphics.newImage("Images/white.png")
     TowersOnMap = {}
     EnemiesOnMap = {}
     Bought = false
@@ -84,6 +104,16 @@ function love.update(dt)
 end
 
 function love.draw()
+
+    if GameState == "building" then
+        for i, grass in ipairs(Grass) do
+            love.graphics.draw(GrassImage, (grass.x -1) *64, (grass.y -1) *64)
+        end
+        for i, path in ipairs(Path) do
+            love.graphics.draw(PathImage, (path.x -1) *64, (path.y -1) *64)
+        end
+    end
+
     local ww = love.graphics.getWidth()
     local wh = love.graphics.getHeight()
 
@@ -140,7 +170,6 @@ function love.draw()
     end
 
     if GameState == "building" then
-        -- Draw Map for loop
 
         local shopX = ww - 250
         local shopY = 100
@@ -247,6 +276,13 @@ function love.mousepressed(x, y, button)
         local newX = x - towerW / 2
         local newY = y - towerH / 2
 
+        local mapWidth  = #Map1[1] * 64
+        local mapHeight = #Map1 * 64
+
+        if newX < 0 or newY < 0 or newX + towerW > mapWidth or newY + towerH > mapHeight then
+            canPlace = false
+        end
+
         for i, t in ipairs(TowersOnMap) do
             local tW = t.tower.image:getWidth()
             local tH = t.tower.image:getHeight()
@@ -257,6 +293,21 @@ function love.mousepressed(x, y, button)
                newX + towerW > tX and
                newY < tY + tH and
                newY + towerH > tY then
+                canPlace = false
+                break
+            end
+        end
+
+        for i, path in ipairs(Path) do
+            local pX = (path.x - 1) * 64
+            local pY = (path.y - 1) * 64
+            local pW = 64
+            local pH = 64
+
+            if newX < pX + pW and
+               newX + towerW > pX and
+               newY < pY + pH and
+               newY + towerH > pY then
                 canPlace = false
                 break
             end
