@@ -322,3 +322,16 @@ function love.mousepressed(x, y, button)
         end
     end
 end
+
+--TODO:
+-- Add tower targeting and projectile mechanics
+-- Add tower shooting and enemy health
+-- Add enemy spawning and movement
+-- Tower upgrade menu
+-- Add wave management and difficulty scaling
+-- Add sound effects and music
+-- Polish UI and overall game experience
+-- Implement save/load functionality for game progress
+-- Optimize performance for larger maps and more entities if needed
+-- more maps at least and map selection menu if i feel like doin so
+-- balancing game difficulty and economy
