@@ -92,20 +92,48 @@ end
 
 function love.update(dt)
     Timer = Timer + dt
+    if Timer > Interval and GameState == "building" then
+            Timer = 0
+            GameState = "wave"
+            WaveShi()
 
-    if GameState == "wave" and not GameState == "gameover" then
-        Wavetimer = Wavetimer + dt
-        if Wavetimer > WaveInterval then
-            GameState = GameState[1]
-            Wavetimer = 0
+    end
+    if GameState == "wave" then
+        for i = #EnemiesOnMap, 1, -1 do
+        local e = EnemiesOnMap[i]
+        local targetTile = Path[e.pathIndex + 1]
+
+        if targetTile then
+            local tx = (targetTile.x - 1) * 64
+            local ty = (targetTile.y - 1) * 64
+            local dx = tx - e.x
+            local dy = ty - e.y
+            local dist = math.sqrt(dx*dx + dy*dy)
+
+            if dist < e.speed * dt then
+                e.x = tx
+                e.y = ty
+                e.pathIndex = e.pathIndex + 1
+            else
+                e.x = e.x + (dx / dist) * e.speed * dt
+                e.y = e.y + (dy / dist) * e.speed * dt
+            end
+        else
+            Health = Health - e.damage
+            table.remove(EnemiesOnMap, i)
+            EnemiesAlive = EnemiesAlive - 1
         end
-    Timer = 0
+    end
+end
+    if #EnemiesOnMap == 0 and EnemiesAlive == 0 then
+        GameState = "building"
+        CurrentWave = CurrentWave + 1
     end
 end
 
 function love.draw()
 
-    if GameState == "building" then
+    if GameState == "building" or GameState == "wave" then
         for i, grass in ipairs(Grass) do
             love.graphics.draw(GrassImage, (grass.x -1) *64, (grass.y -1) *64)
         end
@@ -169,7 +197,7 @@ function love.draw()
         end
     end
 
-    if GameState == "building" then
+    if GameState == "building" or GameState == "wave" then
 
         local shopX = ww - 250
         local shopY = 100
@@ -237,9 +265,9 @@ function love.draw()
         love.graphics.draw(Tower.tower.image, Tower.x - Tower.tower.image:getWidth()/2, Tower.y - Tower.tower.image:getHeight()/2)
     end
 
-    --[[for i, Enemy in ipairs(EnemiesOnMap) do
+    for i, Enemy in ipairs(EnemiesOnMap) do
         love.graphics.draw(Enemy.image, Enemy.x, Enemy.y)
-    end --]]
+    end
 end
 
 function love.keypressed(key)
@@ -323,6 +351,32 @@ function love.mousepressed(x, y, button)
     end
 end
 
+function WaveShi()
+    local waveData = Level1["wave" .. CurrentWave]
+    if waveData then
+        for _, enemyInfo in ipairs(waveData.enemies) do
+            for i = 1, enemyInfo.count do
+                table.insert(EnemiesOnMap, {
+                    type = enemyInfo.type,
+                    image = Enemy[enemyInfo.type].image,
+                    speed = Enemy[enemyInfo.type].speed,
+                    health = Enemy[enemyInfo.type].health,
+                    damage = Enemy[enemyInfo.type].damage,
+                    reward = Enemy[enemyInfo.type].reward,
+                    traits = Enemy[enemyInfo.type].traits,
+                    x = (Path[1].x - 1) * 64,
+                    y = (Path[1].y - 1) * 64,
+                    pathIndex = 1
+                })
+                EnemiesAlive = EnemiesAlive + 1
+            end
+        end
+        CurrentWave = CurrentWave + 1   -- <-- advance AFTER spawning
+    else
+        GameState = "gameover"
+    end
+end
+
 --TODO:
 -- Add tower targeting and projectile mechanics
 -- Add tower shooting and enemy health
@@ -332,6 +386,6 @@ end
 -- Add sound effects and music
 -- Polish UI and overall game experience
 -- Implement save/load functionality for game progress
--- Optimize performance for larger maps and more entities if needed
--- more maps at least and map selection menu if i feel like doin so
--- balancing game difficulty and economy
+-- Optimize performance for larger maps and more entities if needed   
+-- More maps at least and map selection menu if i feel like doin so
+-- Balancing game difficulty and economy
