@@ -1,14 +1,14 @@
 Enemy = {
     zombie = {
-        image = love.graphics.newImage("Images/cannon.png"),
-        speed = 50,
+        image = love.graphics.newImage("Images/Cannon.png"),
+        speed = 300,
         health = 100,
         damage = 10,
         reward = 5,
         traits = {"none"}
     },
     fastZombie = {
-        image = love.graphics.newImage("Images/cannon.png"),
+        image = love.graphics.newImage("Images/Cannon.png"),
         speed = 100,
         health = 40,
         damage = 20,
@@ -16,7 +16,7 @@ Enemy = {
         traits = {"none"}
     },
     tank = {
-        image = love.graphics.newImage("Images/cannon.png"),
+        image = love.graphics.newImage("Images/Cannon.png"),
         speed = 30,
         health = 300,
         damage = 20,
@@ -24,7 +24,7 @@ Enemy = {
         traits = {"armored"}
     },
     hidden = {
-        image = love.graphics.newImage("Images/cannon.png"),
+        image = love.graphics.newImage("Images/Cannon.png"),
         speed = 70,
         health = 80,
         damage = 15,
@@ -32,7 +32,7 @@ Enemy = {
         traits = {"stealth"}
     },
     Normalboss = {
-        image = love.graphics.newImage("Images/cannon.png"),
+        image = love.graphics.newImage("Images/Cannon.png"),
         speed = 20,
         health = 1000,
         damage = 50,
@@ -40,7 +40,7 @@ Enemy = {
         traits = {"armored"}
     },
     Fastboss = {
-        image = love.graphics.newImage("Images/cannon.png"),
+        image = love.graphics.newImage("Images/Cannon.png"),
         speed = 50,
         health = 700,
         damage = 40,
@@ -48,7 +48,7 @@ Enemy = {
         traits = {"slowresistant"}
     },
     Tankboss = {
-        image = love.graphics.newImage("Images/cannon.png"),
+        image = love.graphics.newImage("Images/Cannon.png"),
         speed = 20,
         health = 2000,
         damage = 70,
@@ -56,7 +56,7 @@ Enemy = {
         traits = {"armored"}
     },
     Hiddenboss = {
-        image = love.graphics.newImage("Images/cannon.png"),
+        image = love.graphics.newImage("Images/Cannon.png"),
         speed = 40,
         health = 800,
         damage = 60,
@@ -64,7 +64,7 @@ Enemy = {
         traits = {"stealth"}
     },
     Gravedigger = {
-        image = love.graphics.newImage("Images/cannon.png"),
+        image = love.graphics.newImage("Images/Cannon.png"),
         speed = 15,
         health = 10000,
         damage = 2000,

@@ -4,6 +4,33 @@ Towers = require("Towers")
 Upgrades = require("Upgrades")
 Level1 = require("Level1")
 
+function WaveShi()
+    local waveData = Level1["wave" .. CurrentWave]
+    if waveData then
+        for _, enemyInfo in ipairs(waveData.enemies) do
+            for i = 1, enemyInfo.count do
+                table.insert(EnemiesOnMap, {
+                    type = enemyInfo.type,
+                    image = Enemy[enemyInfo.type].image,
+                    speed = Enemy[enemyInfo.type].speed,
+                    health = Enemy[enemyInfo.type].health,
+                    damage = Enemy[enemyInfo.type].damage,
+                    reward = Enemy[enemyInfo.type].reward,
+                    traits = Enemy[enemyInfo.type].traits,
+                    x = (Flags[1].x - 1) * 64,
+                    y = (Flags[1].y - 1) * 64,
+                    flagIndex = 2
+
+                })
+                EnemiesAlive = EnemiesAlive + 1
+            end
+        end
+        CurrentWave = CurrentWave + 1
+    else
+        GameState = "gameover"
+    end
+end
+
 function love.load()
     Grass = {}
     Path = {}
@@ -56,7 +83,7 @@ function love.load()
     EnemiesOnMap = {}
     Bought = false
     Timer = 0
-    Interval = 0.5
+    Interval = 0.4
     SelectedTower = Towers.Cannon
     Money = 5000000
     Health = 100
@@ -64,7 +91,7 @@ function love.load()
     EnemiesAlive = 0
     GameState = "menu"
     Wavetimer = 0
-    WaveInterval = 10
+    WaveInterval = 1
     CurrentWave = 1
     Placed = false
     Font = love.graphics.newFont(32)
@@ -92,43 +119,48 @@ end
 
 function love.update(dt)
     Timer = Timer + dt
-    if Timer > Interval and GameState == "building" then
-            Timer = 0
+    if Timer > Interval then
+        Timer = 0
+    end
+    Wavetimer = Wavetimer + dt
+    if Wavetimer > WaveInterval and GameState == "building" then
+            Wavetimer = 0
             GameState = "wave"
             WaveShi()
-
     end
+
     if GameState == "wave" then
         for i = #EnemiesOnMap, 1, -1 do
-        local e = EnemiesOnMap[i]
-        local targetTile = Path[e.pathIndex + 1]
+            local e = EnemiesOnMap[i]
+            local targetFlag = Flags[e.flagIndex]
+            if targetFlag then
+                local tx = (targetFlag.x - 1) * 64
+                local ty = (targetFlag.y - 1) * 64
+                local dx = tx - e.x
+                local dy = ty - e.y
+                local dist = math.sqrt(dx*dx + dy*dy)
 
-        if targetTile then
-            local tx = (targetTile.x - 1) * 64
-            local ty = (targetTile.y - 1) * 64
-            local dx = tx - e.x
-            local dy = ty - e.y
-            local dist = math.sqrt(dx*dx + dy*dy)
-
-            if dist < e.speed * dt then
-                e.x = tx
-                e.y = ty
-                e.pathIndex = e.pathIndex + 1
+                if dist < e.speed * dt then
+                    e.x = tx
+                    e.y = ty
+                    e.flagIndex = e.flagIndex + 1
+                else
+                    e.x = e.x + (dx / dist) * e.speed * dt
+                    e.y = e.y + (dy / dist) * e.speed * dt
+                end
             else
-                e.x = e.x + (dx / dist) * e.speed * dt
-                e.y = e.y + (dy / dist) * e.speed * dt
+                Health = Health - e.damage
+                table.remove(EnemiesOnMap, i)
+                EnemiesAlive = EnemiesAlive - 1
             end
-        else
-            Health = Health - e.damage
-            table.remove(EnemiesOnMap, i)
-            EnemiesAlive = EnemiesAlive - 1
         end
     end
-end
-    if #EnemiesOnMap == 0 and EnemiesAlive == 0 then
+
+    if EnemiesAlive == 0 and GameState == "wave" then
         GameState = "building"
         CurrentWave = CurrentWave + 1
     end
+    --TowerAI(TowersOnMap, EnemiesOnMap)
 end
 
 function love.draw()
@@ -348,32 +380,6 @@ function love.mousepressed(x, y, button)
         else
             -- future feedback feature
         end
-    end
-end
-
-function WaveShi()
-    local waveData = Level1["wave" .. CurrentWave]
-    if waveData then
-        for _, enemyInfo in ipairs(waveData.enemies) do
-            for i = 1, enemyInfo.count do
-                table.insert(EnemiesOnMap, {
-                    type = enemyInfo.type,
-                    image = Enemy[enemyInfo.type].image,
-                    speed = Enemy[enemyInfo.type].speed,
-                    health = Enemy[enemyInfo.type].health,
-                    damage = Enemy[enemyInfo.type].damage,
-                    reward = Enemy[enemyInfo.type].reward,
-                    traits = Enemy[enemyInfo.type].traits,
-                    x = (Path[1].x - 1) * 64,
-                    y = (Path[1].y - 1) * 64,
-                    pathIndex = 1
-                })
-                EnemiesAlive = EnemiesAlive + 1
-            end
-        end
-        CurrentWave = CurrentWave + 1   -- <-- advance AFTER spawning
-    else
-        GameState = "gameover"
     end
 end
 
