@@ -7,33 +7,27 @@ Level1 = require("Level1")
 function WaveShi()
     local waveData = Level1["wave" .. CurrentWave]
     if waveData then
-        for _, enemyInfo in ipairs(waveData.enemies) do
-            for i = 1, enemyInfo.count do
-                table.insert(EnemiesOnMap, {
-                    type = enemyInfo.type,
-                    image = Enemy[enemyInfo.type].image,
-                    speed = Enemy[enemyInfo.type].speed,
-                    health = Enemy[enemyInfo.type].health,
-                    damage = Enemy[enemyInfo.type].damage,
-                    reward = Enemy[enemyInfo.type].reward,
-                    traits = Enemy[enemyInfo.type].traits,
-                    x = (Flags[1].x - 1) * 64,
-                    y = (Flags[1].y - 1) * 64,
-                    flagIndex = 2
-
+        PendingSpawns = {}
+        for _, EnemyInfo in ipairs(waveData.enemies) do
+            for i = 1, EnemyInfo.count do
+                table.insert(PendingSpawns, {
+                    type = EnemyInfo.type
                 })
-                EnemiesAlive = EnemiesAlive + 1
             end
         end
-        CurrentWave = CurrentWave + 1
-    else
-        GameState = "gameover"
+
+        Spawning = true
+        EnemyspawnTimer = 0
+
     end
 end
+
 
 function love.load()
     Grass = {}
     Path = {}
+    PendingSpawns = {}
+    Spawning = false
 
     for y,row in ipairs(Map1) do
         for x = 1, #row do
@@ -93,6 +87,7 @@ function love.load()
     Wavetimer = 0
     WaveInterval = 1
     CurrentWave = 1
+    EnemyspawnTimer = 0
     Placed = false
     Font = love.graphics.newFont(32)
 
@@ -118,49 +113,74 @@ function love.load()
 end
 
 function love.update(dt)
-    Timer = Timer + dt
-    if Timer > Interval then
-        Timer = 0
-    end
+
+    EnemyspawnTimer = EnemyspawnTimer + dt
     Wavetimer = Wavetimer + dt
+
     if Wavetimer > WaveInterval and GameState == "building" then
-            Wavetimer = 0
-            GameState = "wave"
-            WaveShi()
+        Wavetimer = 0
+        GameState = "wave"
+        WaveShi()
     end
 
-    if GameState == "wave" then
-        for i = #EnemiesOnMap, 1, -1 do
-            local e = EnemiesOnMap[i]
-            local targetFlag = Flags[e.flagIndex]
-            if targetFlag then
-                local tx = (targetFlag.x - 1) * 64
-                local ty = (targetFlag.y - 1) * 64
-                local dx = tx - e.x
-                local dy = ty - e.y
-                local dist = math.sqrt(dx*dx + dy*dy)
+    if GameState == "wave" and Spawning then
+        local waveData = Level1["wave" .. CurrentWave] or {}
+        local spawnRate = waveData.spawnRate or 0.5
 
-                if dist < e.speed * dt then
-                    e.x = tx
-                    e.y = ty
-                    e.flagIndex = e.flagIndex + 1
-                else
-                    e.x = e.x + (dx / dist) * e.speed * dt
-                    e.y = e.y + (dy / dist) * e.speed * dt
-                end
-            else
-                Health = Health - e.damage
-                table.remove(EnemiesOnMap, i)
-                EnemiesAlive = EnemiesAlive - 1
-            end
+        if EnemyspawnTimer >= spawnRate and #PendingSpawns > 0 then
+            local pending = table.remove(PendingSpawns, 1)
+            local spawnType = pending.type
+            local eData = Enemy[spawnType]
+
+            table.insert(EnemiesOnMap, {
+                type   = spawnType,
+                image  = eData.image,
+                speed  = eData.speed,
+                health = eData.health,
+                damage = eData.damage,
+                reward = eData.reward,
+                traits = eData.traits,
+                x = (Flags[1].x - 1) * 64,
+                y = (Flags[1].y - 1) * 64,
+                flagIndex = 2
+            })
+
+            EnemiesAlive = EnemiesAlive + 1
+            EnemyspawnTimer = 0
+        end
+
+        if #PendingSpawns == 0 then
+            Spawning = false
         end
     end
 
-    if EnemiesAlive == 0 and GameState == "wave" then
+    for i, enemy in ipairs(EnemiesOnMap) do
+        local targetFlag = Flags[enemy.flagIndex]
+        local targetX = (targetFlag.x - 1) * 64
+        local targetY = (targetFlag.y - 1) * 64
+        local dx = targetX - enemy.x
+        local dy = targetY - enemy.y
+        local distance = math.sqrt(dx*dx + dy*dy)
+
+        if distance < enemy.speed * dt then
+            enemy.x = targetX
+            enemy.y = targetY
+            enemy.flagIndex = enemy.flagIndex + 1
+
+            if enemy.flagIndex > #Flags then
+                EnemiesAlive = EnemiesAlive - 1
+                table.remove(EnemiesOnMap, i)
+            end
+        else
+            enemy.x = enemy.x + (dx / distance) * enemy.speed * dt
+            enemy.y = enemy.y + (dy / distance) * enemy.speed * dt
+        end
+    end
+
+    if GameState == "wave" and EnemiesAlive == 0 and not Spawning then
         GameState = "building"
         CurrentWave = CurrentWave + 1
     end
-    --TowerAI(TowersOnMap, EnemiesOnMap)
 end
 
 function love.draw()
@@ -286,6 +306,7 @@ function love.draw()
 
         love.graphics.setColor(1,1,1,1)
     end
+
     if Bought and not Placed then
         local mx, my = love.mouse.getPosition()
         love.graphics.setColor(1, 1, 1, 0.7)
@@ -297,8 +318,8 @@ function love.draw()
         love.graphics.draw(Tower.tower.image, Tower.x - Tower.tower.image:getWidth()/2, Tower.y - Tower.tower.image:getHeight()/2)
     end
 
-    for i, Enemy in ipairs(EnemiesOnMap) do
-        love.graphics.draw(Enemy.image, Enemy.x, Enemy.y)
+    for i, enemy in ipairs(EnemiesOnMap) do
+        love.graphics.draw(enemy.image, enemy.x, enemy.y)
     end
 end
 
@@ -386,11 +407,11 @@ end
 --TODO:
 -- Add tower targeting and projectile mechanics
 -- Add tower shooting and enemy health
--- Add enemy spawning and movement
 -- Tower upgrade menu
 -- Add wave management and difficulty scaling
 -- Add sound effects and music
 -- Polish UI and overall game experience
+-- Progress bar
 -- Implement save/load functionality for game progress
 -- Optimize performance for larger maps and more entities if needed   
 -- More maps at least and map selection menu if i feel like doin so
