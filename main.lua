@@ -154,7 +154,8 @@ function love.update(dt)
         end
     end
 
-    for i, enemy in ipairs(EnemiesOnMap) do
+    for enemyIndex = #EnemiesOnMap, 1, -1 do
+        local enemy = EnemiesOnMap[enemyIndex]
         local targetFlag = Flags[enemy.flagIndex]
         local targetX = (targetFlag.x - 1) * 64
         local targetY = (targetFlag.y - 1) * 64
@@ -169,11 +170,39 @@ function love.update(dt)
 
             if enemy.flagIndex > #Flags then
                 EnemiesAlive = EnemiesAlive - 1
-                table.remove(EnemiesOnMap, i)
+                table.remove(EnemiesOnMap, enemyIndex)
             end
         else
             enemy.x = enemy.x + (dx / distance) * enemy.speed * dt
             enemy.y = enemy.y + (dy / distance) * enemy.speed * dt
+        end
+    end
+
+    for _, tw in ipairs(TowersOnMap) do
+        local bestEnemy = nil
+        local bestDist = math.huge
+
+        local tx = tw.x  -- už je střed
+        local ty = tw.y
+
+        for _, enemy in ipairs(EnemiesOnMap) do
+            local ex = enemy.x + enemy.image:getWidth() / 2
+            local ey = enemy.y + enemy.image:getHeight() / 2
+
+            local dx = ex - tx
+            local dy = ey - ty
+            local dist = math.sqrt(dx*dx + dy*dy)
+
+            if dist <= tw.range and dist < bestDist then
+                bestDist = dist
+                bestEnemy = {x = ex, y = ey}
+            end
+        end
+
+        if bestEnemy then
+            local Dx = bestEnemy.x - tx
+            local Dy = bestEnemy.y - ty
+            tw.rotation = math.atan2(Dy, Dx)
         end
     end
 
@@ -314,11 +343,13 @@ function love.draw()
         love.graphics.setColor(1, 1, 1, 1)
     end
 
-    for i, Tower in ipairs(TowersOnMap) do
-        love.graphics.draw(Tower.tower.image, Tower.x - Tower.tower.image:getWidth()/2, Tower.y - Tower.tower.image:getHeight()/2)
+    for _, tw in ipairs(TowersOnMap) do
+        local ox = tw.image:getWidth() / 2
+        local oy = tw.image:getHeight() / 2
+        love.graphics.draw(tw.image, tw.x, tw.y, tw.rotation or 0, -1, -1, ox, oy)
     end
 
-    for i, enemy in ipairs(EnemiesOnMap) do
+    for _, enemy in ipairs(EnemiesOnMap) do
         love.graphics.draw(enemy.image, enemy.x, enemy.y)
     end
 end
@@ -395,7 +426,7 @@ function love.mousepressed(x, y, button)
         end
 
         if canPlace then
-            table.insert(TowersOnMap, {tower = SelectedTower, x = x, y = y})
+            table.insert(TowersOnMap, {tower = SelectedTower, image = SelectedTower.image, range = SelectedTower.range, rotation = SelectedTower.rotation, x = x, y = y})
             Bought = false
             Placed = true
         else
