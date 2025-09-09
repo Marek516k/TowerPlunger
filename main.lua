@@ -367,13 +367,50 @@ function love.draw()
         local dist = math.sqrt((mx - tw.x)^2 + (my - tw.y)^2)
         if dist < 50 then
             love.graphics.setColor(1, 0, 0, 0.2)
-            love.graphics.circle("fill", tw.x, tw.y, tw.range or 100)
+            love.graphics.circle("fill", tw.x, tw.y, tw.range)
             love.graphics.setColor(1, 1, 1, 1)
         end
     end
 
     for _, enemy in ipairs(EnemiesOnMap) do
         love.graphics.draw(enemy.image, enemy.x, enemy.y)
+        local maxHealth = enemy.health
+        if enemy.health and maxHealth then
+            local enemyWidth = enemy.image:getWidth()
+            local barWidth = 40
+            local barHeight = 6
+            local barX = enemy.x + (enemyWidth - barWidth) / 2
+            local barY = enemy.y - 10
+            local healthPercent = math.max(0, enemy.health / maxHealth)
+
+            love.graphics.setColor(0, 0, 0, 0.8)
+            love.graphics.rectangle("fill", barX - 1, barY - 1, barWidth + 2, barHeight + 2)
+
+            local r = 1 - healthPercent
+            local g = healthPercent
+            love.graphics.setColor(r, g, 0, 1)
+            love.graphics.rectangle("fill", barX, barY, barWidth * healthPercent, barHeight)
+
+            love.graphics.setColor(1, 1, 1, 1)
+        end
+
+        local mx, my = love.mouse.getPosition()
+        local enemyWidth = enemy.image:getWidth()
+        local enemyHeight = enemy.image:getHeight()
+        local enemyCenterX = enemy.x + enemyWidth / 2
+        local enemyCenterY = enemy.y + enemyHeight / 2
+        local Edist = math.sqrt((mx - enemyCenterX)^2 + (my - enemyCenterY)^2)
+
+        if Edist < 30 then
+            love.graphics.setColor(0, 0, 0, 0.8)
+            love.graphics.rectangle("fill", mx + 10, my - 20, 120, 40)
+            love.graphics.setColor(1, 1, 1, 1)
+            love.graphics.setFont(love.graphics.newFont(12))
+            love.graphics.print(enemy.type or "Enemy", mx + 15, my - 15)
+            love.graphics.print("HP: " .. (enemy.health) .. "/" .. (maxHealth), mx + 15, my - 2)
+            love.graphics.setFont(Font)
+            love.graphics.setColor(1, 1, 1, 1)
+        end
     end
 end
 
