@@ -4,42 +4,49 @@ Towers = require("Towers")
 Upgrades = require("Upgrades")
 Level1 = require("Level1")
 
+local Map1 = Level1.Map1
+local Flags = Level1.Flags
+
 function WaveShi()
-    local waveData = Level1["wave" .. CurrentWave]
-    if waveData then
+    local waveKey = "wave" .. tostring(CurrentWave)
+    local waveData = Level1[waveKey] or {}
+    if not waveData or not waveData.enemies then
         PendingSpawns = {}
-        for _, EnemyInfo in ipairs(waveData.enemies) do
-            for i = 1, EnemyInfo.count do
-                table.insert(PendingSpawns, {
-                    type = EnemyInfo.type
-                })
-            end
-        end
-
-        Spawning = true
-        EnemyspawnTimer = 0
-
+        Spawning = false
+        return
     end
+
+    PendingSpawns = {}
+    for _, EnemyInfo in ipairs(waveData.enemies) do
+        for i = 1, EnemyInfo.count do
+            table.insert(PendingSpawns, {
+                type = EnemyInfo.type
+            })
+        end
+    end
+
+    Spawning = true
+    EnemyspawnTimer = 0
 end
 
-
 function love.load()
+    Map1 = _G.Map1
+    Flags = _G.Flags
+
     Grass = {}
     Path = {}
     PendingSpawns = {}
     Spawning = false
 
-    for y,row in ipairs(Map1) do
-        for x = 1, #row do
-            local tile = row:sub(x,x)
-            if tile == "#" then
-                table.insert(Grass, {
-                    x = x,
-                    y = y})
-            elseif tile == "." then
-                table.insert(Path, {
-                    x = x,
-                    y = y})
+    if Map1 then
+        for y,row in ipairs(Map1) do
+            for x = 1, #row do
+                local tile = row:sub(x,x)
+                if tile == "#" then
+                    table.insert(Grass, { x = x, y = y })
+                elseif tile == "." then
+                    table.insert(Path, { x = x, y = y })
+                end
             end
         end
     end
@@ -48,20 +55,19 @@ function love.load()
     Shop = {}
 
     function NewButton(text, fn)
-        return {text = text,
-                fn = fn,
-                now = false,
-                last = false
-            }
+        return {text = text, fn = fn,
+            now = false,
+            last = false
+        }
     end
 
     for name, tower in pairs(Towers) do
         table.insert(Shop, {
-            text = name .. " - $" .. tower.cost,
+            text = name .. " - $" .. (tower.cost or 0),
             image = tower.image,
             fn = function()
-                if Money >= tower.cost and not Bought then
-                    Money = Money - tower.cost
+                if Money >= (tower.cost or 0) and not Bought then
+                    Money = Money - (tower.cost or 0)
                     SelectedTower = tower
                     Bought = true
                     Placed = false
@@ -78,7 +84,7 @@ function love.load()
     Bought = false
     Timer = 0
     Interval = 0.4
-    SelectedTower = Towers.Cannon
+    SelectedTower = Towers.Cannon or next(Towers)
     Money = 5000000
     Health = 100
     CurrentWave = 1
@@ -86,34 +92,26 @@ function love.load()
     GameState = "menu"
     Wavetimer = 0
     WaveInterval = 1
-    CurrentWave = 1
     EnemyspawnTimer = 0
     Placed = false
     Font = love.graphics.newFont(32)
 
-    States = {
-        "menu",
-        "building",
-        "wave",
-        "gameover"
-    }
-
+    Buttons = {}
     table.insert(Buttons, NewButton(
-        "Start Game",
-        function ()
-            GameState = "building"
+            "Start Game",
+            function()
+                GameState = "building"
 
-        end))
-
+            end))
     table.insert(Buttons, NewButton(
-        "Quit",
-        function ()
-            love.event.quit(0)
-        end))
+            "Quit",
+            function()
+                love.event.quit(0)
+
+            end))
 end
 
 function love.update(dt)
-
     EnemyspawnTimer = EnemyspawnTimer + dt
     Wavetimer = Wavetimer + dt
 
@@ -124,28 +122,28 @@ function love.update(dt)
     end
 
     if GameState == "wave" and Spawning then
-        local waveData = Level1["wave" .. CurrentWave] or {}
+        local waveData = Level1["wave" .. tostring(CurrentWave)] or {}
         local spawnRate = waveData.spawnRate or 0.5
 
         if EnemyspawnTimer >= spawnRate and #PendingSpawns > 0 then
             local pending = table.remove(PendingSpawns, 1)
             local spawnType = pending.type
             local eData = Enemy[spawnType]
-
-            table.insert(EnemiesOnMap, {
-                type   = spawnType,
-                image  = eData.image,
-                speed  = eData.speed,
-                health = eData.health,
-                damage = eData.damage,
-                reward = eData.reward,
-                traits = eData.traits,
-                x = (Flags[1].x - 1) * 64,
-                y = (Flags[1].y - 1) * 64,
-                flagIndex = 2
-            })
-
-            EnemiesAlive = EnemiesAlive + 1
+            if eData then
+                table.insert(EnemiesOnMap, {
+                    type   = spawnType,
+                    image  = eData.image,
+                    speed  = eData.speed,
+                    health = eData.health,
+                    damage = eData.damage,
+                    reward = eData.reward,
+                    traits = eData.traits,
+                    x = (Flags[1].x - 1) * 64,
+                    y = (Flags[1].y - 1) * 64,
+                    flagIndex = 2
+                })
+                EnemiesAlive = EnemiesAlive + 1
+            end
             EnemyspawnTimer = 0
         end
 
@@ -157,52 +155,88 @@ function love.update(dt)
     for enemyIndex = #EnemiesOnMap, 1, -1 do
         local enemy = EnemiesOnMap[enemyIndex]
         local targetFlag = Flags[enemy.flagIndex]
-        local targetX = (targetFlag.x - 1) * 64
-        local targetY = (targetFlag.y - 1) * 64
-        local dx = targetX - enemy.x
-        local dy = targetY - enemy.y
-        local distance = math.sqrt(dx*dx + dy*dy)
-
-        if distance < enemy.speed * dt then
-            enemy.x = targetX
-            enemy.y = targetY
-            enemy.flagIndex = enemy.flagIndex + 1
-
-            if enemy.flagIndex > #Flags then
-                EnemiesAlive = EnemiesAlive - 1
-                table.remove(EnemiesOnMap, enemyIndex)
-            end
+        if not targetFlag then
+            EnemiesAlive = math.max(0, EnemiesAlive - 1)
+            table.remove(EnemiesOnMap, enemyIndex)
         else
-            enemy.x = enemy.x + (dx / distance) * enemy.speed * dt
-            enemy.y = enemy.y + (dy / distance) * enemy.speed * dt
+            local targetX = (targetFlag.x - 1) * 64
+            local targetY = (targetFlag.y - 1) * 64
+            local dx = targetX - enemy.x
+            local dy = targetY - enemy.y
+            local distance = math.sqrt(dx*dx + dy*dy)
+
+            if distance < (enemy.speed or 0) * dt then
+                enemy.x = targetX
+                enemy.y = targetY
+                enemy.flagIndex = enemy.flagIndex + 1
+
+                if enemy.flagIndex > #Flags then
+                    EnemiesAlive = math.max(0, EnemiesAlive - 1)
+                    table.remove(EnemiesOnMap, enemyIndex)
+                end
+            else
+                if distance > 0 then
+                    enemy.x = enemy.x + (dx / distance) * (enemy.speed or 0) * dt
+                    enemy.y = enemy.y + (dy / distance) * (enemy.speed or 0) * dt
+                end
+            end
         end
     end
 
     for _, tw in ipairs(TowersOnMap) do
         local bestEnemy = nil
+        local bestEnemyRef = nil
         local bestDist = math.huge
 
-        local tx = tw.x  -- už je střed
+        local tx = tw.x
         local ty = tw.y
 
         for _, enemy in ipairs(EnemiesOnMap) do
-            local ex = enemy.x + enemy.image:getWidth() / 2
-            local ey = enemy.y + enemy.image:getHeight() / 2
+            local enemyWidth = enemy.image:getWidth()
+            local enemyHeight = enemy.image:getHeight()
+            local ex = enemy.x + enemyWidth / 2
+            local ey = enemy.y + enemyHeight / 2
 
             local dx = ex - tx
             local dy = ey - ty
             local dist = math.sqrt(dx*dx + dy*dy)
 
-            if dist <= tw.range and dist < bestDist then
+            if dist <= (tw.range or 0) and dist < bestDist then
                 bestDist = dist
                 bestEnemy = {x = ex, y = ey}
+                bestEnemyRef = enemy
             end
         end
 
         if bestEnemy then
-            local Dx = bestEnemy.x - tx
-            local Dy = bestEnemy.y - ty
-            tw.rotation = math.atan2(Dy, Dx)
+            local dx = bestEnemy.x - tx
+            local dy = bestEnemy.y - ty
+            tw.rotation = math.atan2(dy, dx)
+
+            if bestEnemyRef and bestEnemyRef.speed then
+                local targetFlag = Flags[bestEnemyRef.flagIndex]
+                if targetFlag then
+                    local futureX = (targetFlag.x - 1) * 64 + 32
+                    local futureY = (targetFlag.y - 1) * 64 + 32
+                    local moveX = futureX - bestEnemyRef.x
+                    local moveY = futureY - bestEnemyRef.y
+                    local moveDist = math.sqrt(moveX*moveX + moveY*moveY)
+                    
+                    if moveDist > 0 then
+                        local leadTime = 0.1
+                        local predictX = bestEnemy.x + (moveX/moveDist) * bestEnemyRef.speed * leadTime
+                        local predictY = bestEnemy.y + (moveY/moveDist) * bestEnemyRef.speed * leadTime
+
+                        dx = predictX - tx
+                        dy = predictY - ty
+                        tw.rotation = math.atan2(dy, dx) + math.pi/2
+                    end
+                end
+            end
+            
+            tw.target = bestEnemy
+        else
+            tw.target = nil
         end
     end
 
@@ -213,7 +247,6 @@ function love.update(dt)
 end
 
 function love.draw()
-
     if GameState == "building" or GameState == "wave" then
         for i, grass in ipairs(Grass) do
             love.graphics.draw(GrassImage, (grass.x -1) *64, (grass.y -1) *64)
@@ -254,32 +287,19 @@ function love.draw()
             end
 
             love.graphics.setColor(color)
-            love.graphics.rectangle(
-                "fill",
-                bx,
-                by,
-                button_width,
-                Button_height
-            )
+            love.graphics.rectangle("fill", bx, by, button_width, Button_height)
             love.graphics.setColor(0,0,0,1)
 
             local tetxW = Font:getWidth(Button.text)
             local textH = Font:getHeight(Button.text)
-            love.graphics.print(
-                Button.text,
-                Font,
-                bx + button_width/2 - tetxW/2,
-                by + Button_height/2 - textH/2
-            )
+            love.graphics.print(Button.text, Font, bx + button_width/2 - tetxW/2, by + Button_height/2 - textH/2)
 
             cursor_y = cursor_y + (Button_height + margin)
             love.graphics.setColor(1, 1, 1, 1)
-            
         end
     end
 
     if GameState == "building" or GameState == "wave" then
-
         local shopX = ww - 250
         local shopY = 100
         local shopW = 200
@@ -305,7 +325,9 @@ function love.draw()
             end
 
             love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.draw(Button.image, bx + 10, by + 10, 0, 0.5, 0.5)
+            if Button.image then
+                love.graphics.draw(Button.image, bx + 10, by + 10, 0, 0.5, 0.5)
+            end
 
             love.graphics.setColor(0, 0, 0, 1)
             love.graphics.print(Button.text, bx + 80, by + 40)
@@ -326,27 +348,28 @@ function love.draw()
         local text = "Game Over"
         local textW = Font:getWidth(text)
         local textH = Font:getHeight(text)
-        love.graphics.print(
-            text,
-            Font,
-            ww/2 - textW/2,
-            wh/2 - textH/2
-        )
-
+        love.graphics.print(text, Font, ww/2 - textW/2, wh/2 - textH/2)
         love.graphics.setColor(1,1,1,1)
     end
 
-    if Bought and not Placed then
+    if Bought and not Placed and SelectedTower and SelectedTower.image then
         local mx, my = love.mouse.getPosition()
         love.graphics.setColor(1, 1, 1, 0.7)
-        love.graphics.draw(SelectedTower.image, mx - SelectedTower.image:getWidth()/2, my - SelectedTower.image:getHeight()/2)
+        love.graphics.draw(SelectedTower.image, mx, my, 0, 1, 1, SelectedTower.image:getWidth()/2, SelectedTower.image:getHeight()/2)
         love.graphics.setColor(1, 1, 1, 1)
     end
 
     for _, tw in ipairs(TowersOnMap) do
         local ox = tw.image:getWidth() / 2
         local oy = tw.image:getHeight() / 2
-        love.graphics.draw(tw.image, tw.x, tw.y, tw.rotation or 0, -1, -1, ox, oy)
+        love.graphics.draw(tw.image, tw.x, tw.y, tw.rotation or 0, 1, 1, ox, oy)
+        local mx, my = love.mouse.getPosition()
+        local dist = math.sqrt((mx - tw.x)^2 + (my - tw.y)^2)
+        if dist < 50 then
+            love.graphics.setColor(1, 0, 0, 0.2)
+            love.graphics.circle("fill", tw.x, tw.y, tw.range or 100)
+            love.graphics.setColor(1, 1, 1, 1)
+        end
     end
 
     for _, enemy in ipairs(EnemiesOnMap) do
@@ -355,31 +378,12 @@ function love.draw()
 end
 
 function love.keypressed(key)
-    if key == "escape" then
-        love.event.quit()
-    end
-    if key == "f" then
-        love.window.setFullscreen(not love.window.getFullscreen())
-    end
-    if key == "+" then
-        SelectedTower = Towers.Cannon
-    end
-    if key == "ě" then
-        SelectedTower = Towers[2]
-    end
-    if key == "š" then
-        SelectedTower = Towers[3]
-    end
-    if key == "č" then
-        SelectedTower = Towers[4]
-    end
-    if key == "ř" then
-        SelectedTower = Towers.BombTower
-    end
+    if key == "escape" then love.event.quit() end
+    if key == "f" then love.window.setFullscreen(not love.window.getFullscreen()) end
 end
 
 function love.mousepressed(x, y, button)
-    if button == 1 and Bought then
+    if button == 1 and Bought and SelectedTower and SelectedTower.image then
         local canPlace = true
 
         local towerW = SelectedTower.image:getWidth()
@@ -388,8 +392,8 @@ function love.mousepressed(x, y, button)
         local newX = x - towerW / 2
         local newY = y - towerH / 2
 
-        local mapWidth  = #Map1[1] * 64
-        local mapHeight = #Map1 * 64
+        local mapWidth  = (Map1 and #Map1[1] or 0) * 64
+        local mapHeight = (Map1 and #Map1 or 0) * 64
 
         if newX < 0 or newY < 0 or newX + towerW > mapWidth or newY + towerH > mapHeight then
             canPlace = false
@@ -401,10 +405,7 @@ function love.mousepressed(x, y, button)
             local tX = t.x - tW / 2
             local tY = t.y - tH / 2
 
-            if newX < tX + tW and
-               newX + towerW > tX and
-               newY < tY + tH and
-               newY + towerH > tY then
+            if newX < tX + tW and newX + towerW > tX and newY < tY + tH and newY + towerH > tY then
                 canPlace = false
                 break
             end
@@ -416,28 +417,33 @@ function love.mousepressed(x, y, button)
             local pW = 64
             local pH = 64
 
-            if newX < pX + pW and
-               newX + towerW > pX and
-               newY < pY + pH and
-               newY + towerH > pY then
+            if newX < pX + pW and newX + towerW > pX and newY < pY + pH and newY + towerH > pY then
                 canPlace = false
                 break
             end
         end
 
         if canPlace then
-            table.insert(TowersOnMap, {tower = SelectedTower, image = SelectedTower.image, range = SelectedTower.range, rotation = SelectedTower.rotation, x = x, y = y})
+            table.insert(TowersOnMap, {
+                tower = SelectedTower,
+                image = SelectedTower.image,
+                range = SelectedTower.range or 100,
+                rotation = 0,
+                x = x,
+                y = y,
+                target = nil
+            })
             Bought = false
             Placed = true
         else
-            -- future feedback feature
+            -- some shi resembling a warning
         end
     end
 end
 
 --TODO:
--- Add tower targeting and projectile mechanics
--- Add tower shooting and enemy health
+-- Add projectile mechanics
+-- Add tower shooting and enemy health when hovered
 -- Tower upgrade menu
 -- Add wave management and difficulty scaling
 -- Add sound effects and music
