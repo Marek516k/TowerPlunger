@@ -1,4 +1,3 @@
-
 Towers = {
     Cannon = {
         image = love.graphics.newImage("Images/cannon.png"),
