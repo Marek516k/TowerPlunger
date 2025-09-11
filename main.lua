@@ -490,3 +490,4 @@ end
 -- Optimize performance for larger maps and more entities if needed   
 -- More maps at least and map selection menu if i feel like doin so
 -- Balancing game difficulty and economy
+--bug fixes
