@@ -491,3 +491,4 @@ end
 -- More maps at least and map selection menu if i feel like doin so
 -- Balancing game difficulty and economy
 --bug fixes
+--user feedback stuff
