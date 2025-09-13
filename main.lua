@@ -16,7 +16,6 @@ function WaveShi()
         return
     end
 
-    PendingSpawns = {}
     for _, EnemyInfo in ipairs(waveData.enemies) do
         for i = 1, EnemyInfo.count do
             table.insert(PendingSpawns, {
@@ -32,11 +31,13 @@ end
 function love.load()
     Map1 = _G.Map1
     Flags = _G.Flags
-
+    PendingSpawns = {}
     Grass = {}
     Path = {}
-    PendingSpawns = {}
+    Bullets = {}
     Spawning = false
+    Buttons = {}
+    Shop = {}
 
     if Map1 then
         for y,row in ipairs(Map1) do
@@ -50,9 +51,6 @@ function love.load()
             end
         end
     end
-
-    Buttons = {}
-    Shop = {}
 
     function NewButton(text, fn)
         return {text = text, fn = fn,
@@ -76,9 +74,22 @@ function love.load()
         })
     end
 
+    table.insert(Buttons, NewButton(
+            "Start Game",
+            function()
+                GameState = "building"
+            end))
+
+    table.insert(Buttons, NewButton(
+            "Quit",
+            function()
+                love.event.quit(0)
+            end))
+
     love.window.setMode(1920, 1080, {resizable=false, vsync=true})
     GrassImage = love.graphics.newImage("Images/green.png")
     PathImage = love.graphics.newImage("Images/white.png")
+    --NotPossible = love.audio.newSource("sounds/Nuh-uh.wav", "static")
     TowersOnMap = {}
     EnemiesOnMap = {}
     Bought = false
@@ -95,20 +106,6 @@ function love.load()
     EnemyspawnTimer = 0
     Placed = false
     Font = love.graphics.newFont(32)
-
-    Buttons = {}
-    table.insert(Buttons, NewButton(
-            "Start Game",
-            function()
-                GameState = "building"
-
-            end))
-    table.insert(Buttons, NewButton(
-            "Quit",
-            function()
-                love.event.quit(0)
-
-            end))
 end
 
 function love.update(dt)
@@ -129,12 +126,14 @@ function love.update(dt)
             local pending = table.remove(PendingSpawns, 1)
             local spawnType = pending.type
             local eData = Enemy[spawnType]
+
             if eData then
                 table.insert(EnemiesOnMap, {
                     type   = spawnType,
                     image  = eData.image,
                     speed  = eData.speed,
                     health = eData.health,
+                    maxHealth = eData.health,
                     damage = eData.damage,
                     reward = eData.reward,
                     traits = eData.traits,
@@ -172,7 +171,12 @@ function love.update(dt)
 
                 if enemy.flagIndex > #Flags then
                     EnemiesAlive = math.max(0, EnemiesAlive - 1)
+                    Health = Health - (enemy.damage or 1)
                     table.remove(EnemiesOnMap, enemyIndex)
+
+                    if Health <= 0 then
+                        GameState = "gameover"
+                    end
                 end
             else
                 if distance > 0 then
@@ -183,62 +187,30 @@ function love.update(dt)
         end
     end
 
-    for _, tw in ipairs(TowersOnMap) do
-        local bestEnemy = nil
-        local bestEnemyRef = nil
-        local bestDist = math.huge
+    for _, tower in ipairs(TowersOnMap) do
+        tower.lastShot = (tower.lastShot or 0) + dt
+        local towerData = tower.tower
+        local fireRate = towerData.firerate or 1
+        local projectileSpeed = towerData.projectileSpeed or 300
 
-        local tx = tw.x
-        local ty = tw.y
-
-        for _, enemy in ipairs(EnemiesOnMap) do
-            local enemyWidth = enemy.image:getWidth()
-            local enemyHeight = enemy.image:getHeight()
-            local ex = enemy.x + enemyWidth / 2
-            local ey = enemy.y + enemyHeight / 2
-
-            local dx = ex - tx
-            local dy = ey - ty
-            local dist = math.sqrt(dx*dx + dy*dy)
-
-            if dist <= (tw.range or 0) and dist < bestDist then
-                bestDist = dist
-                bestEnemy = {x = ex, y = ey}
-                bestEnemyRef = enemy
-            end
-        end
-
-        if bestEnemy then
-            local dx = bestEnemy.x - tx
-            local dy = bestEnemy.y - ty
-            tw.rotation = math.atan2(dy, dx)
-
-            if bestEnemyRef and bestEnemyRef.speed then
-                local targetFlag = Flags[bestEnemyRef.flagIndex]
-                if targetFlag then
-                    local futureX = (targetFlag.x - 1) * 64 + 32
-                    local futureY = (targetFlag.y - 1) * 64 + 32
-                    local moveX = futureX - bestEnemyRef.x
-                    local moveY = futureY - bestEnemyRef.y
-                    local moveDist = math.sqrt(moveX*moveX + moveY*moveY)
-                    
-                    if moveDist > 0 then
-                        local leadTime = 0.1
-                        local predictX = bestEnemy.x + (moveX/moveDist) * bestEnemyRef.speed * leadTime
-                        local predictY = bestEnemy.y + (moveY/moveDist) * bestEnemyRef.speed * leadTime
-
-                        dx = predictX - tx
-                        dy = predictY - ty
-                        tw.rotation = math.atan2(dy, dx) + math.pi/2
-                    end
-                end
-            end
+        if tower.lastShot >= (1 / fireRate) then
+            local target = findNearestTargetForTower(tower)
             
-            tw.target = bestEnemy
-        else
-            tw.target = nil
+            if target then
+                local projectile = createProjectile(
+                    tower.x, tower.y,
+                    target.x, target.y,
+                    projectileSpeed,
+                    towerData.dmg or 10,
+                    towerData.piercing or 0,
+                    towerData.splashRadius or 0
+                )
+                table.insert(Bullets, projectile)
+                tower.lastShot = 0
+            end
         end
     end
+    updateProjectiles(dt)
 
     if GameState == "wave" and EnemiesAlive == 0 and not Spawning then
         GameState = "building"
@@ -341,7 +313,20 @@ function love.draw()
         end
 
         love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.print("Money: $" .. Money, 10, 10)
+        love.graphics.print("Health: " .. Health, 10, 50)
+        love.graphics.print("Wave: " .. CurrentWave, 10, 90)
+        love.graphics.print("Enemies: " .. EnemiesAlive, 10, 130)
     end
+
+    love.graphics.setColor(1, 1, 0, 1)
+
+    for _, proj in ipairs(Bullets) do
+        if proj.alive then
+            love.graphics.circle("fill", proj.x, proj.y, proj.radius)
+        end
+    end
+    love.graphics.setColor(1, 1, 1, 1)
 
     if GameState == "gameover" then
         love.graphics.setColor(1,0,0,1)
@@ -374,7 +359,7 @@ function love.draw()
 
     for _, enemy in ipairs(EnemiesOnMap) do
         love.graphics.draw(enemy.image, enemy.x, enemy.y)
-        local maxHealth = enemy.health
+        local maxHealth = enemy.maxHealth or enemy.health
         if enemy.health and maxHealth then
             local enemyWidth = enemy.image:getWidth()
             local barWidth = 40
@@ -407,7 +392,7 @@ function love.draw()
             love.graphics.setColor(1, 1, 1, 1)
             love.graphics.setFont(love.graphics.newFont(12))
             love.graphics.print(enemy.type or "Enemy", mx + 15, my - 15)
-            love.graphics.print("HP: " .. (enemy.health) .. "/" .. (maxHealth), mx + 15, my - 2)
+            love.graphics.print("HP: " .. (enemy.health or 0) .. "/" .. (maxHealth or 0), mx + 15, my - 2)
             love.graphics.setFont(Font)
             love.graphics.setColor(1, 1, 1, 1)
         end
@@ -468,24 +453,130 @@ function love.mousepressed(x, y, button)
                 rotation = 0,
                 x = x,
                 y = y,
-                target = nil
+                target = nil,
+                lastShot = 0
             })
             Bought = false
             Placed = true
         else
-            -- some shi resembling a warning
+            --love.audio.play(sounds/NotPossible)
+        end
+    end
+end
+
+function findNearestTargetForTower(tower)
+    local bestEnemy = nil
+    local bestDist = math.huge
+    local tx = tower.x
+    local ty = tower.y
+
+    for _, enemy in ipairs(EnemiesOnMap) do
+        local enemyWidth = enemy.image:getWidth()
+        local enemyHeight = enemy.image:getHeight()
+        local ex = enemy.x + enemyWidth / 2
+        local ey = enemy.y + enemyHeight / 2
+
+        local dx = ex - tx
+        local dy = ey - ty
+        local dist = math.sqrt(dx*dx + dy*dy)
+
+        if dist <= (tower.range or 0) and dist < bestDist then
+            bestDist = dist
+            bestEnemy = {x = ex, y = ey, enemy = enemy}
+        end
+    end
+
+    if bestEnemy then
+        local dx = bestEnemy.x - tx
+        local dy = bestEnemy.y - ty
+        tower.rotation = math.atan2(dy, dx)
+        tower.target = bestEnemy
+        return bestEnemy
+    else
+        tower.target = nil
+        return nil
+    end
+end
+
+function createProjectile(startX, startY, targetX, targetY, speed, damage, pierce, splashRadius)
+    local dx = targetX - startX
+    local dy = targetY - startY
+    local distance = math.sqrt(dx * dx + dy * dy)
+    
+    if distance == 0 then distance = 1 end
+    
+    local dirX = dx / distance
+    local dirY = dy / distance
+    
+    return {
+        x = startX,
+        y = startY,
+        vx = dirX * speed,
+        vy = dirY * speed,
+        radius = 3,
+        alive = true,
+        damage = damage or 10,
+        pierce = pierce or 0,
+        hitCount = 0,
+        splashRadius = splashRadius or 0
+    }
+end
+
+function updateProjectiles(dt)
+    for i = #Bullets, 1, -1 do
+        local proj = Bullets[i]
+        
+        if proj.alive then
+            proj.x = proj.x + proj.vx * dt
+            proj.y = proj.y + proj.vy * dt
+
+            for j = #EnemiesOnMap, 1, -1 do
+                local enemy = EnemiesOnMap[j]
+                local enemyWidth = enemy.image:getWidth()
+                local enemyHeight = enemy.image:getHeight()
+                local enemyCenterX = enemy.x + enemyWidth / 2
+                local enemyCenterY = enemy.y + enemyHeight / 2
+                
+                local dx = proj.x - enemyCenterX
+                local dy = proj.y - enemyCenterY
+                local distance = math.sqrt(dx * dx + dy * dy)
+                
+                local hitRadius = proj.radius + math.min(enemyWidth, enemyHeight) / 2
+                
+                if distance <= hitRadius then
+                    enemy.health = enemy.health - proj.damage
+                    proj.hitCount = proj.hitCount + 1
+                    
+                    if enemy.health <= 0 then
+                        Money = Money + (enemy.reward or 10)
+                        EnemiesAlive = math.max(0, EnemiesAlive - 1)
+                        table.remove(EnemiesOnMap, j)
+                    end
+
+                    if proj.hitCount >= (proj.pierce + 1) then
+                        proj.alive = false
+                    end
+                    break
+                end
+            end
+
+            if proj.x < -50 or proj.x > love.graphics.getWidth() + 50 or
+               proj.y < -50 or proj.y > love.graphics.getHeight() + 50 then
+                proj.alive = false
+            end
+        end
+
+        if not proj.alive then
+            table.remove(Bullets, i)
         end
     end
 end
 
 --TODO:
--- Add projectile mechanics
--- Add tower shooting and enemy health when hovered
+-- difficulty scaling, preparing for upgrades
 -- Tower upgrade menu
--- Add wave management and difficulty scaling
 -- Add sound effects and music
 -- Polish UI and overall game experience
--- Progress bar
 -- Implement save/load functionality for game progress
 -- Optimize performance for larger maps and more entities if needed   
 -- More maps at least and map selection menu if i feel like doin so

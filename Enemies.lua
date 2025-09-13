@@ -9,7 +9,7 @@ Enemy = {
     },
     fastZombie = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 100,
+        speed = 200,
         health = 40,
         damage = 20,
         reward = 6,
@@ -37,7 +37,7 @@ Enemy = {
         health = 1000,
         damage = 50,
         reward = 100,
-        traits = {"armored"}
+        traits = {"none"}
     },
     Fastboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
@@ -45,7 +45,7 @@ Enemy = {
         health = 700,
         damage = 40,
         reward = 80,
-        traits = {"slowresistant"}
+        traits = {"none"}
     },
     Tankboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
