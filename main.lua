@@ -96,13 +96,13 @@ function love.load()
     Timer = 0
     Interval = 0.4
     SelectedTower = Towers.Cannon or next(Towers)
-    Money = 5000000
+    Money = 500000
     Health = 100
     CurrentWave = 1
     EnemiesAlive = 0
     GameState = "menu"
     Wavetimer = 0
-    WaveInterval = 1
+    WaveInterval = 3
     EnemyspawnTimer = 0
     Placed = false
     Font = love.graphics.newFont(32)
@@ -191,18 +191,18 @@ function love.update(dt)
         tower.lastShot = (tower.lastShot or 0) + dt
         local towerData = tower.tower
         local fireRate = towerData.firerate or 1
-        local projectileSpeed = towerData.projectileSpeed or 300
+        local projectileSpeed = towerData.projectileSpeed
 
         if tower.lastShot >= (1 / fireRate) then
             local target = findNearestTargetForTower(tower)
-            
+           
             if target then
                 local projectile = createProjectile(
                     tower.x, tower.y,
                     target.x, target.y,
                     projectileSpeed,
                     towerData.dmg or 10,
-                    towerData.piercing or 0,
+                    towerData.pierce,
                     towerData.splashRadius or 0
                 )
                 table.insert(Bullets, projectile)
@@ -515,17 +515,17 @@ function createProjectile(startX, startY, targetX, targetY, speed, damage, pierc
         vy = dirY * speed,
         radius = 3,
         alive = true,
-        damage = damage or 10,
-        pierce = pierce or 0,
+        damage = damage,
+        pierce = pierce,
         hitCount = 0,
-        splashRadius = splashRadius or 0
+        splashRadius = splashRadius
     }
 end
 
 function updateProjectiles(dt)
     for i = #Bullets, 1, -1 do
         local proj = Bullets[i]
-        
+
         if proj.alive then
             proj.x = proj.x + proj.vx * dt
             proj.y = proj.y + proj.vy * dt
@@ -542,7 +542,7 @@ function updateProjectiles(dt)
                 local distance = math.sqrt(dx * dx + dy * dy)
                 
                 local hitRadius = proj.radius + math.min(enemyWidth, enemyHeight) / 2
-                
+
                 if distance <= hitRadius then
                     enemy.health = enemy.health - proj.damage
                     proj.hitCount = proj.hitCount + 1
@@ -553,15 +553,15 @@ function updateProjectiles(dt)
                         table.remove(EnemiesOnMap, j)
                     end
 
-                    if proj.hitCount >= (proj.pierce + 1) then
+                    if proj.hitCount > (proj.pierce) then
                         proj.alive = false
                     end
                     break
                 end
             end
 
-            if proj.x < -50 or proj.x > love.graphics.getWidth() + 50 or
-               proj.y < -50 or proj.y > love.graphics.getHeight() + 50 then
+        if proj.x < -50 or proj.x > love.graphics.getWidth() + 50 or
+                proj.y < -50 or proj.y > love.graphics.getHeight() + 50 then
                 proj.alive = false
             end
         end

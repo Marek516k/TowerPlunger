@@ -1,74 +1,74 @@
 Enemy = {
     zombie = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 300,
-        health = 100,
+        speed = 80,
+        health = 85,
         damage = 10,
-        reward = 5,
+        reward = 8,
         traits = {"none"}
     },
     fastZombie = {
         image = love.graphics.newImage("Images/Cannon.png"),
         speed = 200,
-        health = 40,
+        health = 45,
         damage = 20,
-        reward = 6,
+        reward = 12,
         traits = {"none"}
     },
     tank = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 30,
-        health = 300,
+        speed = 35,
+        health = 350,
         damage = 20,
-        reward = 15,
+        reward = 18,
         traits = {"armored"}
     },
     hidden = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 70,
-        health = 80,
+        speed = 75,
+        health = 120,
         damage = 15,
-        reward = 8,
+        reward = 22,
         traits = {"stealth"}
     },
     Normalboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
         speed = 20,
-        health = 1000,
+        health = 1300,
         damage = 50,
-        reward = 100,
+        reward = 150,
         traits = {"none"}
     },
     Fastboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 50,
-        health = 700,
+        speed = 105,
+        health = 2500,
         damage = 40,
-        reward = 80,
+        reward = 350,
         traits = {"none"}
     },
     Tankboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 20,
-        health = 2000,
+        speed = 35,
+        health = 5000,
         damage = 70,
-        reward = 150,
+        reward = 500,
         traits = {"armored"}
     },
     Hiddenboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 40,
-        health = 800,
+        speed = 70,
+        health = 950,
         damage = 60,
-        reward = 120,
+        reward = 675,
         traits = {"stealth"}
     },
     Gravedigger = {
         image = love.graphics.newImage("Images/Cannon.png"),
         speed = 15,
-        health = 10000,
-        damage = 2000,
-        reward = 1000,
+        health = 25000,
+        damage = 100,
+        reward = 1500,
         traits = {"armored"}
     }
     -- more soon mby
