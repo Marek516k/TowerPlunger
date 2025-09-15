@@ -1,7 +1,7 @@
 Towers = {
     Cannon = {
         image = love.graphics.newImage("Images/cannon.png"),
-        dmg = 5,
+        dmg = 10,
         firerate = 1.5,
         range = 300,
         cost = 37,
@@ -40,7 +40,7 @@ Towers = {
         traits = {"detection","slow"},
         projectile = "ice",
         projectileSpeed = 550,
-        splashRadius = 2.5,
+        splashRadius = 65,
         pierce = 0,
         rotation = 0,
     },
@@ -70,7 +70,7 @@ Towers = {
         traits = {"none"},
         projectile = "bomb",
         projectileSpeed = 450,
-        splashRadius = 4,
+        splashRadius = 100,
         pierce = 0,
         rotation = 0
     } --mby more towers in the future

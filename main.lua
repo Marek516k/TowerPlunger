@@ -536,24 +536,57 @@ function updateProjectiles(dt)
                 local enemyHeight = enemy.image:getHeight()
                 local enemyCenterX = enemy.x + enemyWidth / 2
                 local enemyCenterY = enemy.y + enemyHeight / 2
-                
+                local decreseddmg = proj.damage * 0.15
+
                 local dx = proj.x - enemyCenterX
                 local dy = proj.y - enemyCenterY
                 local distance = math.sqrt(dx * dx + dy * dy)
-                
+
                 local hitRadius = proj.radius + math.min(enemyWidth, enemyHeight) / 2
 
                 if distance <= hitRadius then
-                    enemy.health = enemy.health - proj.damage
-                    proj.hitCount = proj.hitCount + 1
-                    
+                    if enemy.traits ~= "armored" then
+                        proj.hitCount = proj.hitCount + 1
+                        enemy.health = enemy.health - (proj.damage - decreseddmg)
+                    elseif enemy.traits ~= "hidden" and not proj.traits ~= "detection" then
+                    else
+                        enemy.health = enemy.health - proj.damage
+                        proj.hitCount = proj.hitCount + 1
+                    end
+
+                    if proj.splashRadius > 0 then
+                        for k = #EnemiesOnMap, 1, -1 do
+                            local splashEnemy = EnemiesOnMap[k]
+                            if splashEnemy ~= enemy then
+                                local splashEnemyWidth = splashEnemy.image:getWidth()
+                                local splashEnemyHeight = splashEnemy.image:getHeight()
+                                local splashCenterX = splashEnemy.x + splashEnemyWidth / 2
+                                local splashCenterY = splashEnemy.y + splashEnemyHeight / 2                             
+                                local splashDx = enemyCenterX - splashCenterX
+                                local splashDy = enemyCenterY - splashCenterY
+                                local splashDistance = math.sqrt(splashDx * splashDx + splashDy * splashDy)
+
+                                if splashDistance <= proj.splashRadius then
+                                    splashEnemy.health = splashEnemy.health - proj.damage
+                                end
+                                if splashEnemy.health <= 0 then
+                                    Money = Money + (splashEnemy.reward)
+                                    EnemiesAlive = math.max(0, EnemiesAlive - 1)
+                                    table.remove(EnemiesOnMap, k)
+                                    if k < j then
+                                        j = j - 1
+                                    end
+                                end
+                            end
+                        end
+                    end
+
                     if enemy.health <= 0 then
-                        Money = Money + (enemy.reward or 10)
+                        Money = Money + (enemy.reward)
                         EnemiesAlive = math.max(0, EnemiesAlive - 1)
                         table.remove(EnemiesOnMap, j)
                     end
-
-                    if proj.hitCount > (proj.pierce) then
+                    if proj.hitCount > proj.pierce then
                         proj.alive = false
                     end
                     break

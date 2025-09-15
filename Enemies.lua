@@ -5,7 +5,7 @@ Enemy = {
         health = 85,
         damage = 10,
         reward = 8,
-        traits = {"none"}
+        traits = {"armored"}
     },
     fastZombie = {
         image = love.graphics.newImage("Images/Cannon.png"),
