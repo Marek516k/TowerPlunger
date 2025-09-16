@@ -5,7 +5,7 @@ Enemy = {
         health = 85,
         damage = 10,
         reward = 8,
-        traits = {"armored"}
+        traits = "none"
     },
     fastZombie = {
         image = love.graphics.newImage("Images/Cannon.png"),
@@ -13,7 +13,7 @@ Enemy = {
         health = 45,
         damage = 20,
         reward = 12,
-        traits = {"none"}
+        traits = "none"
     },
     tank = {
         image = love.graphics.newImage("Images/Cannon.png"),
@@ -21,7 +21,7 @@ Enemy = {
         health = 350,
         damage = 20,
         reward = 18,
-        traits = {"armored"}
+        traits = "armored"
     },
     hidden = {
         image = love.graphics.newImage("Images/Cannon.png"),
@@ -29,7 +29,7 @@ Enemy = {
         health = 120,
         damage = 15,
         reward = 22,
-        traits = {"stealth"}
+        traits = "hidden"
     },
     Normalboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
@@ -37,7 +37,7 @@ Enemy = {
         health = 1300,
         damage = 50,
         reward = 150,
-        traits = {"none"}
+        traits = "none"
     },
     Fastboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
@@ -45,7 +45,7 @@ Enemy = {
         health = 2500,
         damage = 40,
         reward = 350,
-        traits = {"none"}
+        traits = "none"
     },
     Tankboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
@@ -53,7 +53,7 @@ Enemy = {
         health = 5000,
         damage = 70,
         reward = 500,
-        traits = {"armored"}
+        traits = "armored"
     },
     Hiddenboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
@@ -61,7 +61,7 @@ Enemy = {
         health = 950,
         damage = 60,
         reward = 675,
-        traits = {"stealth"}
+        traits = "hidden"
     },
     Gravedigger = {
         image = love.graphics.newImage("Images/Cannon.png"),
@@ -69,7 +69,7 @@ Enemy = {
         health = 25000,
         damage = 100,
         reward = 1500,
-        traits = {"armored"}
+        traits = "armored"
     }
     -- more soon mby
 }

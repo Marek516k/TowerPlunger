@@ -201,9 +201,11 @@ function love.update(dt)
                     tower.x, tower.y,
                     target.x, target.y,
                     projectileSpeed,
-                    towerData.dmg or 10,
+                    towerData.dmg,
                     towerData.pierce,
-                    towerData.splashRadius or 0
+                    towerData.splashRadius,
+                    towerData.traits
+
                 )
                 table.insert(Bullets, projectile)
                 tower.lastShot = 0
@@ -498,7 +500,7 @@ function findNearestTargetForTower(tower)
     end
 end
 
-function createProjectile(startX, startY, targetX, targetY, speed, damage, pierce, splashRadius)
+function createProjectile(startX, startY, targetX, targetY, speed, damage, pierce, splashRadius,traits)
     local dx = targetX - startX
     local dy = targetY - startY
     local distance = math.sqrt(dx * dx + dy * dy)
@@ -518,7 +520,8 @@ function createProjectile(startX, startY, targetX, targetY, speed, damage, pierc
         damage = damage,
         pierce = pierce,
         hitCount = 0,
-        splashRadius = splashRadius
+        splashRadius = splashRadius,
+        traits = traits
     }
 end
 
@@ -545,10 +548,17 @@ function updateProjectiles(dt)
                 local hitRadius = proj.radius + math.min(enemyWidth, enemyHeight) / 2
 
                 if distance <= hitRadius then
-                    if enemy.traits ~= "armored" then
+                    if enemy.traits == "armored" then
                         proj.hitCount = proj.hitCount + 1
                         enemy.health = enemy.health - (proj.damage - decreseddmg)
-                    elseif enemy.traits ~= "hidden" and not proj.traits ~= "detection" then
+                    elseif enemy.traits == "hidden" then
+                        for t = 1, #proj.traits do
+                            if proj.traits[t] == "detection" then
+                                enemy.health = enemy.health - proj.damage
+                                proj.hitCount = proj.hitCount + 1
+                                break
+                            end
+                        end
                     else
                         enemy.health = enemy.health - proj.damage
                         proj.hitCount = proj.hitCount + 1
@@ -561,7 +571,7 @@ function updateProjectiles(dt)
                                 local splashEnemyWidth = splashEnemy.image:getWidth()
                                 local splashEnemyHeight = splashEnemy.image:getHeight()
                                 local splashCenterX = splashEnemy.x + splashEnemyWidth / 2
-                                local splashCenterY = splashEnemy.y + splashEnemyHeight / 2                             
+                                local splashCenterY = splashEnemy.y + splashEnemyHeight / 2                          
                                 local splashDx = enemyCenterX - splashCenterX
                                 local splashDy = enemyCenterY - splashCenterY
                                 local splashDistance = math.sqrt(splashDx * splashDx + splashDy * splashDy)
