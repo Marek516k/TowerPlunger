@@ -105,6 +105,7 @@ function love.load()
     WaveInterval = 3
     EnemyspawnTimer = 0
     Placed = false
+    Slowness = false
     Font = love.graphics.newFont(32)
 end
 
@@ -477,7 +478,6 @@ function findNearestTargetForTower(tower)
         local enemyHeight = enemy.image:getHeight()
         local ex = enemy.x + enemyWidth / 2
         local ey = enemy.y + enemyHeight / 2
-
         local dx = ex - tx
         local dy = ey - ty
         local dist = math.sqrt(dx*dx + dy*dy)
@@ -504,12 +504,10 @@ function createProjectile(startX, startY, targetX, targetY, speed, damage, pierc
     local dx = targetX - startX
     local dy = targetY - startY
     local distance = math.sqrt(dx * dx + dy * dy)
-    
     if distance == 0 then distance = 1 end
-    
     local dirX = dx / distance
     local dirY = dy / distance
-    
+
     return {
         x = startX,
         y = startY,
@@ -526,91 +524,153 @@ function createProjectile(startX, startY, targetX, targetY, speed, damage, pierc
 end
 
 function updateProjectiles(dt)
+    updateSlowEffects(dt)
+
     for i = #Bullets, 1, -1 do
         local proj = Bullets[i]
 
-        if proj.alive then
+        if not proj.alive then
+            table.remove(Bullets, i)
+        else
             proj.x = proj.x + proj.vx * dt
             proj.y = proj.y + proj.vy * dt
 
-            for j = #EnemiesOnMap, 1, -1 do
-                local enemy = EnemiesOnMap[j]
-                local enemyWidth = enemy.image:getWidth()
-                local enemyHeight = enemy.image:getHeight()
-                local enemyCenterX = enemy.x + enemyWidth / 2
-                local enemyCenterY = enemy.y + enemyHeight / 2
-                local decreseddmg = proj.damage * 0.15
+            if proj.x < -50 or proj.x > love.graphics.getWidth() + 50 or
+               proj.y < -50 or proj.y > love.graphics.getHeight() + 50 then
+                proj.alive = false
+                table.remove(Bullets, i)
+            else
+                processProjectileCollisions(proj)
 
-                local dx = proj.x - enemyCenterX
-                local dy = proj.y - enemyCenterY
-                local distance = math.sqrt(dx * dx + dy * dy)
+                if proj.hitCount > proj.pierce then
+                    proj.alive = false
+                    table.remove(Bullets, i)
+                end
+            end
+        end
+    end
+end
 
-                local hitRadius = proj.radius + math.min(enemyWidth, enemyHeight) / 2
+function updateSlowEffects(dt)
+    for i = 1, #EnemiesOnMap do
+        local enemy = EnemiesOnMap[i]
 
-                if distance <= hitRadius then
-                    if enemy.traits == "armored" then
-                        proj.hitCount = proj.hitCount + 1
-                        enemy.health = enemy.health - (proj.damage - decreseddmg)
-                    elseif enemy.traits == "hidden" then
-                        for t = 1, #proj.traits do
-                            if proj.traits[t] == "detection" then
-                                enemy.health = enemy.health - proj.damage
-                                proj.hitCount = proj.hitCount + 1
-                                break
-                            end
-                        end
-                    else
-                        enemy.health = enemy.health - proj.damage
-                        proj.hitCount = proj.hitCount + 1
-                    end
+        if enemy.slowDuration and enemy.slowDuration > 0 then
+            enemy.slowDuration = enemy.slowDuration - dt
 
-                    if proj.splashRadius > 0 then
-                        for k = #EnemiesOnMap, 1, -1 do
-                            local splashEnemy = EnemiesOnMap[k]
-                            if splashEnemy ~= enemy then
-                                local splashEnemyWidth = splashEnemy.image:getWidth()
-                                local splashEnemyHeight = splashEnemy.image:getHeight()
-                                local splashCenterX = splashEnemy.x + splashEnemyWidth / 2
-                                local splashCenterY = splashEnemy.y + splashEnemyHeight / 2                          
-                                local splashDx = enemyCenterX - splashCenterX
-                                local splashDy = enemyCenterY - splashCenterY
-                                local splashDistance = math.sqrt(splashDx * splashDx + splashDy * splashDy)
+            if enemy.slowDuration <= 0 then
+                enemy.speed = enemy.originalSpeed
+                enemy.slowDuration = nil
+                enemy.originalSpeed = nil
+            end
+        end
+    end
+end
 
-                                if splashDistance <= proj.splashRadius then
-                                    splashEnemy.health = splashEnemy.health - proj.damage
-                                end
-                                if splashEnemy.health <= 0 then
-                                    Money = Money + (splashEnemy.reward)
-                                    EnemiesAlive = math.max(0, EnemiesAlive - 1)
-                                    table.remove(EnemiesOnMap, k)
-                                    if k < j then
-                                        j = j - 1
-                                    end
-                                end
-                            end
-                        end
-                    end
+function processProjectileCollisions(proj)
+    local canDetectHidden = hasProjectileTrait(proj, "detection")
+    local hasSlow = hasProjectileTrait(proj, "slow")
 
-                    if enemy.health <= 0 then
-                        Money = Money + (enemy.reward)
-                        EnemiesAlive = math.max(0, EnemiesAlive - 1)
-                        table.remove(EnemiesOnMap, j)
-                    end
-                    if proj.hitCount > proj.pierce then
-                        proj.alive = false
-                    end
-                    break
+    for j = #EnemiesOnMap, 1, -1 do
+        local enemy = EnemiesOnMap[j]
+
+        if checkProjectileHit(proj, enemy) then
+            local damageDealt = calculateDamage(proj, enemy, canDetectHidden)
+
+            if damageDealt > 0 then
+                enemy.health = enemy.health - damageDealt
+                proj.hitCount = proj.hitCount + 1
+
+                if hasSlow then
+                    applySlowEffect(enemy)
+                end
+
+                if proj.splashRadius > 0 then
+                    processSplashDamage(proj, enemy, hasSlow)
                 end
             end
 
-        if proj.x < -50 or proj.x > love.graphics.getWidth() + 50 or
-                proj.y < -50 or proj.y > love.graphics.getHeight() + 50 then
-                proj.alive = false
+            if enemy.health <= 0 then
+                Money = Money + enemy.reward
+                EnemiesAlive = math.max(0, EnemiesAlive - 1)
+                table.remove(EnemiesOnMap, j)
             end
+            break
         end
+    end
+end
 
-        if not proj.alive then
-            table.remove(Bullets, i)
+function hasProjectileTrait(proj, trait)
+    for i = 1, #proj.traits do
+        if proj.traits[i] == trait then
+            return true
+        end
+    end
+    return false
+end
+
+function checkProjectileHit(proj, enemy)
+    local enemyWidth = enemy.image:getWidth()
+    local enemyHeight = enemy.image:getHeight()
+    local enemyCenterX = enemy.x + enemyWidth / 2
+    local enemyCenterY = enemy.y + enemyHeight / 2
+    local dx = proj.x - enemyCenterX
+    local dy = proj.y - enemyCenterY
+    local distance = math.sqrt(dx * dx + dy * dy)
+    local hitRadius = proj.radius + math.min(enemyWidth, enemyHeight) / 2
+
+    return distance <= hitRadius
+end
+
+function calculateDamage(proj, enemy, canDetectHidden)
+    if enemy.traits == "hidden" and not canDetectHidden then
+        return 0
+    elseif enemy.traits == "armored" then
+        return proj.damage * 0.85
+    else
+        return proj.damage
+    end
+end
+
+function applySlowEffect(enemy)
+    if not enemy.originalSpeed then
+        enemy.originalSpeed = enemy.speed
+    end
+    enemy.speed = enemy.originalSpeed * 0.8
+    enemy.slowDuration = 3.0
+end
+
+function processSplashDamage(proj, targetEnemy, hasSlow)
+    local targetWidth = targetEnemy.image:getWidth()
+    local targetHeight = targetEnemy.image:getHeight()
+    local targetCenterX = targetEnemy.x + targetWidth / 2
+    local targetCenterY = targetEnemy.y + targetHeight / 2
+
+    for k = #EnemiesOnMap, 1, -1 do
+        local splashEnemy = EnemiesOnMap[k]
+
+        if splashEnemy ~= targetEnemy then
+            local splashWidth = splashEnemy.image:getWidth()
+            local splashHeight = splashEnemy.image:getHeight()
+            local splashCenterX = splashEnemy.x + splashWidth / 2
+            local splashCenterY = splashEnemy.y + splashHeight / 2
+            local dx = targetCenterX - splashCenterX
+            local dy = targetCenterY - splashCenterY
+            local distance = math.sqrt(dx * dx + dy * dy)
+
+            if distance <= proj.splashRadius then
+                splashEnemy.health = splashEnemy.health - proj.damage
+
+                if hasSlow then
+                    applySlowEffect(splashEnemy)
+                end
+
+                if splashEnemy.health <= 0 then
+                    Money = Money + splashEnemy.reward
+                    EnemiesAlive = math.max(0, EnemiesAlive - 1)
+                    table.remove(EnemiesOnMap, k)
+                end
+            end
         end
     end
 end
