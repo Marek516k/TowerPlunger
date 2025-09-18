@@ -69,6 +69,7 @@ function love.load()
                     SelectedTower = tower
                     Bought = true
                     Placed = false
+                else love.audio.play(NotPossible)
                 end
             end
         })
@@ -89,7 +90,8 @@ function love.load()
     love.window.setMode(1920, 1080, {resizable=false, vsync=true})
     GrassImage = love.graphics.newImage("Images/green.png")
     PathImage = love.graphics.newImage("Images/white.png")
-    --NotPossible = love.audio.newSource("sounds/Nuh-uh.wav", "static")
+    NotPossible = love.audio.newSource("sounds/Nuh-uh.wav", "static")
+    --Song = love.audio.newSource("sounds/Song.mp3", "static")
     TowersOnMap = {}
     EnemiesOnMap = {}
     Bought = false
@@ -106,7 +108,7 @@ function love.load()
     EnemyspawnTimer = 0
     Placed = false
     Slowness = false
-    Font = love.graphics.newFont(32)
+    Font = love.graphics.newFont(25)
 end
 
 function love.update(dt)
@@ -233,11 +235,9 @@ function love.draw()
 
     local ww = love.graphics.getWidth()
     local wh = love.graphics.getHeight()
-
     local button_width = ww * (1/3)
     local Button_height = wh * (1/10)
     local margin = 16
-
     local Total_height = (Button_height + margin) * #Buttons
     local cursor_y = 0
 
@@ -281,7 +281,6 @@ function love.draw()
         local buttonH = 100
         local marginS = 20
         local cursorS_y = 0
-
         local mx, my = love.mouse.getPosition()
 
         for i, Button in ipairs(Shop) do
@@ -289,10 +288,8 @@ function love.draw()
 
             local bx = shopX
             local by = shopY + cursorS_y
-
             love.graphics.setColor(0.8, 0.8, 0.8, 1)
             love.graphics.rectangle("fill", bx, by, shopW, buttonH)
-
             local hot = mx > bx and mx < bx + shopW and my > by and my < by + buttonH
             if hot then
                 love.graphics.setColor(1, 1, 0, 0.3)
@@ -393,10 +390,8 @@ function love.draw()
             love.graphics.setColor(0, 0, 0, 0.8)
             love.graphics.rectangle("fill", mx + 10, my - 20, 120, 40)
             love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.setFont(love.graphics.newFont(12))
             love.graphics.print(enemy.type or "Enemy", mx + 15, my - 15)
             love.graphics.print("HP: " .. (enemy.health or 0) .. "/" .. (maxHealth or 0), mx + 15, my - 2)
-            love.graphics.setFont(Font)
             love.graphics.setColor(1, 1, 1, 1)
         end
     end
@@ -421,6 +416,7 @@ function love.mousepressed(x, y, button)
         local mapHeight = (Map1 and #Map1 or 0) * 64
 
         if newX < 0 or newY < 0 or newX + towerW > mapWidth or newY + towerH > mapHeight then
+            love.audio.play(NotPossible)
             canPlace = false
         end
 
@@ -431,6 +427,7 @@ function love.mousepressed(x, y, button)
             local tY = t.y - tH / 2
 
             if newX < tX + tW and newX + towerW > tX and newY < tY + tH and newY + towerH > tY then
+                love.audio.play(NotPossible)
                 canPlace = false
                 break
             end
@@ -443,6 +440,7 @@ function love.mousepressed(x, y, button)
             local pH = 64
 
             if newX < pX + pW and newX + towerW > pX and newY < pY + pH and newY + towerH > pY then
+                love.audio.play(NotPossible)
                 canPlace = false
                 break
             end
@@ -461,8 +459,6 @@ function love.mousepressed(x, y, button)
             })
             Bought = false
             Placed = true
-        else
-            --love.audio.play(sounds/NotPossible)
         end
     end
 end
@@ -676,7 +672,6 @@ function processSplashDamage(proj, targetEnemy, hasSlow)
 end
 
 --TODO:
--- difficulty scaling, preparing for upgrades
 -- Tower upgrade menu
 -- Add sound effects and music
 -- Polish UI and overall game experience
