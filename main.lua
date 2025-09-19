@@ -198,7 +198,7 @@ function love.update(dt)
 
         if tower.lastShot >= (1 / fireRate) then
             local target = findNearestTargetForTower(tower)
-           
+
             if target then
                 local projectile = createProjectile(
                     tower.x, tower.y,
