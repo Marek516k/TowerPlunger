@@ -355,6 +355,9 @@ function love.draw()
             love.graphics.circle("fill", tw.x, tw.y, tw.range)
             love.graphics.setColor(1, 1, 1, 1)
         end
+        if dist < 40 and love.mouse.isDown(1) then
+            Upgreades()
+        end
     end
 
     for _, enemy in ipairs(EnemiesOnMap) do
@@ -367,15 +370,12 @@ function love.draw()
             local barX = enemy.x + (enemyWidth - barWidth) / 2
             local barY = enemy.y - 10
             local healthPercent = math.max(0, enemy.health / maxHealth)
-
             love.graphics.setColor(0, 0, 0, 0.8)
             love.graphics.rectangle("fill", barX - 1, barY - 1, barWidth + 2, barHeight + 2)
-
             local r = 1 - healthPercent
             local g = healthPercent
             love.graphics.setColor(r, g, 0, 1)
             love.graphics.rectangle("fill", barX, barY, barWidth * healthPercent, barHeight)
-
             love.graphics.setColor(1, 1, 1, 1)
         end
 
@@ -397,6 +397,10 @@ function love.draw()
     end
 end
 
+function Upgrades()
+    local mx,my = love.mouse.getPosition()
+end
+
 function love.keypressed(key)
     if key == "escape" then love.event.quit() end
     if key == "f" then love.window.setFullscreen(not love.window.getFullscreen()) end
@@ -405,13 +409,10 @@ end
 function love.mousepressed(x, y, button)
     if button == 1 and Bought and SelectedTower and SelectedTower.image then
         local canPlace = true
-
         local towerW = SelectedTower.image:getWidth()
         local towerH = SelectedTower.image:getHeight()
-
         local newX = x - towerW / 2
         local newY = y - towerH / 2
-
         local mapWidth  = (Map1 and #Map1[1] or 0) * 64
         local mapHeight = (Map1 and #Map1 or 0) * 64
 
