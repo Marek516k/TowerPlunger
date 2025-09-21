@@ -1,11 +1,11 @@
 love = require("love")
 Enemy = require("Enemies")
 Towers = require("Towers")
-Upgrades = require("Upgrades")
 Level1 = require("Level1")
 
 local Map1 = Level1.Map1
 local Flags = Level1.Flags
+local Upgrades = Towers.TowerUpgrades
 
 function WaveShi()
     local waveKey = "wave" .. tostring(CurrentWave)
@@ -31,6 +31,7 @@ end
 function love.load()
     Map1 = _G.Map1
     Flags = _G.Flags
+    Upgrades = _G.Upgrades
     PendingSpawns = {}
     Grass = {}
     Path = {}
@@ -356,7 +357,7 @@ function love.draw()
             love.graphics.setColor(1, 1, 1, 1)
         end
         if dist < 40 and love.mouse.isDown(1) then
-            Upgreades()
+            TowerUpgrades(tw,Upgrades)
         end
     end
 
@@ -397,8 +398,15 @@ function love.draw()
     end
 end
 
-function Upgrades()
+function TowerUpgrades(tw,Upgrades)
     local mx,my = love.mouse.getPosition()
+    local drawn = false
+    local Canbuy = false
+
+    if drawn and Canbuy then
+        Money = Money - Upgrades.tower.Path[i].cost
+        tw.tower = Upgrades.tower.Path[i]
+    end
 end
 
 function love.keypressed(key)
