@@ -3,13 +3,15 @@ Enemy = require("Enemies")
 Towers = require("Towers")
 Level1 = require("Level1")
 
+local TowerUpgrades = Towers.TowerUpgrades
 local Map1 = Level1.Map1
 local Flags = Level1.Flags
-local Upgrades = Towers.TowerUpgrades
+SelectedTowerForUpgrade = nil
+ShowUpgradeUI = false
 
 function WaveShi()
     local waveKey = "wave" .. tostring(CurrentWave)
-    local waveData = Level1[waveKey] or {}
+    local waveData = Level1[waveKey]
     if not waveData or not waveData.enemies then
         PendingSpawns = {}
         Spawning = false
@@ -62,11 +64,11 @@ function love.load()
 
     for name, tower in pairs(Towers) do
         table.insert(Shop, {
-            text = name .. " - $" .. (tower.cost or 0),
+            text = name .. " - $" .. (tower.cost),
             image = tower.image,
             fn = function()
-                if Money >= (tower.cost or 0) and not Bought then
-                    Money = Money - (tower.cost or 0)
+                if Money >= (tower.cost) and not Bought then
+                    Money = Money - (tower.cost)
                     SelectedTower = tower
                     Bought = true
                     Placed = false
@@ -411,7 +413,6 @@ end
 
 function love.keypressed(key)
     if key == "escape" then love.event.quit() end
-    if key == "f" then love.window.setFullscreen(not love.window.getFullscreen()) end
 end
 
 function love.mousepressed(x, y, button)
