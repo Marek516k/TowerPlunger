@@ -3,7 +3,7 @@ Enemy = require("Enemies")
 Towers = require("Towers")
 Level1 = require("Level1")
 
-local TowerUpgrades = Towers.TowerUpgrades
+local Upgrades = Towers.TowerUpgrades
 local Map1 = Level1.Map1
 local Flags = Level1.Flags
 SelectedTowerForUpgrade = nil
@@ -359,7 +359,7 @@ function love.draw()
             love.graphics.setColor(1, 1, 1, 1)
         end
         if dist < 40 and love.mouse.isDown(1) then
-            TowerUpgrades(tw,Upgrades)
+            TowerUpgrades(tw)
         end
     end
 
@@ -400,10 +400,12 @@ function love.draw()
     end
 end
 
-function TowerUpgrades(tw,Upgrades)
+function TowerUpgrades(tw)
     local mx,my = love.mouse.getPosition()
     local drawn = false
     local Canbuy = false
+
+
 
     if drawn and Canbuy then
         Money = Money - Upgrades.tower.Path[i].cost
