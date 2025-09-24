@@ -3,11 +3,9 @@ Enemy = require("Enemies")
 Towers = require("Towers")
 Level1 = require("Level1")
 
-local Upgrades = Towers.TowerUpgrades
+local Upgrades = TowerUpgrades
 local Map1 = Level1.Map1
 local Flags = Level1.Flags
-SelectedTowerForUpgrade = nil
-ShowUpgradeUI = false
 
 function WaveShi()
     local waveKey = "wave" .. tostring(CurrentWave)
@@ -31,9 +29,10 @@ function WaveShi()
 end
 
 function love.load()
+    SelectedTowerForUpgrade = nil
+    ShowUpgradeUI = false
     Map1 = _G.Map1
     Flags = _G.Flags
-    Upgrades = _G.Upgrades
     PendingSpawns = {}
     Grass = {}
     Path = {}
@@ -403,14 +402,59 @@ end
 function TowerUpgrades(tw)
     local mx,my = love.mouse.getPosition()
     local drawn = false
-    local Canbuy = false
+    local Canbuy = true
 
+    love.graphics.setColor(0,0,0,0.8)
+    love.graphics.rectangle("fill", mx + 10, my - 20, 200, 150)
+    love.graphics.setColor(1,1,1,1)
+    love.graphics.print("Upgrade Tower", mx + 15, my - 15)
+    love.graphics.print("1. Damage +2 ($50)", mx + 15, my + 5)
+    love.graphics.print("2. Range +20 ($50)", mx + 15, my + 25)
+    love.graphics.print("3. Detection($100)", mx + 15, my + 45)
+    love.graphics.print("4. Fire Rate +0.2 ($50)", mx + 15, my + 65)
+    love.graphics.print("5. Sell Tower ($75)", mx + 15, my + 85)
 
-
-    if drawn and Canbuy then
-        Money = Money - Upgrades.tower.Path[i].cost
-        tw.tower = Upgrades.tower.Path[i]
+    if love.keyboard.isDown("1") and Money >= 50 then
+        tw.tower.dmg = (tw.tower.dmg) + 2
+        Money = Money - 50
+        Canbuy = false
     end
+    if love.keyboard.isDown("2") and Money >= 50 then
+        tw.range = (tw.range) + 20
+        Money = Money - 50
+        Canbuy = false
+    end
+    if love.keyboard.isDown("3") and Money >= 100 and Canbuy then
+        local hasDetection = false
+        for _, trait in ipairs(tw.tower.traits) do
+            if trait == "detection" then
+                hasDetection = true
+                break
+            end
+        end
+        if not hasDetection then
+            table.insert(tw.tower.traits, "detection")
+            Money = Money - 100
+            Canbuy = false
+        end
+    end
+    if love.keyboard.isDown("4") and Money >= 50 and Canbuy then
+        tw.tower.firerate = (tw.tower.firerate) + 0.2
+        Money = Money - 50
+        Canbuy = false
+    end
+    if love.keyboard.isDown("5") then
+        Money = Money + 75
+        for i, t in ipairs(TowersOnMap) do
+            if t == tw then
+                table.remove(TowersOnMap, i)
+                break
+            end
+        end
+    end
+
+    love.graphics.setColor(1,1,1,1)
+
 end
 
 function love.keypressed(key)
