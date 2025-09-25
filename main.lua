@@ -78,9 +78,21 @@ function love.load()
     end
 
     table.insert(Buttons, NewButton(
-            "Start Game",
+            "Let's GO",
             function()
                 GameState = "building"
+            end))
+
+    table.insert(Buttons, NewButton(
+            "Music ON/OFF",
+            function()
+                if SongState then
+                    love.audio.pause(Song)
+                    SongState = false
+                else
+                    love.audio.play(Song)
+                    SongState = true
+                end
             end))
 
     table.insert(Buttons, NewButton(
@@ -93,7 +105,8 @@ function love.load()
     GrassImage = love.graphics.newImage("Images/green.png")
     PathImage = love.graphics.newImage("Images/white.png")
     NotPossible = love.audio.newSource("sounds/Nuh-uh.wav", "static")
-    --Song = love.audio.newSource("sounds/Song.mp3", "static")
+    SongState = false
+    Song = love.audio.newSource("sounds/Song.mp3", "static")
     TowersOnMap = {}
     EnemiesOnMap = {}
     Bought = false
@@ -156,72 +169,76 @@ function love.update(dt)
         end
     end
 
-    for enemyIndex = #EnemiesOnMap, 1, -1 do
-        local enemy = EnemiesOnMap[enemyIndex]
-        local targetFlag = Flags[enemy.flagIndex]
-        if not targetFlag then
-            EnemiesAlive = math.max(0, EnemiesAlive - 1)
-            table.remove(EnemiesOnMap, enemyIndex)
-        else
-            local targetX = (targetFlag.x - 1) * 64
-            local targetY = (targetFlag.y - 1) * 64
-            local dx = targetX - enemy.x
-            local dy = targetY - enemy.y
-            local distance = math.sqrt(dx*dx + dy*dy)
+    if GameState == "wave" then
+        for enemyIndex = #EnemiesOnMap, 1, -1 do
+            local enemy = EnemiesOnMap[enemyIndex]
+            local targetFlag = Flags[enemy.flagIndex]
+            if not targetFlag then
+                EnemiesAlive = math.max(0, EnemiesAlive - 1)
+                table.remove(EnemiesOnMap, enemyIndex)
+            else
+                local targetX = (targetFlag.x - 1) * 64
+                local targetY = (targetFlag.y - 1) * 64
+                local dx = targetX - enemy.x
+                local dy = targetY - enemy.y
+                local distance = math.sqrt(dx*dx + dy*dy)
 
-            if distance < (enemy.speed or 0) * dt then
-                enemy.x = targetX
-                enemy.y = targetY
-                enemy.flagIndex = enemy.flagIndex + 1
+                if distance < (enemy.speed or 0) * dt then
+                    enemy.x = targetX
+                    enemy.y = targetY
+                    enemy.flagIndex = enemy.flagIndex + 1
 
-                if enemy.flagIndex > #Flags then
-                    EnemiesAlive = math.max(0, EnemiesAlive - 1)
-                    Health = Health - (enemy.damage or 1)
-                    table.remove(EnemiesOnMap, enemyIndex)
+                    if enemy.flagIndex > #Flags then
+                        EnemiesAlive = math.max(0, EnemiesAlive - 1)
+                        Health = Health - (enemy.damage or 1)
+                        table.remove(EnemiesOnMap, enemyIndex)
 
-                    if Health <= 0 then
-                        GameState = "gameover"
+                        if Health <= 0 then
+                            GameState = "gameover"
+                        end
+                    end
+                else
+                    if distance > 0 then
+                        enemy.x = enemy.x + (dx / distance) * (enemy.speed or 0) * dt
+                        enemy.y = enemy.y + (dy / distance) * (enemy.speed or 0) * dt
                     end
                 end
-            else
-                if distance > 0 then
-                    enemy.x = enemy.x + (dx / distance) * (enemy.speed or 0) * dt
-                    enemy.y = enemy.y + (dy / distance) * (enemy.speed or 0) * dt
+            end
+        end
+    end
+
+    if GameState == "wave" then
+        for _, tower in ipairs(TowersOnMap) do
+            tower.lastShot = (tower.lastShot or 0) + dt
+            local towerData = tower.tower
+            local fireRate = towerData.firerate or 1
+            local projectileSpeed = towerData.projectileSpeed
+
+            if tower.lastShot >= (1 / fireRate) then
+                local target = findNearestTargetForTower(tower)
+
+                if target then
+                    local projectile = createProjectile(
+                        tower.x, tower.y,
+                        target.x, target.y,
+                        projectileSpeed,
+                        towerData.dmg,
+                        towerData.pierce,
+                        towerData.splashRadius,
+                        towerData.traits
+
+                    )
+                    table.insert(Bullets, projectile)
+                    tower.lastShot = 0
                 end
             end
         end
-    end
+        updateProjectiles(dt)
 
-    for _, tower in ipairs(TowersOnMap) do
-        tower.lastShot = (tower.lastShot or 0) + dt
-        local towerData = tower.tower
-        local fireRate = towerData.firerate or 1
-        local projectileSpeed = towerData.projectileSpeed
-
-        if tower.lastShot >= (1 / fireRate) then
-            local target = findNearestTargetForTower(tower)
-
-            if target then
-                local projectile = createProjectile(
-                    tower.x, tower.y,
-                    target.x, target.y,
-                    projectileSpeed,
-                    towerData.dmg,
-                    towerData.pierce,
-                    towerData.splashRadius,
-                    towerData.traits
-
-                )
-                table.insert(Bullets, projectile)
-                tower.lastShot = 0
-            end
+        if GameState == "wave" and EnemiesAlive == 0 and not Spawning then
+            GameState = "building"
+            CurrentWave = CurrentWave + 1
         end
-    end
-    updateProjectiles(dt)
-
-    if GameState == "wave" and EnemiesAlive == 0 and not Spawning then
-        GameState = "building"
-        CurrentWave = CurrentWave + 1
     end
 end
 
@@ -323,12 +340,14 @@ function love.draw()
 
     love.graphics.setColor(1, 1, 0, 1)
 
-    for _, proj in ipairs(Bullets) do
-        if proj.alive then
-            love.graphics.circle("fill", proj.x, proj.y, proj.radius)
+    if GameState == "wave" or GameState == "building" then
+        for _, proj in ipairs(Bullets) do
+            if proj.alive then
+                love.graphics.circle("fill", proj.x, proj.y, proj.radius)
+            end
         end
+        love.graphics.setColor(1, 1, 1, 1)
     end
-    love.graphics.setColor(1, 1, 1, 1)
 
     if GameState == "gameover" then
         love.graphics.setColor(1,0,0,1)
@@ -339,62 +358,68 @@ function love.draw()
         love.graphics.setColor(1,1,1,1)
     end
 
-    if Bought and not Placed and SelectedTower and SelectedTower.image then
-        local mx, my = love.mouse.getPosition()
-        love.graphics.setColor(1, 1, 1, 0.7)
-        love.graphics.draw(SelectedTower.image, mx, my, 0, 1, 1, SelectedTower.image:getWidth()/2, SelectedTower.image:getHeight()/2)
-        love.graphics.setColor(1, 1, 1, 1)
-    end
-
-    for _, tw in ipairs(TowersOnMap) do
-        local ox = tw.image:getWidth() / 2
-        local oy = tw.image:getHeight() / 2
-        love.graphics.draw(tw.image, tw.x, tw.y, tw.rotation or 0, 1, 1, ox, oy)
-        local mx, my = love.mouse.getPosition()
-        local dist = math.sqrt((mx - tw.x)^2 + (my - tw.y)^2)
-        if dist < 50 then
-            love.graphics.setColor(1, 0, 0, 0.2)
-            love.graphics.circle("fill", tw.x, tw.y, tw.range)
+    if GameState == "wave" or GameState == "building" then
+        if Bought and not Placed and SelectedTower and SelectedTower.image then
+            local mx, my = love.mouse.getPosition()
+            love.graphics.setColor(1, 1, 1, 0.7)
+            love.graphics.draw(SelectedTower.image, mx, my, 0, 1, 1, SelectedTower.image:getWidth()/2, SelectedTower.image:getHeight()/2)
             love.graphics.setColor(1, 1, 1, 1)
         end
-        if dist < 40 and love.mouse.isDown(1) then
-            TowerUpgrades(tw)
+    end
+
+    if GameState == "wave" or GameState == "building" then
+        for _, tw in ipairs(TowersOnMap) do
+            local ox = tw.image:getWidth() / 2
+            local oy = tw.image:getHeight() / 2
+            love.graphics.draw(tw.image, tw.x, tw.y, tw.rotation or 0, 1, 1, ox, oy)
+            local mx, my = love.mouse.getPosition()
+            local dist = math.sqrt((mx - tw.x)^2 + (my - tw.y)^2)
+            if dist < 50 then
+                love.graphics.setColor(1, 0, 0, 0.2)
+                love.graphics.circle("fill", tw.x, tw.y, tw.range)
+                love.graphics.setColor(1, 1, 1, 1)
+            end
+            if dist < 40 and love.mouse.isDown(1) then
+                TowerUpgrades(tw)
+            end
         end
     end
 
-    for _, enemy in ipairs(EnemiesOnMap) do
-        love.graphics.draw(enemy.image, enemy.x, enemy.y)
-        local maxHealth = enemy.maxHealth or enemy.health
-        if enemy.health and maxHealth then
+    if GameState == "wave" or GameState == "building" then
+        for _, enemy in ipairs(EnemiesOnMap) do
+            love.graphics.draw(enemy.image, enemy.x, enemy.y)
+            local maxHealth = enemy.maxHealth or enemy.health
+            if enemy.health and maxHealth then
+                local enemyWidth = enemy.image:getWidth()
+                local barWidth = 40
+                local barHeight = 6
+                local barX = enemy.x + (enemyWidth - barWidth) / 2
+                local barY = enemy.y - 10
+                local healthPercent = math.max(0, enemy.health / maxHealth)
+                love.graphics.setColor(0, 0, 0, 0.8)
+                love.graphics.rectangle("fill", barX - 1, barY - 1, barWidth + 2, barHeight + 2)
+                local r = 1 - healthPercent
+                local g = healthPercent
+                love.graphics.setColor(r, g, 0, 1)
+                love.graphics.rectangle("fill", barX, barY, barWidth * healthPercent, barHeight)
+                love.graphics.setColor(1, 1, 1, 1)
+            end
+
+            local mx, my = love.mouse.getPosition()
             local enemyWidth = enemy.image:getWidth()
-            local barWidth = 40
-            local barHeight = 6
-            local barX = enemy.x + (enemyWidth - barWidth) / 2
-            local barY = enemy.y - 10
-            local healthPercent = math.max(0, enemy.health / maxHealth)
-            love.graphics.setColor(0, 0, 0, 0.8)
-            love.graphics.rectangle("fill", barX - 1, barY - 1, barWidth + 2, barHeight + 2)
-            local r = 1 - healthPercent
-            local g = healthPercent
-            love.graphics.setColor(r, g, 0, 1)
-            love.graphics.rectangle("fill", barX, barY, barWidth * healthPercent, barHeight)
-            love.graphics.setColor(1, 1, 1, 1)
-        end
+            local enemyHeight = enemy.image:getHeight()
+            local enemyCenterX = enemy.x + enemyWidth / 2
+            local enemyCenterY = enemy.y + enemyHeight / 2
+            local Edist = math.sqrt((mx - enemyCenterX)^2 + (my - enemyCenterY)^2)
 
-        local mx, my = love.mouse.getPosition()
-        local enemyWidth = enemy.image:getWidth()
-        local enemyHeight = enemy.image:getHeight()
-        local enemyCenterX = enemy.x + enemyWidth / 2
-        local enemyCenterY = enemy.y + enemyHeight / 2
-        local Edist = math.sqrt((mx - enemyCenterX)^2 + (my - enemyCenterY)^2)
-
-        if Edist < 30 then
-            love.graphics.setColor(0, 0, 0, 0.8)
-            love.graphics.rectangle("fill", mx + 10, my - 20, 120, 40)
-            love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.print(enemy.type or "Enemy", mx + 15, my - 15)
-            love.graphics.print("HP: " .. (enemy.health or 0) .. "/" .. (maxHealth or 0), mx + 15, my - 2)
-            love.graphics.setColor(1, 1, 1, 1)
+            if Edist < 30 then
+                love.graphics.setColor(0, 0, 0, 0.8)
+                love.graphics.rectangle("fill", mx + 10, my - 20, 120, 40)
+                love.graphics.setColor(1, 1, 1, 1)
+                love.graphics.print(enemy.type or "Enemy", mx + 15, my - 15)
+                love.graphics.print("HP: " .. (enemy.health or 0) .. "/" .. (maxHealth or 0), mx + 15, my - 2)
+                love.graphics.setColor(1, 1, 1, 1)
+            end
         end
     end
 end
@@ -458,7 +483,9 @@ function TowerUpgrades(tw)
 end
 
 function love.keypressed(key)
-    if key == "escape" then love.event.quit() end
+    if key == "escape" then
+        GameState = "menu"
+    end
 end
 
 function love.mousepressed(x, y, button)
