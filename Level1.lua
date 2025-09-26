@@ -4,15 +4,15 @@ Level1 = {
             {type = "zombie", count = 8}
         },
         spawnRate = 0.5,
-        reward = 100
+        reward = 80
     },
     wave2 = {
         enemies = {
-            {type = "zombie", count = 5},
+            {type = "zombie", count = 6},
             {type = "fastZombie", count = 5}
         },
-        spawnRate = 0.5,
-        reward = 150
+        spawnRate = 0.4,
+        reward = 120
     },
     wave3 = {
         enemies = {
@@ -20,26 +20,26 @@ Level1 = {
             {type = "hidden", count = 2}
         },
         spawnRate = 0.5,
-        reward = 200
+        reward = 150
     },
     wave4 = {
         enemies = {
             {type = "Normalboss", count = 1}
         },
         spawnRate = 0.1,
-        reward = 250
+        reward = 170
     },
     wave5 = {
         enemies = {
             {type = "fastZombie", count = 10},
             {type = "tank", count = 10}
         },
-        spawnRate = 0.7,
-        reward = 150
+        spawnRate = 0.5,
+        reward = 130
     },
     wave6 = {
         enemies = {
-            {type = "Normalboss", count = 4},
+            {type = "Normalboss", count = 6},
             {type = "hidden", count = 5}
         },
         spawnRate = 1,
@@ -61,7 +61,7 @@ Level1 = {
             {type = "fastZombie", count = 10}
         },
         spawnRate = 0.2,
-        reward = 700
+        reward = 450
     },
     wave9 = {
         enemies = {
