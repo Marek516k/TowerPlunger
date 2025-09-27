@@ -173,6 +173,7 @@ function love.update(dt)
         for enemyIndex = #EnemiesOnMap, 1, -1 do
             local enemy = EnemiesOnMap[enemyIndex]
             local targetFlag = Flags[enemy.flagIndex]
+
             if not targetFlag then
                 EnemiesAlive = math.max(0, EnemiesAlive - 1)
                 table.remove(EnemiesOnMap, enemyIndex)
@@ -304,40 +305,36 @@ function love.draw()
 
         for i, Button in ipairs(Shop) do
             Button.last = Button.now
-
             local bx = shopX
             local by = shopY + cursorS_y
             love.graphics.setColor(0.8, 0.8, 0.8, 1)
             love.graphics.rectangle("fill", bx, by, shopW, buttonH)
             local hot = mx > bx and mx < bx + shopW and my > by and my < by + buttonH
+
             if hot then
                 love.graphics.setColor(1, 1, 0, 0.3)
                 love.graphics.rectangle("fill", bx, by, shopW, buttonH)
             end
-
             love.graphics.setColor(1, 1, 1, 1)
+
             if Button.image then
                 love.graphics.draw(Button.image, bx + 10, by + 10, 0, 0.5, 0.5)
             end
-
             love.graphics.setColor(0, 0, 0, 1)
             love.graphics.print(Button.text, bx + 80, by + 40)
-
             Button.now = love.mouse.isDown(1)
+
             if Button.now and not Button.last and hot then
                 Button.fn()
             end
-
             cursorS_y = cursorS_y + (buttonH + marginS)
         end
-
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.print("Money: $" .. Money, 10, 10)
         love.graphics.print("Health: " .. Health, 10, 50)
         love.graphics.print("Wave: " .. CurrentWave, 10, 90)
         love.graphics.print("Enemies: " .. EnemiesAlive, 10, 130)
     end
-
     love.graphics.setColor(1, 1, 0, 1)
 
     if GameState == "wave" or GameState == "building" then
@@ -379,6 +376,7 @@ function love.draw()
                 love.graphics.circle("fill", tw.x, tw.y, tw.range)
                 love.graphics.setColor(1, 1, 1, 1)
             end
+
             if dist < 40 and love.mouse.isDown(1) then
                 TowerUpgrades(tw)
             end
@@ -389,6 +387,7 @@ function love.draw()
         for _, enemy in ipairs(EnemiesOnMap) do
             love.graphics.draw(enemy.image, enemy.x, enemy.y)
             local maxHealth = enemy.maxHealth or enemy.health
+
             if enemy.health and maxHealth then
                 local enemyWidth = enemy.image:getWidth()
                 local barWidth = 40
@@ -428,7 +427,6 @@ function TowerUpgrades(tw)
     local mx,my = love.mouse.getPosition()
     local drawn = false
     local Canbuy = true
-
     love.graphics.setColor(0,0,0,0.8)
     love.graphics.rectangle("fill", mx + 10, my - 20, 200, 150)
     love.graphics.setColor(1,1,1,1)
@@ -457,17 +455,20 @@ function TowerUpgrades(tw)
                 break
             end
         end
+
         if not hasDetection then
             table.insert(tw.tower.traits, "detection")
             Money = Money - 100
             Canbuy = false
         end
     end
+
     if love.keyboard.isDown("4") and Money >= 50 and Canbuy then
         tw.tower.firerate = (tw.tower.firerate) + 0.2
         Money = Money - 50
         Canbuy = false
     end
+
     if love.keyboard.isDown("5") then
         Money = Money + 75
         for i, t in ipairs(TowersOnMap) do
@@ -477,7 +478,6 @@ function TowerUpgrades(tw)
             end
         end
     end
-
     love.graphics.setColor(1,1,1,1)
 
 end
