@@ -3,7 +3,7 @@ Enemy = require("Enemies")
 Towers = require("Towers")
 Level1 = require("Level1")
 
-local Upgrades = TowerUpgrades
+local Upgrades = Towers.TowerUpgrades
 local Map1 = Level1.Map1
 local Flags = Level1.Flags
 
@@ -33,6 +33,7 @@ function love.load()
     ShowUpgradeUI = false
     Map1 = _G.Map1
     Flags = _G.Flags
+    Upgrades = _G.Upgrades
     PendingSpawns = {}
     Grass = {}
     Path = {}
@@ -424,18 +425,17 @@ function love.draw()
 end
 
 function TowerUpgrades(tw)
-    local mx,my = love.mouse.getPosition()
     local drawn = false
     local Canbuy = true
     love.graphics.setColor(0,0,0,0.8)
-    love.graphics.rectangle("fill", mx + 10, my - 20, 200, 150)
+    love.graphics.rectangle("fill", tw.x + 10, tw.y - 20, 200, 150)
     love.graphics.setColor(1,1,1,1)
-    love.graphics.print("Upgrade Tower", mx + 15, my - 15)
-    love.graphics.print("1. Damage +2 ($50)", mx + 15, my + 5)
-    love.graphics.print("2. Range +20 ($50)", mx + 15, my + 25)
-    love.graphics.print("3. Detection($100)", mx + 15, my + 45)
-    love.graphics.print("4. Fire Rate +0.2 ($50)", mx + 15, my + 65)
-    love.graphics.print("5. Sell Tower ($75)", mx + 15, my + 85)
+    love.graphics.print("Upgrade Tower", tw.x + 15, tw.y - 15)
+    love.graphics.print("1. Damage +2 ($50)", tw.x + 15, tw.y + 5)
+    love.graphics.print("2. Range +20 ($50)", tw.x + 15, tw.y + 25)
+    love.graphics.print("3. Detection($100)", tw.x + 15, tw.y + 45)
+    love.graphics.print("4. Fire Rate +0.2 ($50)", tw.x + 15, tw.y + 65)
+    love.graphics.print("5. Sell Tower ($75)", tw.x + 15, tw.y + 85)
 
     if love.keyboard.isDown("1") and Money >= 50 then
         tw.tower.dmg = (tw.tower.dmg) + 2
@@ -762,5 +762,5 @@ end
 -- Optimize performance for larger maps and more entities if needed   
 -- More maps at least and map selection menu if i feel like doin so
 -- Balancing game difficulty and economy
---bug fixes
---user feedback stuff
+-- bug fixes
+-- user feedback stuff
