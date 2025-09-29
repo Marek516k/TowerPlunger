@@ -40,6 +40,7 @@ function love.load()
     Bullets = {}
     Spawning = false
     Buttons = {}
+    UpgradeButtons = {}
     Shop = {}
 
     if Map1 then
@@ -102,6 +103,18 @@ function love.load()
                 love.event.quit(0)
             end))
 
+    table.insert(UpgradeButtons, NewButton(
+            "Upgrade to Path 1",
+            function ()
+                love.event.quit(0)
+            end))
+
+    table.insert(UpgradeButtons, NewButton(
+            "Upgrade to Path 2",
+            function ()
+                love.event.quit(0)
+            end))
+
     love.window.setMode(1920, 1080, {resizable=false, vsync=true})
     GrassImage = love.graphics.newImage("Images/green.png")
     PathImage = love.graphics.newImage("Images/white.png")
@@ -125,6 +138,8 @@ function love.load()
     Placed = false
     Slowness = false
     Font = love.graphics.newFont(25)
+    ww = love.graphics.getWidth()
+    wh = love.graphics.getHeight()
 end
 
 function love.update(dt)
@@ -254,15 +269,13 @@ function love.draw()
         end
     end
 
-    local ww = love.graphics.getWidth()
-    local wh = love.graphics.getHeight()
-    local button_width = ww * (1/3)
-    local Button_height = wh * (1/10)
-    local margin = 16
-    local Total_height = (Button_height + margin) * #Buttons
-    local cursor_y = 0
-
     if GameState == "menu" then
+        local button_width = ww * (1/3)
+        local Button_height = wh * (1/10)
+        local margin = 16
+        local Total_height = (Button_height + margin) * #Buttons
+        local cursor_y = 0
+
         for i, Button in ipairs(Buttons) do
             Button.last = Button.now
             local bx = (ww * 0.5 ) - (button_width * 0.5)
@@ -336,9 +349,9 @@ function love.draw()
         love.graphics.print("Wave: " .. CurrentWave, 10, 90)
         love.graphics.print("Enemies: " .. EnemiesAlive, 10, 130)
     end
-    love.graphics.setColor(1, 1, 0, 1)
 
     if GameState == "wave" or GameState == "building" then
+        love.graphics.setColor(0, 0.3, 0, 1) -- dark green
         for _, proj in ipairs(Bullets) do
             if proj.alive then
                 love.graphics.circle("fill", proj.x, proj.y, proj.radius)
@@ -425,6 +438,44 @@ function love.draw()
 end
 
 function TowerUpgrades(tw)
+    local button_width = ww * (1/8)
+    local Button_height = wh * (1/30)
+    local margin = 12
+    local Total_height = (Button_height + margin) * #UpgradeButtons
+    local cursor_y = 0
+
+    for i, Button in ipairs(UpgradeButtons) do
+        Button.last = Button.now
+        local bx = (tw.x + 160) - (button_width * 0.5)
+        local by = (tw.y) - (Total_height * 0.5) + cursor_y
+
+        local color = {1,0,0,1}
+        local mx, my = love.mouse.getPosition()
+        local hot = mx > bx and mx < bx + button_width and my > by and my < by + Button_height
+
+        if hot then
+            color = {0,1,0,1}
+        end
+
+        Button.now = love.mouse.isDown(1)
+
+        if Button.now and not Button.last and hot then
+            Button.fn()
+        end
+
+        love.graphics.setColor(color)
+        love.graphics.rectangle("fill", bx, by, button_width, Button_height)
+        love.graphics.setColor(0,0,0,1)
+
+        local tetxW = Font:getWidth(Button.text)
+        local textH = Font:getHeight(Button.text)
+        love.graphics.print(Button.text, Font, bx + button_width/2 - tetxW/2, by + Button_height/2 - textH/2)
+
+        cursor_y = cursor_y + (Button_height + margin)
+        love.graphics.setColor(1, 1, 1, 1)
+    end
+
+    --[[
     local drawn = false
     local Canbuy = true
     love.graphics.setColor(0,0,0,0.8)
@@ -479,6 +530,7 @@ function TowerUpgrades(tw)
         end
     end
     love.graphics.setColor(1,1,1,1)
+    --]]
 
 end
 
@@ -756,6 +808,7 @@ end
 
 --TODO:
 -- Tower upgrade menu
+-- tower range display only while looking at upgrades
 -- Add sound effects and music
 -- Polish UI and overall game experience
 -- Implement save/load functionality for game progress
