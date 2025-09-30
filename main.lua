@@ -34,6 +34,7 @@ function love.load()
     Map1 = _G.Map1
     Flags = _G.Flags
     Upgrades = _G.Upgrades
+    TWdata = nil
     PendingSpawns = {}
     Grass = {}
     Path = {}
@@ -106,13 +107,25 @@ function love.load()
     table.insert(UpgradeButtons, NewButton(
             "Upgrade to Path 1",
             function ()
-                love.event.quit(0)
+                if TWdata and Money >= 100 then
+                    Money = Money - 100
+                    --here is a spot for upgrade logic
+                    TWdata.upgraded = true
+                    TWdata.upgradePath = 1
+                    ShowUpgradeUI = false
+                end
             end))
 
     table.insert(UpgradeButtons, NewButton(
             "Upgrade to Path 2",
             function ()
-                love.event.quit(0)
+                if TWdata and Money >= 150 then
+                    Money = Money - 150
+                    --here is a spot for upgrade logic
+                    TWdata.upgraded = true
+                    TWdata.upgradePath = 2
+                    ShowUpgradeUI = false
+                end
             end))
 
     love.window.setMode(1920, 1080, {resizable=false, vsync=true})
@@ -323,7 +336,7 @@ function love.draw()
             local by = shopY + cursorS_y
             love.graphics.setColor(0.8, 0.8, 0.8, 1)
             love.graphics.rectangle("fill", bx, by, shopW, buttonH)
-            local hot = mx > bx and mx < bx + shopW and my > by and my < by + buttonH
+            local hot = mx > bx and mx < bx + shopW and my > by and by < by + buttonH
 
             if hot then
                 love.graphics.setColor(1, 1, 0, 0.3)
@@ -385,14 +398,20 @@ function love.draw()
             love.graphics.draw(tw.image, tw.x, tw.y, tw.rotation or 0, 1, 1, ox, oy)
             local mx, my = love.mouse.getPosition()
             local dist = math.sqrt((mx - tw.x)^2 + (my - tw.y)^2)
+
             if dist < 50 then
                 love.graphics.setColor(1, 0, 0, 0.2)
                 love.graphics.circle("fill", tw.x, tw.y, tw.range)
                 love.graphics.setColor(1, 1, 1, 1)
             end
 
-            if dist < 40 and love.mouse.isDown(1) then
-                TowerUpgrades(tw)
+            if dist < 25 and love.mouse.isDown(1) then
+                TWdata = tw
+                ShowUpgradeUI = true
+
+            elseif love.mouse.isDown(2) then
+                ShowUpgradeUI = false
+                TWdata = nil
             end
         end
     end
@@ -435,19 +454,27 @@ function love.draw()
             end
         end
     end
+
+    if ShowUpgradeUI and TWdata and (GameState == "wave" or GameState == "building") then
+        DrawTowerUpgrades(TWdata)
+    end
 end
 
-function TowerUpgrades(tw)
+function DrawTowerUpgrades(tower)
+    local Font2 = love.graphics.newFont(20)
     local button_width = ww * (1/8)
     local Button_height = wh * (1/30)
     local margin = 12
     local Total_height = (Button_height + margin) * #UpgradeButtons
     local cursor_y = 0
+    love.graphics.setColor(0.2, 0.2, 0.2, 0.9)
+    love.graphics.rectangle("fill", tower.x + 100, tower.y - Total_height/2 - 20, button_width + 40, Total_height + 40)
+    love.graphics.setColor(1, 1, 1, 1)
 
     for i, Button in ipairs(UpgradeButtons) do
         Button.last = Button.now
-        local bx = (tw.x + 160) - (button_width * 0.5)
-        local by = (tw.y) - (Total_height * 0.5) + cursor_y
+        local bx = (tower.x + 120)
+        local by = (tower.y) - (Total_height * 0.5) + cursor_y
 
         local color = {1,0,0,1}
         local mx, my = love.mouse.getPosition()
@@ -467,76 +494,20 @@ function TowerUpgrades(tw)
         love.graphics.rectangle("fill", bx, by, button_width, Button_height)
         love.graphics.setColor(0,0,0,1)
 
-        local tetxW = Font:getWidth(Button.text)
-        local textH = Font:getHeight(Button.text)
-        love.graphics.print(Button.text, Font, bx + button_width/2 - tetxW/2, by + Button_height/2 - textH/2)
+        local tetxW = Font2:getWidth(Button.text)
+        local textH = Font2:getHeight(Button.text)
+        love.graphics.print(Button.text, Font2, bx + button_width/2 - tetxW/2, by + Button_height/2 - textH/2)
 
         cursor_y = cursor_y + (Button_height + margin)
         love.graphics.setColor(1, 1, 1, 1)
     end
-
-    --[[
-    local drawn = false
-    local Canbuy = true
-    love.graphics.setColor(0,0,0,0.8)
-    love.graphics.rectangle("fill", tw.x + 10, tw.y - 20, 200, 150)
-    love.graphics.setColor(1,1,1,1)
-    love.graphics.print("Upgrade Tower", tw.x + 15, tw.y - 15)
-    love.graphics.print("1. Damage +2 ($50)", tw.x + 15, tw.y + 5)
-    love.graphics.print("2. Range +20 ($50)", tw.x + 15, tw.y + 25)
-    love.graphics.print("3. Detection($100)", tw.x + 15, tw.y + 45)
-    love.graphics.print("4. Fire Rate +0.2 ($50)", tw.x + 15, tw.y + 65)
-    love.graphics.print("5. Sell Tower ($75)", tw.x + 15, tw.y + 85)
-
-    if love.keyboard.isDown("1") and Money >= 50 then
-        tw.tower.dmg = (tw.tower.dmg) + 2
-        Money = Money - 50
-        Canbuy = false
-    end
-    if love.keyboard.isDown("2") and Money >= 50 then
-        tw.range = (tw.range) + 20
-        Money = Money - 50
-        Canbuy = false
-    end
-    if love.keyboard.isDown("3") and Money >= 100 and Canbuy then
-        local hasDetection = false
-        for _, trait in ipairs(tw.tower.traits) do
-            if trait == "detection" then
-                hasDetection = true
-                break
-            end
-        end
-
-        if not hasDetection then
-            table.insert(tw.tower.traits, "detection")
-            Money = Money - 100
-            Canbuy = false
-        end
-    end
-
-    if love.keyboard.isDown("4") and Money >= 50 and Canbuy then
-        tw.tower.firerate = (tw.tower.firerate) + 0.2
-        Money = Money - 50
-        Canbuy = false
-    end
-
-    if love.keyboard.isDown("5") then
-        Money = Money + 75
-        for i, t in ipairs(TowersOnMap) do
-            if t == tw then
-                table.remove(TowersOnMap, i)
-                break
-            end
-        end
-    end
-    love.graphics.setColor(1,1,1,1)
-    --]]
-
 end
 
 function love.keypressed(key)
     if key == "escape" then
         GameState = "menu"
+        ShowUpgradeUI = false
+        TWdata = nil
     end
 end
 
@@ -547,8 +518,8 @@ function love.mousepressed(x, y, button)
         local towerH = SelectedTower.image:getHeight()
         local newX = x - towerW / 2
         local newY = y - towerH / 2
-        local mapWidth  = (Map1 and #Map1[1] or 0) * 64
-        local mapHeight = (Map1 and #Map1 or 0) * 64
+        local mapWidth  = (Map1 and #Map1[1]) * 64
+        local mapHeight = (Map1 and #Map1) * 64
 
         if newX < 0 or newY < 0 or newX + towerW > mapWidth or newY + towerH > mapHeight then
             love.audio.play(NotPossible)
@@ -590,7 +561,9 @@ function love.mousepressed(x, y, button)
                 x = x,
                 y = y,
                 target = nil,
-                lastShot = 0
+                lastShot = 0,
+                upgraded = false,
+                upgradePath = 0
             })
             Bought = false
             Placed = true
