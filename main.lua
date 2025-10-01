@@ -1,9 +1,8 @@
 love = require("love")
 Enemy = require("Enemies")
 Towers = require("Towers")
-Level1 = require("Level1")
-
-local Upgrades = Towers.TowerUpgrades
+Level1 = require("GameLevels.Level1")
+Upgrades = require("TowerUpgrades")
 local Map1 = Level1.Map1
 local Flags = Level1.Flags
 
@@ -29,20 +28,17 @@ function WaveShi()
 end
 
 function love.load()
-    SelectedTowerForUpgrade = nil
-    ShowUpgradeUI = false
-    Map1 = _G.Map1
-    Flags = _G.Flags
-    Upgrades = _G.Upgrades
-    TWdata = nil
     PendingSpawns = {}
     Grass = {}
     Path = {}
     Bullets = {}
-    Spawning = false
     Buttons = {}
     UpgradeButtons = {}
     Shop = {}
+    TowersOnMap = {}
+    EnemiesOnMap = {}
+    Map1 = _G.Map1
+    Flags = _G.Flags
 
     if Map1 then
         for y,row in ipairs(Map1) do
@@ -104,42 +100,32 @@ function love.load()
                 love.event.quit(0)
             end))
 
-    table.insert(UpgradeButtons, NewButton(
-            "Upgrade to Path 1",
+        table.insert(UpgradeButtons, NewButton(
+            "Upgrade Path 1",
             function ()
-                if TWdata and Money >= 100 then
-                    Money = Money - 100
-                    --here is a spot for upgrade logic
-                    TWdata.upgraded = true
-                    TWdata.upgradePath = 1
-                    ShowUpgradeUI = false
-                end
+                UpgradeLogic(1)
             end))
 
-    table.insert(UpgradeButtons, NewButton(
-            "Upgrade to Path 2",
+        table.insert(UpgradeButtons, NewButton(
+            "Upgrade Path 2",
             function ()
-                if TWdata and Money >= 150 then
-                    Money = Money - 150
-                    --here is a spot for upgrade logic
-                    TWdata.upgraded = true
-                    TWdata.upgradePath = 2
-                    ShowUpgradeUI = false
-                end
+                UpgradeLogic(2)
             end))
 
     love.window.setMode(1920, 1080, {resizable=false, vsync=true})
     GrassImage = love.graphics.newImage("Images/green.png")
     PathImage = love.graphics.newImage("Images/white.png")
     NotPossible = love.audio.newSource("sounds/Nuh-uh.wav", "static")
-    SongState = false
     Song = love.audio.newSource("sounds/Song.mp3", "static")
-    TowersOnMap = {}
-    EnemiesOnMap = {}
+    SongState = false
+    SelectedTowerForUpgrade = nil
+    ShowUpgradeUI = false
+    TWdata = nil
+    Spawning = false
     Bought = false
     Timer = 0
     Interval = 0.4
-    SelectedTower = Towers.Cannon or next(Towers)
+    SelectedTower = Towers.Cannon
     Money = 500000
     Health = 100
     CurrentWave = 1
@@ -256,7 +242,6 @@ function love.update(dt)
                         towerData.pierce,
                         towerData.splashRadius,
                         towerData.traits
-
                     )
                     table.insert(Bullets, projectile)
                     tower.lastShot = 0
@@ -399,13 +384,7 @@ function love.draw()
             local mx, my = love.mouse.getPosition()
             local dist = math.sqrt((mx - tw.x)^2 + (my - tw.y)^2)
 
-            if dist < 50 then
-                love.graphics.setColor(1, 0, 0, 0.2)
-                love.graphics.circle("fill", tw.x, tw.y, tw.range)
-                love.graphics.setColor(1, 1, 1, 1)
-            end
-
-            if dist < 25 and love.mouse.isDown(1) then
+            if dist < 41 and love.mouse.isDown(1) then
                 TWdata = tw
                 ShowUpgradeUI = true
 
@@ -455,12 +434,15 @@ function love.draw()
         end
     end
 
-    if ShowUpgradeUI and TWdata and (GameState == "wave" or GameState == "building") then
+    if ShowUpgradeUI and TWdata and (GameState == "wave" or GameState == "building") and Bought == false then
         DrawTowerUpgrades(TWdata)
     end
 end
 
 function DrawTowerUpgrades(tower)
+    love.graphics.setColor(1, 0, 0, 0.2)
+    love.graphics.circle("fill", tower.x, tower.y, tower.range)
+    love.graphics.setColor(1, 1, 1, 1)
     local Font2 = love.graphics.newFont(20)
     local button_width = ww * (1/8)
     local Button_height = wh * (1/30)
@@ -500,6 +482,68 @@ function DrawTowerUpgrades(tower)
 
         cursor_y = cursor_y + (Button_height + margin)
         love.graphics.setColor(1, 1, 1, 1)
+    end
+end
+
+function UpgradeLogic(PathNumber)
+    local towerType = nil
+
+    for name, tower in pairs(Towers) do
+        if tower.image == TWdata.image then
+            towerType = name
+            break
+        end
+    end
+
+    if PathNumber == 1 then
+        selectedPath = upgradePaths.Path1
+    elseif PathNumber == 2 then
+        selectedPath = upgradePaths.Path2
+    else
+        return
+    end
+
+    local currentLevel = TWdata.upgradePath
+    local nextLevelKey = "lvl" .. tostring(currentLevel + 1)
+    local nextLevelData = selectedPath[nextLevelKey]
+    local upgradeCost = nextLevelData.upgradeCost
+
+    if Money < upgradeCost then
+        love.audio.play(NotPossible)
+        return
+    end
+
+    Money = Money - upgradeCost
+
+    if nextLevelData.dmg then
+        TWdata.tower.dmg = (TWdata.tower.dmg) + nextLevelData.dmg
+    end
+
+    if nextLevelData.range then
+        TWdata.tower.range = (TWdata.tower.range) + nextLevelData.range
+    end
+
+    if nextLevelData.fireRate then
+        TWdata.tower.firerate = (TWdata.tower.firerate) + nextLevelData.fireRate
+    end
+
+    if nextLevelData.projectileSpeed then
+        TWdata.tower.projectileSpeed = (TWdata.tower.projectileSpeed) + nextLevelData.projectileSpeed
+    end
+
+    if nextLevelData.pierce then
+        TWdata.tower.pierce = (TWdata.tower.pierce) + nextLevelData.pierce
+    end
+
+    if nextLevelData.splashRadius then
+        TWdata.tower.splashRadius = (TWdata.tower.splashRadius) + nextLevelData.splashRadius
+    end
+
+    if nextLevelData.traits then
+        TWdata.tower.traits = TWdata.tower.traits
+        for _, trait in ipairs(nextLevelData.traits) do
+            table.insert(TWdata.tower.traits, trait)
+        end
     end
 end
 
