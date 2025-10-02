@@ -2,7 +2,7 @@ love = require("love")
 Enemy = require("Enemies")
 Towers = require("Towers")
 Level1 = require("GameLevels.Level1")
-Upgrades = require("TowerUpgrades")
+PathData = require("TowerUpgrades")
 local Map1 = Level1.Map1
 local Flags = Level1.Flags
 
@@ -37,6 +37,9 @@ function love.load()
     Shop = {}
     TowersOnMap = {}
     EnemiesOnMap = {}
+    TWdata = {}
+    SelectedTower = nil
+    SelectedTowerForUpgrade = nil
     Map1 = _G.Map1
     Flags = _G.Flags
 
@@ -64,10 +67,12 @@ function love.load()
         table.insert(Shop, {
             text = name .. " - $" .. (tower.cost),
             image = tower.image,
+            towerName = name,
             fn = function()
                 if Money >= (tower.cost) and not Bought then
                     Money = Money - (tower.cost)
                     SelectedTower = tower
+                    SelectedTowerName = name
                     Bought = true
                     Placed = false
                 else love.audio.play(NotPossible)
@@ -103,13 +108,13 @@ function love.load()
         table.insert(UpgradeButtons, NewButton(
             "Upgrade Path 1",
             function ()
-                UpgradeLogic(1)
+                UpgradeLogic(1,TWdata)
             end))
 
         table.insert(UpgradeButtons, NewButton(
             "Upgrade Path 2",
             function ()
-                UpgradeLogic(2)
+                UpgradeLogic(2,TWdata)
             end))
 
     love.window.setMode(1920, 1080, {resizable=false, vsync=true})
@@ -118,14 +123,11 @@ function love.load()
     NotPossible = love.audio.newSource("sounds/Nuh-uh.wav", "static")
     Song = love.audio.newSource("sounds/Song.mp3", "static")
     SongState = false
-    SelectedTowerForUpgrade = nil
     ShowUpgradeUI = false
-    TWdata = nil
     Spawning = false
     Bought = false
     Timer = 0
     Interval = 0.4
-    SelectedTower = Towers.Cannon
     Money = 500000
     Health = 100
     CurrentWave = 1
@@ -152,8 +154,8 @@ function love.update(dt)
     end
 
     if GameState == "wave" and Spawning then
-        local waveData = Level1["wave" .. tostring(CurrentWave)] or {}
-        local spawnRate = waveData.spawnRate or 0.5
+        local waveData = Level1["wave" .. tostring(CurrentWave)]
+        local spawnRate = waveData.spawnRate
 
         if EnemyspawnTimer >= spawnRate and #PendingSpawns > 0 then
             local pending = table.remove(PendingSpawns, 1)
@@ -199,7 +201,7 @@ function love.update(dt)
                 local dy = targetY - enemy.y
                 local distance = math.sqrt(dx*dx + dy*dy)
 
-                if distance < (enemy.speed or 0) * dt then
+                if distance < (enemy.speed) * dt then
                     enemy.x = targetX
                     enemy.y = targetY
                     enemy.flagIndex = enemy.flagIndex + 1
@@ -215,8 +217,8 @@ function love.update(dt)
                     end
                 else
                     if distance > 0 then
-                        enemy.x = enemy.x + (dx / distance) * (enemy.speed or 0) * dt
-                        enemy.y = enemy.y + (dy / distance) * (enemy.speed or 0) * dt
+                        enemy.x = enemy.x + (dx / distance) * (enemy.speed) * dt
+                        enemy.y = enemy.y + (dy / distance) * (enemy.speed) * dt
                     end
                 end
             end
@@ -390,7 +392,6 @@ function love.draw()
 
             elseif love.mouse.isDown(2) then
                 ShowUpgradeUI = false
-                TWdata = nil
             end
         end
     end
@@ -485,42 +486,55 @@ function DrawTowerUpgrades(tower)
     end
 end
 
-function UpgradeLogic(PathNumber)
-    local towerType = nil
-
-    for name, tower in pairs(Towers) do
-        if tower.image == TWdata.image then
-            towerType = name
-            break
-        end
+function UpgradeLogic(PathNumber, TWdata)
+    if not TWdata.upgradePath then
+        TWdata.upgradePath = 0
+    end
+    if not TWdata.upgradeLevel then
+        TWdata.upgradeLevel = 0
     end
 
-    if PathNumber == 1 then
-        selectedPath = upgradePaths.Path1
-    elseif PathNumber == 2 then
-        selectedPath = upgradePaths.Path2
-    else
-        return
-    end
-
-    local currentLevel = TWdata.upgradePath
-    local nextLevelKey = "lvl" .. tostring(currentLevel + 1)
-    local nextLevelData = selectedPath[nextLevelKey]
-    local upgradeCost = nextLevelData.upgradeCost
-
-    if Money < upgradeCost then
+    if TWdata.upgradePath == 0 and TWdata.upgradePath == PathNumber then
         love.audio.play(NotPossible)
         return
     end
 
-    Money = Money - upgradeCost
+    if not TWdata.towerType or not PathData[TWdata.towerType] then
+        love.audio.play(NotPossible)
+        return
+    end
+
+    local towerUpgradeData = PathData[TWdata.towerType].PathData
+    local currentLevel = TWdata.upgradeLevel
+    local nextLevel = currentLevel + 1
+    local upgradeKey = "Path" .. PathNumber .. "_lvl" .. tostring(nextLevel)
+    local nextLevelData = towerUpgradeData[upgradeKey]
+    local upgradeCost = nextLevelData.upgradeCost
+
+    if not nextLevelData then
+        love.audio.play(NotPossible)
+        return
+    end
+
+    if Money < upgradeCost then
+        love.audio.play(NotPossible)
+        return
+    else
+        Money = Money - upgradeCost
+    end
+
+    if TWdata.upgradePath == 0 then
+        TWdata.upgradePath = PathNumber
+    end
+
+    TWdata.upgradeLevel = nextLevel
 
     if nextLevelData.dmg then
         TWdata.tower.dmg = (TWdata.tower.dmg) + nextLevelData.dmg
     end
 
     if nextLevelData.range then
-        TWdata.tower.range = (TWdata.tower.range) + nextLevelData.range
+        TWdata.range = (TWdata.range) + nextLevelData.range
     end
 
     if nextLevelData.fireRate then
@@ -540,7 +554,9 @@ function UpgradeLogic(PathNumber)
     end
 
     if nextLevelData.traits then
-        TWdata.tower.traits = TWdata.tower.traits
+        if not TWdata.tower.traits then
+            TWdata.tower.traits = {}
+        end
         for _, trait in ipairs(nextLevelData.traits) do
             table.insert(TWdata.tower.traits, trait)
         end
@@ -599,15 +615,15 @@ function love.mousepressed(x, y, button)
         if canPlace then
             table.insert(TowersOnMap, {
                 tower = SelectedTower,
+                towerType = SelectedTowerName,
                 image = SelectedTower.image,
-                range = SelectedTower.range or 100,
+                range = SelectedTower.range,
                 rotation = 0,
                 x = x,
                 y = y,
                 target = nil,
                 lastShot = 0,
                 upgraded = false,
-                upgradePath = 0
             })
             Bought = false
             Placed = true
@@ -630,7 +646,7 @@ function findNearestTargetForTower(tower)
         local dy = ey - ty
         local dist = math.sqrt(dx*dx + dy*dy)
 
-        if dist <= (tower.range or 0) and dist < bestDist then
+        if dist <= (tower.range) and dist < bestDist then
             bestDist = dist
             bestEnemy = {x = ex, y = ey, enemy = enemy}
         end
