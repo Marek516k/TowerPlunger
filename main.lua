@@ -507,6 +507,10 @@ function UpgradeLogic(PathNumber, TWdata)
     local towerUpgradeData = PathData[TWdata.towerType].PathData
     local currentLevel = TWdata.upgradeLevel
     local nextLevel = currentLevel + 1
+    if nextLevel >= 5 then
+        love.audio.play(NotPossible)
+        return
+    end
     local upgradeKey = "Path" .. PathNumber .. "_lvl" .. tostring(nextLevel)
     local nextLevelData = towerUpgradeData[upgradeKey]
     local upgradeCost = nextLevelData.upgradeCost
