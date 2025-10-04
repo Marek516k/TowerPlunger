@@ -844,7 +844,7 @@ function processSplashDamage(proj, targetEnemy, hasSlow)
 end
 
 --TODO:
--- Tower upgrade menu
+-- fix tower selection, fix upgrade path selection and make it so that only the selected tower gets upgraded
 -- tower range display only while looking at upgrades
 -- Add sound effects and music
 -- Polish UI and overall game experience
