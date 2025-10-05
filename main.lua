@@ -68,14 +68,16 @@ function love.load()
             text = name .. " - $" .. (tower.cost),
             image = tower.image,
             towerName = name,
-            fn = function()
-                if Money >= (tower.cost) and not Bought then
-                    Money = Money - (tower.cost)
-                    SelectedTower = tower
-                    SelectedTowerName = name
+            towerData = tower,
+            fn = function(self)
+                if Money >= (self.towerData.cost) and not Bought then
+                    Money = Money - (self.towerData.cost)
+                    SelectedTower = self.towerData
+                    SelectedTowerName = self.towerName
                     Bought = true
                     Placed = false
-                else love.audio.play(NotPossible)
+                else
+                    love.audio.play(NotPossible)
                 end
             end
         })
@@ -323,7 +325,7 @@ function love.draw()
             local by = shopY + cursorS_y
             love.graphics.setColor(0.8, 0.8, 0.8, 1)
             love.graphics.rectangle("fill", bx, by, shopW, buttonH)
-            local hot = mx > bx and mx < bx + shopW and my > by and by < by + buttonH
+            local hot = mx > bx and mx < bx + shopW and my > by and my < by + buttonH
 
             if hot then
                 love.graphics.setColor(1, 1, 0, 0.3)
@@ -339,7 +341,7 @@ function love.draw()
             Button.now = love.mouse.isDown(1)
 
             if Button.now and not Button.last and hot then
-                Button.fn()
+                Button.fn(Button)
             end
             cursorS_y = cursorS_y + (buttonH + marginS)
         end
@@ -494,7 +496,7 @@ function UpgradeLogic(PathNumber, TWdata)
         TWdata.upgradeLevel = 0
     end
 
-    if TWdata.upgradePath == 0 and TWdata.upgradePath == PathNumber then
+    if TWdata.upgradePath ~= 0 and TWdata.upgradePath ~= PathNumber then
         love.audio.play(NotPossible)
         return
     end
@@ -575,6 +577,18 @@ function love.keypressed(key)
     end
 end
 
+function deepCopyTower(original)
+    local copy = {}
+    for k, v in pairs(original) do
+        if type(v) == "table" and k ~= "image" then
+            copy[k] = deepCopyTower(v)
+        else
+            copy[k] = v
+        end
+    end
+    return copy
+end
+
 function love.mousepressed(x, y, button)
     if button == 1 and Bought and SelectedTower and SelectedTower.image then
         local canPlace = true
@@ -617,8 +631,9 @@ function love.mousepressed(x, y, button)
         end
 
         if canPlace then
+            local towerCopy = deepCopyTower(SelectedTower)
             table.insert(TowersOnMap, {
-                tower = SelectedTower,
+                tower = towerCopy,
                 towerType = SelectedTowerName,
                 image = SelectedTower.image,
                 range = SelectedTower.range,
@@ -628,6 +643,8 @@ function love.mousepressed(x, y, button)
                 target = nil,
                 lastShot = 0,
                 upgraded = false,
+                upgradePath = 0,
+                upgradeLevel = 0
             })
             Bought = false
             Placed = true
