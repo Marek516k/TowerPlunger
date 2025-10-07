@@ -9,11 +9,6 @@ local Flags = Level1.Flags
 function WaveShi()
     local waveKey = "wave" .. tostring(CurrentWave)
     local waveData = Level1[waveKey]
-    if not waveData or not waveData.enemies then
-        PendingSpawns = {}
-        Spawning = false
-        return
-    end
 
     for _, EnemyInfo in ipairs(waveData.enemies) do
         for i = 1, EnemyInfo.count do
@@ -134,7 +129,7 @@ function love.load()
     Bought = false
     Timer = 0
     Interval = 0.4
-    Money = 500000
+    Money = 500
     Health = 100
     CurrentWave = 1
     EnemiesAlive = 0
@@ -296,6 +291,7 @@ function love.update(dt)
 
         if GameState == "wave" and EnemiesAlive == 0 and not Spawning then
             GameState = "building"
+            Money = Money + (Level1["wave" .. tostring(CurrentWave)].reward)
             CurrentWave = CurrentWave + 1
         end
     end
@@ -338,7 +334,7 @@ function love.draw()
         love.graphics.setColor(0.1, 0.1, 0.2, 1)
         love.graphics.rectangle("fill", 0, 0, ww, wh)
 
-        local title = "TOWER DEFENSE"
+        local title = "TOWER PLUNGER"
         local titleScale = 2 + math.sin(love.timer.getTime() * 2) * 0.1
 
         love.graphics.setColor(0, 0, 0, 0.5)
@@ -1100,8 +1096,8 @@ function processSplashDamage(proj, targetEnemy, hasSlow)
 end
 
 --TODO:
--- Add sound effects and music
--- More maps at least and map selection menu if i feel like doin so
 -- Balancing game difficulty and economy
--- bug fixes
+-- Add sound effects and music
+-- More maps and level selection menu
+-- bug fixes if there are any to fix
 -- user feedback stuff

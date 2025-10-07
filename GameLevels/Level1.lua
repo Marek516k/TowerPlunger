@@ -9,7 +9,7 @@ Level1 = {
     wave2 = {
         enemies = {
             {type = "zombie", count = 6},
-            {type = "fastZombie", count = 5}
+            {type = "fastZombie", count = 5},
         },
         spawnRate = 0.4,
         reward = 120
@@ -43,7 +43,7 @@ Level1 = {
             {type = "hidden", count = 5}
         },
         spawnRate = 1,
-        reward = 350
+        reward = 250
     },
     wave7 = {
         enemies = {
@@ -53,7 +53,7 @@ Level1 = {
             {type = "hidden", count = 5}
         },
         spawnRate = 0.6,
-        reward = 200
+        reward = 230
     },
     wave8 = {
         enemies = {
@@ -61,7 +61,7 @@ Level1 = {
             {type = "fastZombie", count = 10}
         },
         spawnRate = 0.2,
-        reward = 450
+        reward = 220
     },
     wave9 = {
         enemies = {
@@ -81,14 +81,14 @@ Level1 = {
             {type = "Tankboss", count = 1}
         },
         spawnRate = 0.5,
-        reward = 2000
+        reward = 1000
     },
     wave11 = {
         enemies = {
             {type = "Tankboss", count = 3}
         },
         spawnRate = 2,
-        reward = 1500
+        reward = 500
     },wave12 = {
         enemies = {
             {type = "zombie", count = 20},
@@ -98,7 +98,7 @@ Level1 = {
             {type = "Hiddenboss", count = 5}
         },
         spawnRate = 3.0,
-        reward = 1000
+        reward = 800
     },
     wave13 = {
         enemies = {
@@ -108,14 +108,14 @@ Level1 = {
             {type = "Hiddenboss", count = 1}
         },
         spawnRate = 1.5,
-        reward = 1500
+        reward = 400
     },
     wave14 = {
         enemies = {
             {type = "Gravedigger", count = 1}
         },
         spawnRate = 0.1,
-        reward = 1000
+        reward = 500
     },
     wave15 = {
         enemies = {
@@ -126,7 +126,7 @@ Level1 = {
             {type = "Fastboss", count = 20}
         },
         spawnRate = 0.75,
-        reward = 2001
+        reward = 750
     },
     wave16 = {
         enemies = {
@@ -137,13 +137,36 @@ Level1 = {
             {type = "Gravedigger", count = 2}
         },
         spawnRate = 0.5,
-        reward = 1048
+        reward = 500
     },
     wave17 = {
         enemies = {
             {type = "zombie", count = 1000}
         },
-        spawnRate = 0.01,
+        spawnRate = 0.02,
+        reward = 1
+    },
+    wave18 = {
+        enemies = {
+            {type = "Ultimateboss", count = 1},
+            {type = "hiddenBrainrot", count = 5}
+        },
+        spawnRate = 1,
+        reward = 1000
+    },
+    wawe19 = {
+        enemies = {
+            {type = "Ultimateboss", count = 3}
+        },
+        spawnRate = 1,
+        reward = 1000
+    },
+    wawe20 = {
+        enemies = {
+            {type = "Ultimateboss", count = 5},
+            {type = "hiddenBrainrot", count = 10}
+        },
+        spawnRate = 0.5,
         reward = 0
     }
 }
