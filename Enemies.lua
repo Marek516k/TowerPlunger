@@ -65,10 +65,10 @@ Enemy = {
     },
     hiddenBrainrot = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 60,
-        health = 7000,
-        damage = 90,
-        reward = 1000,
+        speed = 67,
+        health = 7067,
+        damage = 67,
+        reward = 1067,
         traits = "hidden","armored"
     },
     Gravedigger = {
@@ -81,35 +81,35 @@ Enemy = {
     },
     Ultimateboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 2000,
+        speed = 150,
         health = 100000,
         damage = 500,
-        reward = 5000,
+        reward = 1000,
         traits = "armored"
     },
     Destroyer = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 2000,
-        health = 100000,
+        speed = 180,
+        health = 10000,
         damage = 500,
-        reward = 5000,
+        reward = 2000,
         traits = "armored"
     },
     YourNightmare = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 2000,
-        health = 100000,
+        speed = 20,
+        health = 70000,
         damage = 500,
-        reward = 5000,
+        reward = 3000,
         traits = "armored"
-    }, 
+    },
     GhostPhantasm = {
         image = love.graphics.newImage("Images/Cannon.png"),
         speed = 150,
-        health = 100000,
+        health = 50000,
         damage = 500,
-        reward = 5000,
-        traits = "hidden"
+        reward = 4000,
+        traits = "hidden","armored"
     },
     ScreenMuncher = {
         image = love.graphics.newImage("Images/Cannon.png"),
@@ -118,14 +118,14 @@ Enemy = {
         damage = 500,
         reward = 5000,
         traits = "armored"
-    }, 
+    },
     TheONE= {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 100,
-        health = 100000000,
+        speed = 75,
+        health = 900000,
         damage = 500,
         reward = 0,
         traits = "none"
     }
-} 
+}
 return Enemy

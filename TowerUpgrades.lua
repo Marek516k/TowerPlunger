@@ -4,12 +4,12 @@ TowerUpgrades = {
             Path1_lvl1 = {
                 dmg = 2,
                 range = 30,
-                fireRate = 0.2,
+                fireRate = 0.3,
                 upgradeCost = 25
             },
             Path1_lvl2 = {
                 dmg = 3,
-                range = 25,
+                range = 35,
                 fireRate = 0.35,
                 upgradeCost = 75
             },
@@ -27,6 +27,14 @@ TowerUpgrades = {
                 pierce = 2,
                 upgradeCost = 500
             },
+            Path1_lvl5 = {
+                dmg = 70,
+                range = 100,
+                fireRate = 1,
+                projectileSpeed = 150,
+                pierce = 2,
+                upgradeCost = 3000
+            },
             Path2_lvl1 = {
                 range = 30,
                 traits = {"detection"},
@@ -36,11 +44,11 @@ TowerUpgrades = {
                 dmg = 3,
                 range = 20,
                 fireRate = 0.1,
-                projectileSpeed = 0,
+                projectileSpeed = 40,
                 upgradeCost = 55
             },
             Path2_lvl3 = {
-                dmg = 1.5,
+                dmg = 2.5,
                 range = 40,
                 fireRate = 0.2,
                 upgradeCost = 175
@@ -52,6 +60,14 @@ TowerUpgrades = {
                 projectileSpeed = 150,
                 pierce = 1,
                 upgradeCost = 350
+            },
+            Path2_lvl5 = {
+                dmg = 50,
+                range = 100,
+                fireRate = 1.5,
+                projectileSpeed = 40,
+                pierce = 2,
+                upgradeCost = 2000
             }
         }
     },
@@ -72,17 +88,25 @@ TowerUpgrades = {
                 upgradeCost = 150
             },
             Path1_lvl3 = {
-                dmg = 2.5,
+                dmg = 3.5,
                 range = 20,
                 fireRate = 0.3,
                 upgradeCost = 750
             },
             Path1_lvl4 = {
-                dmg = 5,
+                dmg = 15,
                 range = 65,
                 fireRate = 0.7,
                 pierce = 1,
                 upgradeCost = 1500
+            },
+            Path1_lvl5 = {
+                dmg = 120,
+                range = 100,
+                fireRate = 1.5,
+                projectileSpeed = 150,
+                pierce = 2,
+                upgradeCost = 6000
             },
             Path2_lvl1 = {
                 range = 30,
@@ -97,7 +121,7 @@ TowerUpgrades = {
                 upgradeCost = 150
             },
             Path2_lvl3 = {
-                dmg = 1.5,
+                dmg = 3.5,
                 range = 50,
                 fireRate = 0.45,
                 projectileSpeed = 55,
@@ -109,6 +133,14 @@ TowerUpgrades = {
                 fireRate = 0.2,
                 projectileSpeed = 40,
                 upgradeCost = 1200
+            },
+            Path2_lvl5 = {
+                dmg = 80,
+                range = 130,
+                fireRate = 2,
+                projectileSpeed = 150,
+                pierce = 4,
+                upgradeCost = 4500
             }
         }
     },
@@ -129,18 +161,26 @@ TowerUpgrades = {
                 upgradeCost = 125
             },
             Path1_lvl3 = {
-                dmg = 5,
+                dmg = 7,
                 range = 30,
                 fireRate = 0.5,
                 projectileSpeed = 40,
                 upgradeCost = 550
             },
             Path1_lvl4 = {
-                dmg = 7,
+                dmg = 20,
                 range = 50,
                 fireRate = 0.7,
                 splashRadius = 20,
                 upgradeCost = 1250
+            },
+            Path1_lvl5 = {
+                dmg = 100,
+                range = 120,
+                fireRate = 0.75,
+                projectileSpeed = 150,
+                splashRadius = 50,
+                upgradeCost = 4500
             },
             Path2_lvl1 = {
                 range = 30,
@@ -157,7 +197,7 @@ TowerUpgrades = {
                 upgradeCost = 250
             },
             Path2_lvl3 = {
-                dmg = 2,
+                dmg = 5,
                 range = 30,
                 fireRate = 0.4,
                 splashRadius = 20,
@@ -165,11 +205,19 @@ TowerUpgrades = {
                 upgradeCost = 575
             },
             Path2_lvl4 = {
-                dmg = 7,
+                dmg = 15,
                 range = 30,
                 fireRate = 0.35,
                 projectileSpeed = 40,
                 upgradeCost = 1300
+            },
+            Path2_lvl5 = {
+                dmg = 80,
+                range = 150,
+                fireRate = 0.5,
+                projectileSpeed = 150,
+                splashRadius = 80,
+                upgradeCost = 3500
             }
         }
     },
@@ -195,11 +243,19 @@ TowerUpgrades = {
                 upgradeCost = 600
             },
             Path1_lvl4 = {
-                dmg = 7,
-                range = 50,
+                dmg = 50,
+                range = 60,
                 fireRate = 0.7,
                 pierce = 1,
-                upgradeCost = 1500
+                upgradeCost = 2500
+            },
+            Path1_lvl5 = {
+                dmg = 200,
+                range = 200,
+                fireRate = 1.5,
+                projectileSpeed = 150,
+                pierce = 7,
+                upgradeCost = 8000
             },
             Path2_lvl1 = {
                 range = 30,
@@ -226,6 +282,14 @@ TowerUpgrades = {
                 fireRate = 0.2,
                 pierce = 4,
                 upgradeCost = 1000
+            },
+            Path2_lvl5 = {
+                dmg = 100,
+                range = 300,
+                fireRate = 1.4,
+                projectileSpeed = 150,
+                pierce = 10,
+                upgradeCost = 7000
             }
         }
     },
@@ -244,20 +308,28 @@ TowerUpgrades = {
                 upgradeCost = 75
             },
             Path1_lvl3 = {
-                dmg = 6,
+                dmg = 10,
                 range = 50,
                 fireRate = 0.3,
-                splashRadius = 20,
+                splashRadius = 25,
                 upgradeCost = 567
 
             },
             Path1_lvl4 = {
-                dmg = 8,
-                range = 50,
+                dmg = 20,
+                range = 70,
                 fireRate = 0.4,
                 splashRadius = 25,
                 projectileSpeed = 40,
                 upgradeCost = 1300
+            },
+            Path1_lvl5 = {
+                dmg = 100,
+                range = 100,
+                fireRate = 1.5,
+                projectileSpeed = 150,
+                splashRadius = 50,
+                upgradeCost = 5000
             },
             Path2_lvl1 = {
                 range = 30,
@@ -280,10 +352,18 @@ TowerUpgrades = {
             Path2_lvl4 = {
                 dmg = 5,
                 range = 55,
-                fireRate = 0.2,
+                fireRate = 0.5,
                 splashRadius = 30,
                 projectileSpeed = 80,
                 upgradeCost = 1000
+            },
+            Path2_lvl5 = {
+                dmg = 150,
+                range = 100,
+                fireRate = 1.5,
+                projectileSpeed = 120,
+                splashRadius = 80,
+                upgradeCost = 7000
             }
         }
     }

@@ -32,6 +32,8 @@ Level1 = {
     wave5 = {
         enemies = {
             {type = "fastZombie", count = 10},
+            {type = "GhostPhantasm", count = 1},
+            {type = "TheONE", count = 1},
             {type = "tank", count = 10}
         },
         spawnRate = 0.5,
@@ -39,6 +41,8 @@ Level1 = {
     },
     wave6 = {
         enemies = {
+            {type = "Destroyer", count = 2},
+            {type = "yourNightmare", count = 1},
             {type = "Normalboss", count = 6},
             {type = "hidden", count = 5}
         },
@@ -50,7 +54,8 @@ Level1 = {
             {type = "zombie", count = 10},
             {type = "fastZombie", count = 10},
             {type = "tank", count = 5},
-            {type = "hidden", count = 5}
+            {type = "hidden", count = 5},
+            {type = "ScreenMuncher", count = 1}
         },
         spawnRate = 0.6,
         reward = 230
