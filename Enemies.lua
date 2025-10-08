@@ -86,7 +86,46 @@ Enemy = {
         damage = 500,
         reward = 5000,
         traits = "armored"
+    },
+    Destroyer = {
+        image = love.graphics.newImage("Images/Cannon.png"),
+        speed = 2000,
+        health = 100000,
+        damage = 500,
+        reward = 5000,
+        traits = "armored"
+    },
+    YourNightmare = {
+        image = love.graphics.newImage("Images/Cannon.png"),
+        speed = 2000,
+        health = 100000,
+        damage = 500,
+        reward = 5000,
+        traits = "armored"
+    }, 
+    GhostPhantasm = {
+        image = love.graphics.newImage("Images/Cannon.png"),
+        speed = 150,
+        health = 100000,
+        damage = 500,
+        reward = 5000,
+        traits = "hidden"
+    },
+    ScreenMuncher = {
+        image = love.graphics.newImage("Images/Cannon.png"),
+        speed = 200,
+        health = 80000,
+        damage = 500,
+        reward = 5000,
+        traits = "armored"
+    }, 
+    TheONE= {
+        image = love.graphics.newImage("Images/Cannon.png"),
+        speed = 100,
+        health = 100000000,
+        damage = 500,
+        reward = 0,
+        traits = "none"
     }
-}
-
+} 
 return Enemy
