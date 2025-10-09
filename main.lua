@@ -972,6 +972,7 @@ function processSplashDamage(proj, targetEnemy, hasSlow)
 end
 
 --TODO:
+-- info box for tower stats on their left side
 -- Balancing game difficulty and economy
 -- Add sound effects and music
 -- More maps and level selection menu
