@@ -20,7 +20,7 @@ TowerUpgrades = {
                 upgradeCost = 250
             },
             Path1_lvl4 = {
-                dmg = 7,
+                dmg = 15,
                 range = 50,
                 fireRate = 0.7,
                 projectileSpeed = 100,
@@ -54,7 +54,7 @@ TowerUpgrades = {
                 upgradeCost = 175
             },
             Path2_lvl4 = {
-                dmg = 3.5,
+                dmg = 15.5,
                 range = 30,
                 fireRate = 0.2,
                 projectileSpeed = 150,
