@@ -4,6 +4,7 @@ Towers = require("Towers")
 Level1 = require("GameLevels.Level1")
 PathData = require("TowerUpgrades")
 loadStuff = require("Stuff to load")
+mouse = require("mys")
 
 function WaveShi()
     local waveKey = "wave" .. tostring(CurrentWave)
@@ -516,6 +517,75 @@ function DrawTowerUpgrades(tower)
     love.graphics.setColor(1, 1, 1, 1)
 
     local Font2 = love.graphics.newFont(18)
+    local FontStats = love.graphics.newFont(14)
+
+    local statsWidth = 180
+    local statsHeight = 200
+    local statsX = tower.x - statsWidth - 100
+    local statsY = tower.y - statsHeight/2
+
+    love.graphics.setColor(0.15, 0.15, 0.25, 0.95)
+    love.graphics.rectangle("fill", statsX, statsY, statsWidth, statsHeight, 10, 10)
+    love.graphics.setColor(0.3, 0.7, 1, 1)
+    love.graphics.setLineWidth(3)
+    love.graphics.rectangle("line", statsX, statsY, statsWidth, statsHeight, 10, 10)
+
+    love.graphics.setColor(0.3, 0.7, 1, 1)
+    love.graphics.print("TOWER STATS", Font2, statsX + 35, statsY + 10)
+
+    love.graphics.setColor(0.3, 0.7, 1, 0.5)
+    love.graphics.setLineWidth(1)
+    love.graphics.line(statsX + 10, statsY + 35, statsX + statsWidth - 10, statsY + 35)
+
+    love.graphics.setColor(1, 1, 1, 1)
+    local statY = statsY + 45
+    local lineHeight = 22
+
+    local towerData = tower.tower
+
+    love.graphics.setColor(1, 0.5, 0.5, 1)
+    love.graphics.print("Damage:", FontStats, statsX + 15, statY)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.print(tostring(towerData.dmg), FontStats, statsX + statsWidth - 50, statY)
+    statY = statY + lineHeight
+
+    love.graphics.setColor(0.5, 1, 0.5, 1)
+    love.graphics.print("Fire Rate:", FontStats, statsX + 15, statY)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.print(string.format("%.1f/s", towerData.firerate), FontStats, statsX + statsWidth - 50, statY)
+    statY = statY + lineHeight
+
+    love.graphics.setColor(0.5, 0.5, 1, 1)
+    love.graphics.print("Range:", FontStats, statsX + 15, statY)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.print(tostring(tower.range), FontStats, statsX + statsWidth - 50, statY)
+    statY = statY + lineHeight
+
+    love.graphics.setColor(1, 1, 0.5, 1)
+    love.graphics.print("Pierce:", FontStats, statsX + 15, statY)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.print(tostring(towerData.pierce), FontStats, statsX + statsWidth - 50, statY)
+    statY = statY + lineHeight
+
+    if towerData.splashRadius and towerData.splashRadius > 0 then
+        love.graphics.setColor(1, 0.5, 1, 1)
+        love.graphics.print("Splash:", FontStats, statsX + 15, statY)
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.print(tostring(towerData.splashRadius), FontStats, statsX + statsWidth - 50, statY)
+        statY = statY + lineHeight
+    end
+
+    if towerData.traits and #towerData.traits > 0 then
+        love.graphics.setColor(0.7, 0.7, 1, 1)
+        love.graphics.print("Traits:", FontStats, statsX + 15, statY)
+        statY = statY + 18
+        love.graphics.setColor(0.9, 0.9, 0.9, 1)
+        for _, trait in ipairs(towerData.traits) do
+            love.graphics.print("- " .. trait, FontStats, statsX + 25, statY)
+            statY = statY + 16
+        end
+    end
+
     local button_width = ww * (1/7)
     local Button_height = wh * (1/25)
     local margin = 15
@@ -579,93 +649,6 @@ function DrawTowerUpgrades(tower)
     love.graphics.setColor(1, 1, 1, 1)
 end
 
-function UpgradeLogic(PathNumber, TWdata)
-    if not TWdata.upgradePath then
-        TWdata.upgradePath = 0
-    end
-
-    if not TWdata.upgradeLevel then
-        TWdata.upgradeLevel = 0
-    end
-
-    if TWdata.upgradePath ~= 0 and TWdata.upgradePath ~= PathNumber then
-        love.audio.play(NotPossible)
-        return
-    end
-
-    if not TWdata.towerType or not PathData[TWdata.towerType] then
-        love.audio.play(NotPossible)
-        return
-    end
-
-    local towerUpgradeData = PathData[TWdata.towerType].PathData
-    local currentLevel = TWdata.upgradeLevel
-    local nextLevel = currentLevel + 1
-
-    if nextLevel >= 6 then
-        love.audio.play(NotPossible)
-        return
-    end
-
-    local upgradeKey = "Path" .. PathNumber .. "_lvl" .. tostring(nextLevel)
-    local nextLevelData = towerUpgradeData[upgradeKey]
-    local upgradeCost = nextLevelData.upgradeCost
-
-    if not nextLevelData then
-        love.audio.play(NotPossible)
-        return
-    end
-
-    if Money < upgradeCost then
-        love.audio.play(NotPossible)
-        return
-    else
-        Money = Money - upgradeCost
-        for i = 1, 15 do
-            createParticle(TWdata.x, TWdata.y, {0.2, 1, 0.3, 1})
-        end
-    end
-
-    if TWdata.upgradePath == 0 then
-        TWdata.upgradePath = PathNumber
-    end
-
-    TWdata.upgradeLevel = nextLevel
-
-    if nextLevelData.dmg then
-        TWdata.tower.dmg = (TWdata.tower.dmg) + nextLevelData.dmg
-    end
-
-    if nextLevelData.range then
-        TWdata.range = (TWdata.range) + nextLevelData.range
-    end
-
-    if nextLevelData.fireRate then
-        TWdata.tower.firerate = (TWdata.tower.firerate) + nextLevelData.fireRate
-    end
-
-    if nextLevelData.projectileSpeed then
-        TWdata.tower.projectileSpeed = (TWdata.tower.projectileSpeed) + nextLevelData.projectileSpeed
-    end
-
-    if nextLevelData.pierce then
-        TWdata.tower.pierce = (TWdata.tower.pierce) + nextLevelData.pierce
-    end
-
-    if nextLevelData.splashRadius then
-        TWdata.tower.splashRadius = (TWdata.tower.splashRadius) + nextLevelData.splashRadius
-    end
-
-    if nextLevelData.traits then
-        if not TWdata.tower.traits then
-            TWdata.tower.traits = {}
-        end
-        for _, trait in ipairs(nextLevelData.traits) do
-            table.insert(TWdata.tower.traits, trait)
-        end
-    end
-end
-
 function love.keypressed(key)
     if key == "escape" then
         GameState = "menu"
@@ -687,70 +670,7 @@ function deepCopyTower(original)
 end
 
 function love.mousepressed(x, y, button)
-    if button == 1 and Bought and SelectedTower and SelectedTower.image then
-        local canPlace = true
-        local towerW = SelectedTower.image:getWidth()
-        local towerH = SelectedTower.image:getHeight()
-        local newX = x - towerW / 2
-        local newY = y - towerH / 2
-        local mapWidth  = (Map1 and #Map1[1]) * 64
-        local mapHeight = (Map1 and #Map1) * 64
-
-        if newX < 0 or newY < 0 or newX + towerW > mapWidth or newY + towerH > mapHeight then
-            love.audio.play(NotPossible)
-            canPlace = false
-        end
-
-        for i, t in ipairs(TowersOnMap) do
-            local tW = t.tower.image:getWidth()
-            local tH = t.tower.image:getHeight()
-            local tX = t.x - tW / 2
-            local tY = t.y - tH / 2
-
-            if newX < tX + tW and newX + towerW > tX and newY < tY + tH and newY + towerH > tY then
-                love.audio.play(NotPossible)
-                canPlace = false
-                break
-            end
-        end
-
-        for i, path in ipairs(Path) do
-            local pX = (path.x - 1) * 64
-            local pY = (path.y - 1) * 64
-            local pW = 64
-            local pH = 64
-
-            if newX < pX + pW and newX + towerW > pX and newY < pY + pH and newY + towerH > pY then
-                love.audio.play(NotPossible)
-                canPlace = false
-                break
-            end
-        end
-
-        if canPlace then
-            local towerCopy = deepCopyTower(SelectedTower)
-            table.insert(TowersOnMap, {
-                tower = towerCopy,
-                towerType = SelectedTowerName,
-                image = SelectedTower.image,
-                range = SelectedTower.range,
-                rotation = 0,
-                x = x,
-                y = y,
-                target = nil,
-                lastShot = 0,
-                upgraded = false,
-                upgradePath = 0,
-                upgradeLevel = 0,
-                shootFlash = 0
-            })
-            Bought = false
-            Placed = true
-            for i = 1, 10 do
-                createParticle(x, y, {0.3, 0.7, 1, 1})
-            end
-        end
-    end
+    mouse(x, y, button)
 end
 
 function findNearestTargetForTower(tower)
@@ -791,9 +711,10 @@ function createProjectile(startX, startY, targetX, targetY, speed, damage, pierc
     local dy = targetY - startY
     local distance = math.sqrt(dx * dx + dy * dy)
 
-    if distance == 0 then 
+    if distance == 0 then
         distance = 1
     end
+
     local dirX = dx / distance
     local dirY = dy / distance
 

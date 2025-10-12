@@ -184,7 +184,6 @@ TowerUpgrades = {
             },
             Path2_lvl1 = {
                 range = 30,
-                traits = {"detection"},
                 splashRadius = 10,
                 upgradeCost = 50
             },

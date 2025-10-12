@@ -1,6 +1,7 @@
 local Map1 = Level1.Map1
 local Flags = Level1.Flags
 Level1 = require("GameLevels.Level1")
+UpgradeLogic = require("UpgradeLogic")
 
 function loading()
     PendingSpawns = {}
@@ -128,4 +129,5 @@ function loading()
     WaveTransition = 0
     ShakeAmount = 0
 end
+
 return loading
