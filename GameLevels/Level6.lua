@@ -1,5 +1,4 @@
 Level6 = {
-    -- Early build-up
     wave1 = {
         enemies = {
             {type = "zombie", count = 8},
@@ -41,7 +40,6 @@ Level6 = {
         reward = 260
     },
 
-    -- Mid progression
     wave6 = {
         enemies = {
             {type = "fastZombie", count = 10},
@@ -83,7 +81,6 @@ Level6 = {
         reward = 420
     },
 
-    -- Rising threat
     wave11 = {
         enemies = {
             {type = "tank", count = 8},
@@ -103,14 +100,15 @@ Level6 = {
     wave13 = {
         enemies = {
             {type = "tank", count = 10},
-            {type = "hidden", count = 10}
+            {type = "hidden", count = 10},
+            {type = "Tankboss", count = 4}
         },
         spawnRate = 0.35,
         reward = 650
     },
     wave14 = {
         enemies = {
-            {type = "Fastboss", count = 1},
+            {type = "Fastboss", count = 2},
             {type = "armoredSkeleton", count = 5}
         },
         spawnRate = 1.0,
@@ -125,7 +123,6 @@ Level6 = {
         reward = 1000
     },
 
-    -- Final stretch
     wave16 = {
         enemies = {
             {type = "Tankboss", count = 1},
@@ -136,7 +133,7 @@ Level6 = {
     },
     wave17 = {
         enemies = {
-            {type = "GhostPhantasm", count = 1},
+            {type = "Gravedigger", count = 2},
             {type = "armoredSkeleton", count = 6}
         },
         spawnRate = 1.3,
@@ -159,14 +156,13 @@ Level6 = {
         reward = 2000
     },
 
-    -- 💀 Final Boss Wave
     wave20 = {
         enemies = {
             {type = "Destroyer", count = 1},
             {type = "Hiddenboss", count = 1},
             {type = "boneReaper", count = 3}
         },
-        spawnRate = 2.5,
+        spawnRate = 1,
         reward = 2500
     }
 }
