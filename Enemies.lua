@@ -31,7 +31,6 @@ Enemy = {
         reward = 30,
         traits = "hidden"
     },
-
     skeleton = {
         image = love.graphics.newImage("Images/Skeleton.png"),
         speed = 95,
@@ -40,7 +39,6 @@ Enemy = {
         reward = 8,
         traits = "none"
     },
-
     armoredSkeleton = {
         image = love.graphics.newImage("Images/ArmoredSkeleton.png"),
         speed = 50,
@@ -49,7 +47,6 @@ Enemy = {
         reward = 35,
         traits = "armored"
     },
-
     boneReaper = {
         image = love.graphics.newImage("Images/BoneReaper.png"),
         speed = 70,
@@ -58,7 +55,30 @@ Enemy = {
         reward = 45,
         traits = "hidden,armored"
     },
-
+    slime = {
+        image = love.graphics.newImage("Images/Slime.png"),
+        speed = 70,
+        health = 120,
+        damage = 12,
+        reward = 12,
+        traits = "none"
+    },
+    bigSlime = {
+        image = love.graphics.newImage("Images/BigSlime.png"),
+        speed = 50,
+        health = 500,
+        damage = 25,
+        reward = 35,
+        traits = "armored"
+    },
+    skeletonKing = {
+        image = love.graphics.newImage("Images/SkeletonKing.png"),
+        speed = 65,
+        health = 3000,
+        damage = 30,
+        reward = 120,
+        traits = "armored"
+    },
     Normalboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
         speed = 50,
