@@ -31,6 +31,34 @@ Enemy = {
         reward = 30,
         traits = "hidden"
     },
+
+    skeleton = {
+        image = love.graphics.newImage("Images/Skeleton.png"),
+        speed = 95,
+        health = 70,
+        damage = 7,
+        reward = 8,
+        traits = "none"
+    },
+
+    armoredSkeleton = {
+        image = love.graphics.newImage("Images/ArmoredSkeleton.png"),
+        speed = 50,
+        health = 500,
+        damage = 25,
+        reward = 35,
+        traits = "armored"
+    },
+
+    boneReaper = {
+        image = love.graphics.newImage("Images/BoneReaper.png"),
+        speed = 70,
+        health = 160,
+        damage = 20,
+        reward = 45,
+        traits = "hidden,armored"
+    },
+
     Normalboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
         speed = 50,
@@ -69,7 +97,7 @@ Enemy = {
         health = 7067,
         damage = 67,
         reward = 1067,
-        traits = "hidden","armored"
+        traits = "hidden,armored"
     },
     Gravedigger = {
         image = love.graphics.newImage("Images/Cannon.png"),
@@ -109,7 +137,7 @@ Enemy = {
         health = 50000,
         damage = 500,
         reward = 4000,
-        traits = "hidden","armored"
+        traits = "hidden,armored"
     },
     ScreenMuncher = {
         image = love.graphics.newImage("Images/Cannon.png"),
@@ -119,7 +147,7 @@ Enemy = {
         reward = 5000,
         traits = "armored"
     },
-    TheONE= {
+    TheONE = {
         image = love.graphics.newImage("Images/Cannon.png"),
         speed = 75,
         health = 900000,
@@ -128,4 +156,5 @@ Enemy = {
         traits = "none"
     }
 }
+
 return Enemy
