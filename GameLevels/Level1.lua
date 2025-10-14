@@ -32,8 +32,6 @@ Level1 = {
     wave5 = {
         enemies = {
             {type = "fastZombie", count = 10},
-            {type = "GhostPhantasm", count = 1},
-            {type = "TheONE", count = 1},
             {type = "tank", count = 10}
         },
         spawnRate = 0.5,
@@ -41,8 +39,6 @@ Level1 = {
     },
     wave6 = {
         enemies = {
-            {type = "Destroyer", count = 2},
-            {type = "yourNightmare", count = 1},
             {type = "Normalboss", count = 6},
             {type = "hidden", count = 5}
         },
@@ -55,7 +51,6 @@ Level1 = {
             {type = "fastZombie", count = 10},
             {type = "tank", count = 5},
             {type = "hidden", count = 5},
-            {type = "ScreenMuncher", count = 1}
         },
         spawnRate = 0.6,
         reward = 230
@@ -90,9 +85,9 @@ Level1 = {
     },
     wave11 = {
         enemies = {
-            {type = "Tankboss", count = 3}
+            {type = "Tankboss", count = 4}
         },
-        spawnRate = 2,
+        spawnRate = 1,
         reward = 500
     },wave12 = {
         enemies = {
@@ -102,7 +97,7 @@ Level1 = {
             {type = "hidden", count = 15},
             {type = "Hiddenboss", count = 5}
         },
-        spawnRate = 3.0,
+        spawnRate = 0.5,
         reward = 800
     },
     wave13 = {
@@ -112,7 +107,7 @@ Level1 = {
             {type = "Tankboss", count = 1},
             {type = "Hiddenboss", count = 1}
         },
-        spawnRate = 1.5,
+        spawnRate = 0.5,
         reward = 400
     },
     wave14 = {
@@ -176,7 +171,7 @@ Level1 = {
     }
 }
 
-Map1 = {
+Map = {
     "#################################",
     "#################################",
     "#################################",
@@ -215,4 +210,4 @@ Flags = {
     {x = 31, y = 9},
 }
 
-return Level1, Map1, Flags
+return Level1, Map, Flags

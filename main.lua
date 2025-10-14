@@ -893,8 +893,8 @@ function processSplashDamage(proj, targetEnemy, hasSlow)
 end
 
 --TODO:
---refactor the code a bit
--- info box for tower stats on their left side
+-- refactor the code a bit
+-- make the font correct size for everithing
 -- Balancing game difficulty and economy
 -- Add sound effects and music
 -- More maps and level selection menu

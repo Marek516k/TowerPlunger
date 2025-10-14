@@ -1,4 +1,4 @@
-local Map1 = Level1.Map1
+local Map = Level1.Map
 local Flags = Level1.Flags
 Level1 = require("GameLevels.Level1")
 UpgradeLogic = require("UpgradeLogic")
@@ -17,11 +17,11 @@ function loading()
     Particles = {}
     SelectedTower = nil
     SelectedTowerForUpgrade = nil
-    Map1 = _G.Map1
+    Map = _G.Map
     Flags = _G.Flags
 
-    if Map1 then
-        for y,row in ipairs(Map1) do
+    if Map then
+        for y,row in ipairs(Map) do
             for x = 1, #row do
                 local tile = row:sub(x,x)
                 if tile == "#" then

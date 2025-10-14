@@ -5,8 +5,8 @@ function mys(x, y, button)
         local towerH = SelectedTower.image:getHeight()
         local newX = x - towerW / 2
         local newY = y - towerH / 2
-        local mapWidth  = (Map1 and #Map1[1]) * 64
-        local mapHeight = (Map1 and #Map1) * 64
+        local mapWidth  = (Map and #Map[1]) * 64
+        local mapHeight = (Map and #Map) * 64
 
         if newX < 0 or newY < 0 or newX + towerW > mapWidth or newY + towerH > mapHeight then
             love.audio.play(NotPossible)
