@@ -5,6 +5,7 @@ Level1 = require("GameLevels.Level1")
 PathData = require("TowerUpgrades")
 loadStuff = require("Stuff to load")
 mouse = require("mys")
+local LevelSelector = require("LevelSelector")
 
 function WaveShi()
     local waveKey = "wave" .. tostring(CurrentWave)
@@ -136,9 +137,9 @@ function love.update(dt)
 
     if GameState == "wave" then
         for _, tower in ipairs(TowersOnMap) do
-            tower.lastShot = (tower.lastShot or 0) + dt
+            tower.lastShot = (tower.lastShot) + dt
             local towerData = tower.tower
-            local fireRate = towerData.firerate or 1
+            local fireRate = towerData.firerate
             local projectileSpeed = towerData.projectileSpeed
 
             if tower.lastShot >= (1 / fireRate) then
@@ -188,6 +189,10 @@ function createParticle(x, y, color)
 end
 
 function love.draw()
+    if GameState == "levelSelect" then
+        LevelSelector()
+    end
+
     if ShakeAmount > 0 then
         love.graphics.push()
         love.graphics.translate(

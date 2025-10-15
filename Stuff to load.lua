@@ -19,6 +19,7 @@ function loading()
     SelectedTowerForUpgrade = nil
     Map = _G.Map
     Flags = _G.Flags
+    GameStarted = false
 
     if Map then
         for y,row in ipairs(Map) do
@@ -66,7 +67,12 @@ function loading()
     table.insert(Buttons, NewButton(
             "Let's GO",
             function()
-                GameState = "building"
+                if GameStarted == false then
+                    GameState = "levelSelect"
+                    GameStarted = true
+                else
+                    GameState = "building"
+                end
             end))
 
     table.insert(Buttons, NewButton(
@@ -109,7 +115,7 @@ function loading()
     Spawning = false
     Bought = false
     Timer = 0
-    Interval = 0.4
+    Interval = 0.35
     Money = 50000
     Health = 100
     CurrentWave = 1
