@@ -1,6 +1,3 @@
-local Map = Level1.Map
-local Flags = Level1.Flags
-Level1 = require("GameLevels.Level1")
 UpgradeLogic = require("UpgradeLogic")
 
 function loading()
@@ -17,22 +14,7 @@ function loading()
     Particles = {}
     SelectedTower = nil
     SelectedTowerForUpgrade = nil
-    Map = _G.Map
-    Flags = _G.Flags
     GameStarted = false
-
-    if Map then
-        for y,row in ipairs(Map) do
-            for x = 1, #row do
-                local tile = row:sub(x,x)
-                if tile == "#" then
-                    table.insert(Grass, { x = x, y = y })
-                elseif tile == "." then
-                    table.insert(Path, { x = x, y = y })
-                end
-            end
-        end
-    end
 
     function NewButton(text, fn)
         return {text = text, fn = fn,

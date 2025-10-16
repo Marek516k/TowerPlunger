@@ -4,6 +4,7 @@ Towers = require("Towers")
 Level1 = require("GameLevels.Level1")
 PathData = require("TowerUpgrades")
 loadStuff = require("Stuff to load")
+
 mouse = require("mys")
 local LevelSelector = require("LevelSelector")
 
@@ -655,7 +656,7 @@ function DrawTowerUpgrades(tower)
 end
 
 function love.keypressed(key)
-    if key == "escape" then
+    if key == "escape" and not GameState == "levelSelect" then
         GameState = "menu"
         ShowUpgradeUI = false
         TWdata = nil
@@ -674,8 +675,9 @@ function deepCopyTower(original)
     return copy
 end
 
-function love.mousepressed(x, y, button)
+function love.mousepressed(x, y, button,istouch,presses)
     mouse(x, y, button)
+    CheckLevelSelectorClick(x, y, button)
 end
 
 function findNearestTargetForTower(tower)
