@@ -4,9 +4,9 @@ Towers = require("Towers")
 Level1 = require("GameLevels.Level1")
 PathData = require("TowerUpgrades")
 loadStuff = require("Stuff to load")
-
 mouse = require("mys")
-local LevelSelector = require("LevelSelector")
+loadLevel = require("LevelSelector")
+DrawLevel = require("LevelSelector")
 
 function WaveShi()
     local waveKey = "wave" .. tostring(CurrentWave)
@@ -25,6 +25,7 @@ function WaveShi()
 end
 
 function love.load()
+    loadLevel()
     loadStuff()
 end
 
@@ -190,8 +191,8 @@ function createParticle(x, y, color)
 end
 
 function love.draw()
-    if GameState == "levelSelect" then
-        LevelSelector()
+    if GameState == "levelSelection" then
+        DrawLevel()
     end
 
     if ShakeAmount > 0 then
@@ -656,7 +657,7 @@ function DrawTowerUpgrades(tower)
 end
 
 function love.keypressed(key)
-    if key == "escape" and not GameState == "levelSelect" then
+    if key == "escape" and not GameState == "levelSelection" then
         GameState = "menu"
         ShowUpgradeUI = false
         TWdata = nil

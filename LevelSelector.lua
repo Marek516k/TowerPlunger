@@ -1,35 +1,40 @@
 local Levels = require("GameLevels")
 local ButtonRects = {}
 local HoveredButton = nil
+local Buttons = {}
 
-function LevelSelector()
-    local ww = love.graphics.getWidth()
-    local wh = love.graphics.getHeight()
-    local text = "Select Level"
-    local font = love.graphics.getFont()
+function NewButton(text, fn)
+        return {text = text, fn = fn
+        }
+    end
 
-    local textWidth = font:getWidth(text) * 3
-    local textHeight = font:getHeight() * 3
-
-    local x = (ww - textWidth) / 2
-    local y = 100
-
-    love.graphics.setColor(0.2, 0.8, 1, 1)
-    love.graphics.print(text, x, y, 0, 3, 3)
-    love.graphics.setColor(1, 1, 1, 1)
-
-    local Buttons = {}
-
+function loadLevel()
     for i, level in ipairs(Levels.list) do
         table.insert(Buttons, NewButton(
             "Level " .. i,
             function()
-                Map = level.map
-                Flags = level.flags
                 GameState = "building"
+                love.event.quit()
             end
         ))
     end
+end
+
+local ww = love.graphics.getWidth()
+local wh = love.graphics.getHeight()
+local Text = "Select Level"
+local font = love.graphics.getFont()
+
+local textWidth = font:getWidth(Text) * 3
+local textHeight = font:getHeight() * 3
+
+local Tx = (ww - textWidth) / 2
+local Ty = 100
+
+function DrawLevel()
+    love.graphics.setColor(0.2, 0.8, 1, 1)
+    love.graphics.print(Text, Tx, Ty, 0, 3, 3)
+    love.graphics.setColor(1, 1, 1, 1)
 
     local a = 0
     ButtonRects = {}
@@ -76,8 +81,7 @@ end
 function CheckLevelSelectorClick(x, y, button)
     if button == 1 then
         for i, rect in ipairs(ButtonRects) do
-            if x >= rect.x and x <= rect.x + rect.width and
-               y >= rect.y and y <= rect.y + rect.height then
+            if x >= rect.x and x <= rect.x + rect.width and y >= rect.y and y <= rect.y + rect.height then
                 rect.callback()
                 break
             end
@@ -85,4 +89,4 @@ function CheckLevelSelectorClick(x, y, button)
     end
 end
 
-return LevelSelector
+return loadLevel, DrawLevel
