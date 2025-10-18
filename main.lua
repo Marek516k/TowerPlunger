@@ -901,6 +901,7 @@ function processSplashDamage(proj, targetEnemy, hasSlow)
 end
 
 --TODO:
+-- fix the bugs finally man
 -- refactor the code a bit
 -- make the font correct size for everithing
 -- Balancing game difficulty and economy
