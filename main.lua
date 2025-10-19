@@ -902,7 +902,7 @@ end
 
 --TODO:
 -- fix the bugs finally man
--- refactor the code a bit
+-- really refactor the code a bit
 -- make the font correct size for everithing
 -- Balancing game difficulty and economy
 -- Add sound effects and music
