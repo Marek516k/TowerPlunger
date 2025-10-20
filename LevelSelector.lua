@@ -1,27 +1,18 @@
 local Levels = require("GameLevels")
-local ButtonRects = {}
-local HoveredButton = nil
-local Buttons = {}
 
 function NewButton(text, fn)
         return {text = text, fn = fn
         }
     end
 
-function loadLevel()
-    for i, level in ipairs(Levels.list) do
-        table.insert(Buttons, NewButton(
-            "Level " .. i,
-            function()
-                GameState = "building"
-                love.event.quit()
-            end
-        ))
-    end
-end
+
+local ButtonRects = {}
+local HoveredButton = nil
+local Buttons = {}
 
 local ww = love.graphics.getWidth()
 local wh = love.graphics.getHeight()
+
 local Text = "Select Level"
 local font = love.graphics.getFont()
 
@@ -31,20 +22,32 @@ local textHeight = font:getHeight() * 3
 local Tx = (ww - textWidth) / 2
 local Ty = 100
 
+function loadLevel()
+    for i, level in ipairs(Levels.list) do
+        table.insert(Buttons, NewButton(
+            "Level " .. i,
+            function()
+                GameState = "building"
+            end
+        ))
+    end
+end
+
 function DrawLevel()
     love.graphics.setColor(0.2, 0.8, 1, 1)
     love.graphics.print(Text, Tx, Ty, 0, 3, 3)
     love.graphics.setColor(1, 1, 1, 1)
 
     local a = 0
-    ButtonRects = {}
 
     for i, button in ipairs(Buttons) do
         local button_width = ww / 9
         local button_height = wh / 7
+
         local button_x_start = 140
         local buttonX_spacing = 200
         local buttonY_spacing = 400
+
         local button_y = 200 + (buttonY_spacing * a)
         local button_x = button_x_start + (i - 1 - (a * 5)) * (button_height + buttonX_spacing)
 
@@ -89,4 +92,6 @@ function CheckLevelSelectorClick(x, y, button)
     end
 end
 
-return loadLevel, DrawLevel
+return {loadLevel, DrawLevel}
+
+-- put everything you had in love.load() here, only leave the stuff required for menu screen

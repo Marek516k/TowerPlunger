@@ -5,8 +5,9 @@ Level1 = require("GameLevels.Level1")
 PathData = require("TowerUpgrades")
 loadStuff = require("Stuff to load")
 mouse = require("mys")
-loadLevel = require("LevelSelector")
-DrawLevel = require("LevelSelector")
+LevelSelector = require("LevelSelector")
+loadLevelButtons = LevelSelector[1]
+DrawLevel = LevelSelector[2]
 
 function WaveShi()
     local waveKey = "wave" .. tostring(CurrentWave)
@@ -25,8 +26,8 @@ function WaveShi()
 end
 
 function love.load()
-    loadLevel()
     loadStuff()
+    loadLevelButtons()
 end
 
 function love.update(dt)

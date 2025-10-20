@@ -50,7 +50,7 @@ function loading()
             "Let's GO",
             function()
                 if GameStarted == false then
-                    GameState = "levelSelect"
+                    GameState = "levelSelection"
                     GameStarted = true
                 else
                     GameState = "building"
