@@ -163,7 +163,7 @@ Level6 = {
             {type = "boneReaper", count = 3}
         },
         spawnRate = 1,
-        reward = 2500
+        reward = 0
     }
 }
 
@@ -191,4 +191,8 @@ Map = {
     "#################################"
 }
 
-return Level6, Map
+return {
+    waves = Level6,
+    map = Map,
+    flags = Flags
+}

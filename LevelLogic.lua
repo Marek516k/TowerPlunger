@@ -5,10 +5,16 @@ function NewButton(text, fn)
         }
     end
 
-
-local ButtonRects = {}
-local HoveredButton = nil
 local Buttons = {}
+ButtonRects = {}
+Grass = {}
+Path = {}
+
+local HoveredButton = nil
+CurrentWave = 1
+
+GrassImage = love.graphics.newImage("Images/green.png")
+PathImage = love.graphics.newImage("Images/white.png")
 
 local ww = love.graphics.getWidth()
 local wh = love.graphics.getHeight()
@@ -28,12 +34,24 @@ function loadLevel()
             "Level " .. i,
             function()
                 GameState = "building"
+                for j, row in ipairs(level.map) do
+                    for x = 1, #row do
+                        local tileType = row:sub(x, x)
+                        if tileType == "#" then
+                            table.insert(Grass, {x = x, y = j})
+                        elseif tileType == "." then
+                            table.insert(Path, {x = x, y = j})
+                        end
+                    end
+                end
             end
         ))
     end
 end
 
-function DrawLevel()
+function DrawLevelSel()
+    ButtonRects = {}
+
     love.graphics.setColor(0.2, 0.8, 1, 1)
     love.graphics.print(Text, Tx, Ty, 0, 3, 3)
     love.graphics.setColor(1, 1, 1, 1)
@@ -56,7 +74,7 @@ function DrawLevel()
             y = button_y,
             width = button_width,
             height = button_height,
-            callback = button.callback
+            callback = button.fn
         })
 
         local mx, my = love.mouse.getPosition()
@@ -81,6 +99,17 @@ function DrawLevel()
     return ButtonRects
 end
 
+function drawMap()
+    for i, grass in ipairs(Grass) do
+        love.graphics.draw(GrassImage, (grass.x -1) *64, (grass.y -1) *64)
+    end
+    for i, path in ipairs(Path) do
+        love.graphics.setColor(1, 1, 1, 0.9)
+        love.graphics.draw(PathImage, (path.x -1) *64, (path.y -1) *64)
+        love.graphics.setColor(1, 1, 1, 1)
+    end
+end
+
 function CheckLevelSelectorClick(x, y, button)
     if button == 1 then
         for i, rect in ipairs(ButtonRects) do
@@ -92,6 +121,4 @@ function CheckLevelSelectorClick(x, y, button)
     end
 end
 
-return {loadLevel, DrawLevel}
-
--- put everything you had in love.load() here, only leave the stuff required for menu screen
+return {loadLevel, DrawLevelSel, drawMap}

@@ -5,9 +5,10 @@ Level1 = require("GameLevels.Level1")
 PathData = require("TowerUpgrades")
 loadStuff = require("Stuff to load")
 mouse = require("mys")
-LevelSelector = require("LevelSelector")
+LevelSelector = require("LevelLogic")
 loadLevelButtons = LevelSelector[1]
 DrawLevel = LevelSelector[2]
+drawMap = LevelSelector[3]
 
 function WaveShi()
     local waveKey = "wave" .. tostring(CurrentWave)
@@ -193,7 +194,7 @@ end
 
 function love.draw()
     if GameState == "levelSelection" then
-        DrawLevel()
+        DrawLevelSel()
     end
 
     if ShakeAmount > 0 then
@@ -205,14 +206,7 @@ function love.draw()
     end
 
     if GameState == "building" or GameState == "wave" then
-        for i, grass in ipairs(Grass) do
-            love.graphics.draw(GrassImage, (grass.x -1) *64, (grass.y -1) *64)
-        end
-        for i, path in ipairs(Path) do
-            love.graphics.setColor(1, 1, 1, 0.9)
-            love.graphics.draw(PathImage, (path.x -1) *64, (path.y -1) *64)
-            love.graphics.setColor(1, 1, 1, 1)
-        end
+        drawMap()
     end
 
     if GameState == "menu" then
@@ -658,7 +652,7 @@ function DrawTowerUpgrades(tower)
 end
 
 function love.keypressed(key)
-    if key == "escape" and not GameState == "levelSelection" then
+    if key == "escape" and (GameState == "building" or GameState == "wave") then
         GameState = "menu"
         ShowUpgradeUI = false
         TWdata = nil
@@ -907,6 +901,5 @@ end
 -- make the font correct size for everithing
 -- Balancing game difficulty and economy
 -- Add sound effects and music
--- More maps and level selection menu
 -- bug fixes if there are any to fix
 -- user feedback stuff

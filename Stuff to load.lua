@@ -2,8 +2,6 @@ UpgradeLogic = require("UpgradeLogic")
 
 function loading()
     PendingSpawns = {}
-    Grass = {}
-    Path = {}
     Bullets = {}
     Buttons = {}
     UpgradeButtons = {}
@@ -88,8 +86,6 @@ function loading()
             end))
 
     love.window.setMode(1920, 1080, {resizable=false, vsync=true})
-    GrassImage = love.graphics.newImage("Images/green.png")
-    PathImage = love.graphics.newImage("Images/white.png")
     NotPossible = love.audio.newSource("sounds/Nuh-uh.wav", "static")
     Song = love.audio.newSource("sounds/Song.mp3", "static")
     SongState = false
@@ -100,7 +96,6 @@ function loading()
     Interval = 0.35
     Money = 50000
     Health = 100
-    CurrentWave = 1
     EnemiesAlive = 0
     GameState = "menu"
     Wavetimer = 0

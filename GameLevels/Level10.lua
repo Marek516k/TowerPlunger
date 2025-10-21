@@ -163,7 +163,7 @@ Level10 = {
             {type = "skeletonKing", count = 2}
         },
         spawnRate = 0.75,
-        reward = 4000
+        reward = 0
     }
 }
 
@@ -191,4 +191,8 @@ Map = {
     "#################################"
 }
 
-return Level10, Map
+return {
+    waves = Level10,
+    map = Map,
+    flags = Flags
+}

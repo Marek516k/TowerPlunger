@@ -150,4 +150,8 @@ Map = {
     "#################################"
 }
 
-return Level7, Map
+return {
+    waves = Level7,
+    map = Map,
+    flags = Flags
+}
