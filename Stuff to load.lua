@@ -7,7 +7,6 @@ function loading()
     UpgradeButtons = {}
     Shop = {}
     TowersOnMap = {}
-    EnemiesOnMap = {}
     TWdata = {}
     Particles = {}
     SelectedTower = nil
@@ -90,17 +89,11 @@ function loading()
     Song = love.audio.newSource("sounds/Song.mp3", "static")
     SongState = false
     ShowUpgradeUI = false
-    Spawning = false
     Bought = false
     Timer = 0
     Interval = 0.35
     Money = 50000
-    Health = 100
-    EnemiesAlive = 0
     GameState = "menu"
-    Wavetimer = 0
-    WaveInterval = 3
-    EnemyspawnTimer = 0
     Placed = false
     Slowness = false
     Font = love.graphics.newFont(25)

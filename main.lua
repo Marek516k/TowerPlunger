@@ -5,30 +5,12 @@ Level1 = require("GameLevels.Level1")
 PathData = require("TowerUpgrades")
 loadStuff = require("Stuff to load")
 mouse = require("mys")
-LevelSelector = require("LevelLogic")
-loadLevelButtons = LevelSelector[1]
-DrawLevel = LevelSelector[2]
-drawMap = LevelSelector[3]
-
-function WaveShi()
-    local waveKey = "wave" .. tostring(CurrentWave)
-    local waveData = Level1[waveKey]
-
-    for _, EnemyInfo in ipairs(waveData.enemies) do
-        for i = 1, EnemyInfo.count do
-            table.insert(PendingSpawns, {
-                type = EnemyInfo.type
-            })
-        end
-    end
-
-    Spawning = true
-    EnemyspawnTimer = 0
-end
+LevelLogic = require("LevelLogic")
 
 function love.load()
     loadStuff()
-    loadLevelButtons()
+    LevelLogic.loadLevel()
+    waveButton = { x = 920, y = 30, w = 200, h = 80 }
 end
 
 function love.update(dt)
@@ -56,87 +38,8 @@ function love.update(dt)
         end
     end
 
-    EnemyspawnTimer = EnemyspawnTimer + dt
-    Wavetimer = Wavetimer + dt
-
-    if Wavetimer > WaveInterval and GameState == "building" then
-        Wavetimer = 0
-        GameState = "wave"
-        WaveShi()
-        WaveTransition = 1
-    end
-
-    if GameState == "wave" and Spawning then
-        local waveData = Level1["wave" .. tostring(CurrentWave)]
-        local spawnRate = waveData.spawnRate
-
-        if EnemyspawnTimer >= spawnRate and #PendingSpawns > 0 then
-            local pending = table.remove(PendingSpawns, 1)
-            local spawnType = pending.type
-            local eData = Enemy[spawnType]
-
-            if eData then
-                table.insert(EnemiesOnMap, {
-                    type   = spawnType,
-                    image  = eData.image,
-                    speed  = eData.speed,
-                    health = eData.health,
-                    maxHealth = eData.health,
-                    damage = eData.damage,
-                    reward = eData.reward,
-                    traits = eData.traits,
-                    x = (Flags[1].x - 1) * 64,
-                    y = (Flags[1].y - 1) * 64,
-                    flagIndex = 2
-                })
-                EnemiesAlive = EnemiesAlive + 1
-            end
-            EnemyspawnTimer = 0
-        end
-
-        if #PendingSpawns == 0 then
-            Spawning = false
-        end
-    end
-
     if GameState == "wave" then
-        for enemyIndex = #EnemiesOnMap, 1, -1 do
-            local enemy = EnemiesOnMap[enemyIndex]
-            local targetFlag = Flags[enemy.flagIndex]
-
-            if not targetFlag then
-                EnemiesAlive = math.max(0, EnemiesAlive - 1)
-                table.remove(EnemiesOnMap, enemyIndex)
-            else
-                local targetX = (targetFlag.x - 1) * 64
-                local targetY = (targetFlag.y - 1) * 64
-                local dx = targetX - enemy.x
-                local dy = targetY - enemy.y
-                local distance = math.sqrt(dx*dx + dy*dy)
-
-                if distance < (enemy.speed) * dt then
-                    enemy.x = targetX
-                    enemy.y = targetY
-                    enemy.flagIndex = enemy.flagIndex + 1
-
-                    if enemy.flagIndex > #Flags then
-                        EnemiesAlive = math.max(0, EnemiesAlive - 1)
-                        Health = Health - (enemy.damage or 1)
-                        table.remove(EnemiesOnMap, enemyIndex)
-                        ShakeAmount = 0.3
-
-                        if Health <= 0 then
-                            GameState = "gameover"
-                        end
-                    end
-                else
-                    if distance > 0 then
-                        enemy.x = enemy.x + (dx / distance) * (enemy.speed) * dt
-                        enemy.y = enemy.y + (dy / distance) * (enemy.speed) * dt
-                    end
-                end
-            end
-        end
+        LevelLogic.Enemyupdate(dt)
     end
 
     if GameState == "wave" then
@@ -170,12 +73,6 @@ function love.update(dt)
             end
         end
         updateProjectiles(dt)
-
-        if GameState == "wave" and EnemiesAlive == 0 and not Spawning then
-            GameState = "building"
-            Money = Money + (Level1["wave" .. tostring(CurrentWave)].reward)
-            CurrentWave = CurrentWave + 1
-        end
     end
 end
 
@@ -194,7 +91,7 @@ end
 
 function love.draw()
     if GameState == "levelSelection" then
-        DrawLevelSel()
+        LevelLogic.DrawLevelSel()
     end
 
     if ShakeAmount > 0 then
@@ -206,7 +103,7 @@ function love.draw()
     end
 
     if GameState == "building" or GameState == "wave" then
-        drawMap()
+        LevelLogic.drawMap()
     end
 
     if GameState == "menu" then
@@ -269,6 +166,13 @@ function love.draw()
             cursor_y = cursor_y + (Button_height + margin)
         end
         love.graphics.setColor(1, 1, 1, 1)
+    end
+
+    if GameState == "building" then
+            love.graphics.setColor(0, 0.8, 0.2)
+            love.graphics.rectangle("fill", waveButton.x, waveButton.y, waveButton.w, waveButton.h, 12)
+            love.graphics.setColor(0, 0, 0)
+            love.graphics.printf("Start Wave", waveButton.x, waveButton.y + 25, waveButton.w, "center")
     end
 
     if GameState == "building" or GameState == "wave" then
@@ -433,7 +337,8 @@ function love.draw()
         end
     end
 
-    if GameState == "wave" or GameState == "building" then
+    if GameState == "wave" then
+        LevelLogic.DrawEnemies()
         for _, enemy in ipairs(EnemiesOnMap) do
             love.graphics.setColor(1, 1, 1, 1)
             love.graphics.draw(enemy.image, enemy.x, enemy.y)
@@ -651,11 +556,18 @@ function DrawTowerUpgrades(tower)
     love.graphics.setColor(1, 1, 1, 1)
 end
 
-function love.keypressed(key)
+function love.keypressed(key,x,y,button)
     if key == "escape" and (GameState == "building" or GameState == "wave") then
         GameState = "menu"
         ShowUpgradeUI = false
         TWdata = nil
+    end
+
+    if GameState == "building" then
+        if x >= waveButton.x and x <= waveButton.x + waveButton.w and y >= waveButton.y and y <= waveButton.y + waveButton.h then
+            LevelLogic.startWave()
+            GameState = "wave"
+        end
     end
 end
 
