@@ -36,7 +36,7 @@ end
 
 function loadLevel()
     for i, level in ipairs(Levels.list) do
-        local l = level  -- capture local copy
+        local l = level
         table.insert(Buttons, NewButton("Level " .. i, function()
             CurrentLevel = l
             GameState = "building"
