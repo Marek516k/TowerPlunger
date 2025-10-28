@@ -1,5 +1,5 @@
 function mys(x, y, button)
-    if button == 1 and Bought and SelectedTower and SelectedTower.image then
+    if button == 1 and Bought and SelectedTower then
         local canPlace = true
         local towerW = SelectedTower.image:getWidth()
         local towerH = SelectedTower.image:getHeight()

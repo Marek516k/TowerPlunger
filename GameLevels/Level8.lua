@@ -359,8 +359,6 @@ Flags = {
     {x = 28, y = 15},
 }
 
-return {
-    waves = Level8,
-    map = Map,
-    flags = Flags
-}
+Level8.map = Map
+Level8.flags = Flags
+return Level8

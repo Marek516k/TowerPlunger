@@ -1,7 +1,6 @@
 love = require("love")
 Enemy = require("Enemies")
 Towers = require("Towers")
-Level1 = require("GameLevels.Level1")
 PathData = require("TowerUpgrades")
 loadStuff = require("Stuff to load")
 mouse = require("mys")
@@ -90,7 +89,7 @@ function createParticle(x, y, color)
 end
 
 function love.draw()
-    if GameState == "levelSelection" then
+    if GameState == "select" then
         LevelLogic.DrawLevelSel()
     end
 
@@ -339,57 +338,6 @@ function love.draw()
 
     if GameState == "wave" then
         LevelLogic.DrawEnemies()
-        for _, enemy in ipairs(EnemiesOnMap) do
-            love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.draw(enemy.image, enemy.x, enemy.y)
-            local maxHealth = enemy.maxHealth or enemy.health
-
-            if enemy.health and maxHealth then
-                local enemyWidth = enemy.image:getWidth()
-                local barWidth = 45
-                local barHeight = 7
-                local barX = enemy.x + (enemyWidth - barWidth) / 2
-                local barY = enemy.y - 12
-                local healthPercent = math.max(0, enemy.health / maxHealth)
-
-                love.graphics.setColor(0.2, 0.2, 0.2, 0.9)
-                love.graphics.rectangle("fill", barX - 2, barY - 2, barWidth + 4, barHeight + 4, 2, 2)
-
-                local r = 1 - healthPercent
-                local g = healthPercent
-
-                love.graphics.setColor(r, g, 0, 1)
-                love.graphics.rectangle("fill", barX, barY, barWidth * healthPercent, barHeight, 2, 2)
-                love.graphics.setColor(1, 1, 1, 0.5)
-                love.graphics.setLineWidth(1)
-                love.graphics.rectangle("line", barX, barY, barWidth, barHeight, 2, 2)
-
-                love.graphics.setColor(1, 1, 1, 1)
-            end
-
-            local mx, my = love.mouse.getPosition()
-            local enemyWidth = enemy.image:getWidth()
-            local enemyHeight = enemy.image:getHeight()
-            local enemyCenterX = enemy.x + enemyWidth / 2
-            local enemyCenterY = enemy.y + enemyHeight / 2
-            local Edist = math.sqrt((mx - enemyCenterX)^2 + (my - enemyCenterY)^2)
-
-            if Edist < 30 then
-                love.graphics.setColor(0.1, 0.1, 0.2, 0.95)
-                love.graphics.rectangle("fill", mx + 10, my - 25, 140, 50, 5, 5)
-                love.graphics.setColor(0.3, 0.7, 1, 1)
-
-                love.graphics.setLineWidth(2)
-                love.graphics.rectangle("line", mx + 10, my - 25, 140, 50, 5, 5)
-
-                love.graphics.setColor(1, 1, 1, 1)
-
-                love.graphics.print(enemy.type or "Enemy", FontSmall, mx + 15, my - 20)
-                love.graphics.print("HP: " .. math.floor(enemy.health or 0) .. "/" .. (maxHealth or 0), FontSmall, mx + 15, my - 2)
-
-                love.graphics.setColor(1, 1, 1, 1)
-            end
-        end
     end
 
     if ShowUpgradeUI and TWdata and (GameState == "wave" or GameState == "building") and Bought == false then
@@ -562,13 +510,6 @@ function love.keypressed(key,x,y,button)
         ShowUpgradeUI = false
         TWdata = nil
     end
-
-    if GameState == "building" then
-        if x >= waveButton.x and x <= waveButton.x + waveButton.w and y >= waveButton.y and y <= waveButton.y + waveButton.h then
-            LevelLogic.startWave()
-            GameState = "wave"
-        end
-    end
 end
 
 function deepCopyTower(original)
@@ -584,8 +525,18 @@ function deepCopyTower(original)
 end
 
 function love.mousepressed(x, y, button,istouch,presses)
+    if GameState == "building" then
+        if x >= waveButton.x and x <= waveButton.x + waveButton.w and y >= waveButton.y and y <= waveButton.y + waveButton.h and button == 1 then
+            LevelLogic.startWave()
+            GameState = "wave"
+        end
+    end
+
+    if GameState == "select" then
+        LevelLogic.CheckLevelSelectorClick(x, y, button)
+    end
+
     mouse(x, y, button)
-    CheckLevelSelectorClick(x, y, button)
 end
 
 function findNearestTargetForTower(tower)
