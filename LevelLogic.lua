@@ -126,18 +126,28 @@ function startWave()
         end
     end
 
-    Spawning = true
+    Spawning = (#PendingSpawns > 0)
     EnemyspawnTimer = 0
     GameState = "wave"
 end
 
 function Enemyupdate(dt)
-    if GameState == "wave" and Spawning then
-        local waveData = CurrentLevel["wave" .. tostring(CurrentWave)]
-        local spawnRate = waveData.spawnRate or 1
+    if not Spawning and EnemiesAlive == 0 then
+        CurrentWave = CurrentWave + 1
+        WaveTransition = 1
+        GameState = "building"
+    end
+
+    if GameState ~= "wave" then return end
+
+    if Spawning then
+        local waveData = CurrentLevel and CurrentLevel["wave" .. tostring(CurrentWave)]
+        local spawnRate = tonumber(waveData.spawnRate)
+        if spawnRate <= 0 then spawnRate = 0.05 end
+
         EnemyspawnTimer = EnemyspawnTimer + dt
 
-        if EnemyspawnTimer >= spawnRate and #PendingSpawns > 0 then
+        while EnemyspawnTimer >= spawnRate and #PendingSpawns > 0 do
             local pending = table.remove(PendingSpawns, 1)
             local eData = Enemy[pending.type]
             if eData and Flags[1] then
@@ -154,44 +164,38 @@ function Enemyupdate(dt)
                     flagIndex = 2
                 })
                 EnemiesAlive = EnemiesAlive + 1
+                EnemyspawnTimer = EnemyspawnTimer - spawnRate
             end
-
-            EnemyspawnTimer = 0
-
-            if #PendingSpawns == 0 then
-                Spawning = false
-            end
+            Spawning = (#PendingSpawns > 0)
         end
     end
 
-    if GameState == "wave" then
-        for i = #EnemiesOnMap, 1, -1 do
-            local e = EnemiesOnMap[i]
-            local f = Flags[e.flagIndex]
+    for i = #EnemiesOnMap, 1, -1 do
+        local e = EnemiesOnMap[i]
+        local f = Flags[e.flagIndex]
 
-            if not f then
-                table.remove(EnemiesOnMap, i)
-                EnemiesAlive = EnemiesAlive - 1
-            else
-                local tx, ty = (f.x - 1) * 64, (f.y - 1) * 64
-                local dx, dy = tx - e.x, ty - e.y
-                local dist = math.sqrt(dx*dx + dy*dy)
+        if not f then
+            table.remove(EnemiesOnMap, i)
+            EnemiesAlive = math.max(0, EnemiesAlive - 1)
+        else
+            local tx, ty = (f.x - 1) * 64, (f.y - 1) * 64
+            local dx, dy = tx - e.x, ty - e.y
+            local dist = math.sqrt(dx*dx + dy*dy)
 
-                if dist < e.speed * dt then
-                    e.x, e.y = tx, ty
-                    e.flagIndex = e.flagIndex + 1
-                    if e.flagIndex > #Flags then
-                        Health = Health - e.damage
-                        table.remove(EnemiesOnMap, i)
-                        EnemiesAlive = EnemiesAlive - 1
-                        if Health <= 0 then
-                            GameState = "gameover"
-                        end
+            if dist < e.speed * dt then
+                e.x, e.y = tx, ty
+                e.flagIndex = e.flagIndex + 1
+                if e.flagIndex > #Flags then
+                    Health = Health - (e.damage or 1)
+                    table.remove(EnemiesOnMap, i)
+                    EnemiesAlive = math.max(0, EnemiesAlive - 1)
+                    if Health <= 0 then
+                        GameState = "gameover"
                     end
-                else
-                    e.x = e.x + (dx/dist) * e.speed * dt
-                    e.y = e.y + (dy/dist) * e.speed * dt
                 end
+            else
+                e.x = e.x + (dx/dist) * e.speed * dt
+                e.y = e.y + (dy/dist) * e.speed * dt
             end
         end
     end

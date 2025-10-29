@@ -17,6 +17,13 @@ function love.load()
 end
 
 function love.update(dt)
+    if GameState == "building" then
+        autoWaveTimer = autoWaveTimer - dt
+        if autoWaveTimer <= 0 then
+            startWave()
+        end
+    end
+
     if UIAlpha < 1 then
         UIAlpha = math.min(1, UIAlpha + dt * 2)
     end
@@ -254,8 +261,6 @@ function love.mousepressed(x, y, button,istouch,presses)
 end
 
 --TODO:
--- fix the bugs finally man
--- really refactor the code a bit
 -- make the font correct size for everithing
 -- Balancing game difficulty and economy
 -- Add sound effects and music

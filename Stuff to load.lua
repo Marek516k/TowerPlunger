@@ -104,6 +104,7 @@ function loading()
     UIAlpha = 0
     WaveTransition = 0
     ShakeAmount = 0
+    autoWaveTimer = 10
 end
 
 return loading
