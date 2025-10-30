@@ -19,16 +19,8 @@ EnemyspawnTimer = 0
 EnemiesAlive = 0
 Health = 100
 
-local ww, wh = love.graphics.getWidth(), love.graphics.getHeight()
-
 GrassImage = love.graphics.newImage("Images/green.png")
 PathImage = love.graphics.newImage("Images/white.png")
-
-local Text = "Select Level"
-local font = love.graphics.getFont()
-local textWidth = font:getWidth(Text) * 3
-local Tx = (ww - textWidth) / 2
-local Ty = 100
 
 local function NewButton(text, fn)
     return { text = text, fn = fn }
@@ -61,38 +53,50 @@ function loadLevel()
 end
 
 function DrawLevelSel()
+    local ww, wh = love.graphics.getWidth(), love.graphics.getHeight()
+    local font = love.graphics.getFont()
     ButtonRects = {}
+
+    local title = "Select Level"
+    local titleScale = 3
+    local titleW = font:getWidth(title) * titleScale
+    local titleH = font:getHeight() * titleScale
     love.graphics.setColor(0.2, 0.8, 1)
-    love.graphics.print(Text, Tx, Ty, 0, 3, 3)
+    love.graphics.print(title, ww / 2 - titleW / 2, 100, 0, titleScale, titleScale)
     love.graphics.setColor(1, 1, 1)
 
+    local buttonsPerRow = 5
     local buttonRows = 0
+    local bw, bh = ww / 9, wh / 7
+    local startX = (ww - (bw * buttonsPerRow + (buttonsPerRow - 1) * 40)) / 2
+    local yStart = 200
+    local ySpace = 200
+    local xSpace = 40
 
     for i, button in ipairs(Buttons) do
-        local bw, bh = ww / 9, wh / 7
-        local startX, xSpace, ySpace = 140, 200, 400
-        local by = 200 + (ySpace * buttonRows)
-        local bx = startX + (i - 1 - (buttonRows * 5)) * (bh + xSpace)
-
-        love.graphics.setColor(0, 0, 0)
-        local tw = font:getWidth(button.text)
-        local th = font:getHeight()
-        love.graphics.print(button.text, bx + (bw - tw)/2, by + (bh - th)/2)
-
-        love.graphics.setColor(1, 1, 1)
-        love.graphics.rectangle("line", bx, by, bw, bh, 12)
+        local bx = startX + ((i - 1) % buttonsPerRow) * (bw + xSpace)
+        local by = yStart + math.floor((i - 1) / buttonsPerRow) * (bh + ySpace)
 
         local mx, my = love.mouse.getPosition()
         local hovered = mx >= bx and mx <= bx + bw and my >= by and my <= by + bh
 
         if hovered then
-            love.graphics.setColor(0.9,0.5,0.3)
+            love.graphics.setColor(0.9, 0.5, 0.3)
+            love.graphics.rectangle("fill", bx, by, bw, bh, 12)
+        else
+            love.graphics.setColor(0, 0, 0, 0.6)
             love.graphics.rectangle("fill", bx, by, bw, bh, 12)
         end
 
-        table.insert(ButtonRects, {x = bx, y = by, width = bw, height = bh, callback = button.fn})
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.rectangle("line", bx, by, bw, bh, 12)
 
-        if i % 5 == 0 then buttonRows = buttonRows + 1 end
+        local tw = font:getWidth(button.text)
+        local th = font:getHeight()
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.print(button.text, bx + (bw - tw) / 2, by + (bh - th) / 2)
+
+        table.insert(ButtonRects, {x = bx, y = by, width = bw, height = bh, callback = button.fn})
     end
 end
 
@@ -136,6 +140,7 @@ function Enemyupdate(dt)
         CurrentWave = CurrentWave + 1
         WaveTransition = 1
         GameState = "building"
+        autoWaveTimer = 10
     end
 
     if GameState ~= "wave" then return end

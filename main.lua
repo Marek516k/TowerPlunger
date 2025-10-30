@@ -18,10 +18,7 @@ end
 
 function love.update(dt)
     if GameState == "building" then
-        autoWaveTimer = autoWaveTimer - dt
-        if autoWaveTimer <= 0 then
-            startWave()
-        end
+        UpdateCountdown(dt)
     end
 
     if UIAlpha < 1 then
@@ -99,7 +96,16 @@ function createParticle(x, y, color)
     })
 end
 
+function DrawCountdown()
+    local ww, wh = love.graphics.getWidth(), love.graphics.getHeight()
+    local secondsLeft = math.ceil(autoWaveTimer)
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.printf("The wave starts in " .. secondsLeft, 0, wh/2 - 40, ww, "center")
+end
+
 function love.draw()
+    local ww, wh = love.graphics.getWidth(), love.graphics.getHeight()
+
     if GameState == "select" then
         LevelLogic.DrawLevelSel()
     end
@@ -125,6 +131,10 @@ function love.draw()
         love.graphics.rectangle("fill", waveButton.x, waveButton.y, waveButton.w, waveButton.h, 12)
         love.graphics.setColor(0, 0, 0)
         love.graphics.printf("Start Wave", waveButton.x, waveButton.y + 25, waveButton.w, "center")
+
+        if autoWaveTimer < 5 then
+            DrawCountdown()
+        end
     end
 
     if GameState == "building" or GameState == "wave" then
@@ -163,6 +173,7 @@ function love.draw()
 
         local subText = "Wave " .. CurrentWave .. " reached"
         local subW = Font:getWidth(subText)
+        local subH = Font:getHeight(subText)
 
         love.graphics.print(subText, Font, ww/2 - subW/2, wh/2 + textH)
         love.graphics.setColor(1, 1, 1, 1)
@@ -258,6 +269,13 @@ function love.mousepressed(x, y, button,istouch,presses)
     end
 
     mouse(x, y, button)
+end
+
+function UpdateCountdown(dt)
+    autoWaveTimer = autoWaveTimer - dt
+    if autoWaveTimer <= 0 then
+        startWave()
+    end
 end
 
 --TODO:

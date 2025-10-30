@@ -4,4 +4,4 @@ Set fso = CreateObject("Scripting.FileSystemObject")
 folder = fso.GetParentFolderName(WScript.ScriptFullName)
 shell.CurrentDirectory = folder
 
-shell.Run "love.exe .", 1, False
+shell.Run "love2d\love.exe .", 1, False
