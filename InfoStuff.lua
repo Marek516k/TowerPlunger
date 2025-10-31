@@ -1,4 +1,10 @@
+local FontTitle = love.graphics.newFont(20, "light")
+local FontNormal = love.graphics.newFont(20, "light")
+local FontSmall = love.graphics.newFont(18, "light")
+local FontTiny = love.graphics.newFont(16, "light")
+
 function utilities()
+    local ww, wh = love.graphics.getWidth(), love.graphics.getHeight()
     local shopX = ww - 270
     local shopY = 80
     local shopW = 240
@@ -10,7 +16,8 @@ function utilities()
     love.graphics.setColor(0.15, 0.15, 0.25, 0.95)
     love.graphics.rectangle("fill", shopX - 10, shopY - 30, shopW + 20, (#Shop * (buttonH + marginS)) + 40, 15, 15)
     love.graphics.setColor(0.3, 0.7, 1, 1)
-    love.graphics.print("TOWER SHOP", Font, shopX + 30, shopY - 20)
+    love.graphics.setFont(FontTitle)
+    love.graphics.print("TOWER SHOP", shopX + (shopW / 2 - FontTitle:getWidth("TOWER SHOP") / 2), shopY - 25)
     love.graphics.setColor(1, 1, 1, 1)
 
     for i, Button in ipairs(Shop) do
@@ -43,40 +50,56 @@ function utilities()
         love.graphics.setColor(0.4 + Button.hover * 0.3, 0.5 + Button.hover * 0.3, 0.7, 1)
         love.graphics.setLineWidth(2)
         love.graphics.rectangle("line", bx + offsetX, by + offsetY, shopW * scale, buttonH * scale, 8, 8)
-        love.graphics.setColor(1, 1, 1, 1)
 
         if Button.image then
+            love.graphics.setColor(1, 1, 1, 1)
             love.graphics.draw(Button.image, bx + 15, by + 15, 0, 0.6, 0.6)
         end
 
-        love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.print(Button.text, FontSmall, bx + 90, by + 45)
-        Button.now = love.mouse.isDown(1)
+        local text = Button.text
+        love.graphics.setFont(FontNormal)
 
+        if FontNormal:getWidth(text) > (shopW - 40) then
+            love.graphics.setFont(FontSmall)
+        end
+
+        if FontSmall:getWidth(text) > (shopW - 40) then
+            love.graphics.setFont(FontTiny)
+        end
+
+        local font = love.graphics.getFont()
+        local textW = font:getWidth(text)
+        local textH = font:getHeight()
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.print(text, bx + (shopW - textW) / 2, by + (buttonH - textH) / 2)
+
+        Button.now = love.mouse.isDown(1)
         if Button.now and not Button.last and hot then
             Button.fn(Button)
         end
+
         cursorS_y = cursorS_y + (buttonH + marginS)
     end
 
+    love.graphics.setFont(FontNormal)
     love.graphics.setColor(0.15, 0.15, 0.25, 0.95)
     love.graphics.rectangle("fill", 5, 5, 250, 170, 10, 10)
-
     love.graphics.setColor(0.3, 0.7, 1, 1)
     love.graphics.setLineWidth(2)
     love.graphics.rectangle("line", 5, 5, 250, 170, 10, 10)
+
     love.graphics.setColor(1, 0.9, 0.3, 1)
-    love.graphics.print("Money: $" .. Money, Font, 15, 15)
+    love.graphics.printf("Money: $" .. Money, 15, 15, 220, "left")
 
     local healthColor = {1 - (100 - Health) / 100, Health / 100, 0, 1}
     love.graphics.setColor(healthColor)
-    love.graphics.print("Health: " .. Health, Font, 15, 50)
+    love.graphics.printf("Health: " .. Health, 15, 50, 220, "left")
 
     love.graphics.setColor(0.5, 1, 0.5, 1)
-    love.graphics.print("Wave: " .. CurrentWave, Font, 15, 85)
+    love.graphics.printf("Wave: " .. CurrentWave, 15, 85, 220, "left")
 
     love.graphics.setColor(1, 0.5, 0.5, 1)
-    love.graphics.print("Enemies: " .. EnemiesAlive, Font, 15, 120)
+    love.graphics.printf("Enemies: " .. EnemiesAlive, 15, 120, 220, "left")
 
     love.graphics.setColor(1, 1, 1, 1)
 end
