@@ -1,6 +1,10 @@
 UpgradeLogic = require("UpgradeLogic")
 
 function loading()
+    love.window.setMode(1920, 1080, {resizable=false, vsync=true})
+    ww = love.graphics.getWidth()
+    wh = love.graphics.getHeight()
+
     PendingSpawns = {}
     Bullets = {}
     Buttons = {}
@@ -9,6 +13,10 @@ function loading()
     TowersOnMap = {}
     TWdata = {}
     Particles = {}
+    waveButton = { x = 920, y = 30, w = 200, h = 80 }
+    VictoryScreenButtons = {x = ww/2 - 100, y = wh/2 + 100, w = 200, h = 50}
+    GameOverButton = {x = ww/2 - 100, y = wh/2 + 100, w = 200, h = 50}
+
     SelectedTower = nil
     SelectedTowerForUpgrade = nil
     GameStarted = false
@@ -84,7 +92,6 @@ function loading()
                 UpgradeLogic(2,TWdata)
             end))
 
-    love.window.setMode(1920, 1080, {resizable=false, vsync=true})
     NotPossible = love.audio.newSource("sounds/Nuh-uh.wav", "static")
     Song = love.audio.newSource("sounds/Song.mp3", "static")
     SongState = false
@@ -93,14 +100,13 @@ function loading()
     Timer = 0
     Interval = 0.35
     Money = 50000
+    Health = 100
     GameState = "menu"
     Placed = false
     Slowness = false
     Font = love.graphics.newFont(25)
     FontLarge = love.graphics.newFont(48)
     FontSmall = love.graphics.newFont(18)
-    ww = love.graphics.getWidth()
-    wh = love.graphics.getHeight()
     UIAlpha = 0
     WaveTransition = 0
     ShakeAmount = 0

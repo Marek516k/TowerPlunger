@@ -1,7 +1,7 @@
 Enemy = {
     zombie = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 80,
+        speed = 8000,
         health = 100,
         damage = 10,
         reward = 10,
@@ -25,7 +25,7 @@ Enemy = {
     },
     hidden = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 75,
+        speed = 7500,
         health = 120,
         damage = 15,
         reward = 30,

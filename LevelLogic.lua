@@ -17,7 +17,6 @@ PendingSpawns = {}
 Spawning = false
 EnemyspawnTimer = 0
 EnemiesAlive = 0
-Health = 100
 
 GrassImage = love.graphics.newImage("Images/green.png")
 PathImage = love.graphics.newImage("Images/white.png")
