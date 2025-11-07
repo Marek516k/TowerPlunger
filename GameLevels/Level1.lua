@@ -154,14 +154,14 @@ Level1 = {
         spawnRate = 1,
         reward = 1000
     },
-    wawe19 = {
+    wave19 = {
         enemies = {
             {type = "Ultimateboss", count = 3}
         },
         spawnRate = 1,
         reward = 1000
     },
-    wawe20 = {
+    wave20 = {
         enemies = {
             {type = "Ultimateboss", count = 5},
             {type = "hiddenBrainrot", count = 10}
