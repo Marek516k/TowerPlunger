@@ -9,11 +9,12 @@ Path = {}
 Flags = {}
 
 CurrentWave = 1
-local CurrentLevel = nil
+CurrentLevel = nil
 
 EnemiesOnMap = {}
 PendingSpawns = {}
 
+Victory = false
 Spawning = false
 EnemyspawnTimer = 0
 EnemiesAlive = 0
@@ -60,6 +61,7 @@ function DrawLevelSel()
     local titleScale = 3
     local titleW = font:getWidth(title) * titleScale
     local titleH = font:getHeight() * titleScale
+
     love.graphics.setColor(0.2, 0.8, 1)
     love.graphics.print(title, ww / 2 - titleW / 2, 100, 0, titleScale, titleScale)
     love.graphics.setColor(1, 1, 1)
@@ -103,6 +105,7 @@ function drawMap()
     for _, grass in ipairs(Grass) do
         love.graphics.draw(GrassImage, (grass.x - 1) * 64, (grass.y - 1) * 64)
     end
+
     for _, path in ipairs(Path) do
         love.graphics.setColor(1, 1, 1, 0.9)
         love.graphics.draw(PathImage, (path.x - 1) * 64, (path.y - 1) * 64)
@@ -122,6 +125,12 @@ end
 function startWave()
     local waveKey = "wave" .. tostring(CurrentWave)
     local waveData = CurrentLevel[waveKey]
+
+    if waveData == nil then
+        Victory = true
+        CurrentLevel = nil
+        return
+    end
 
     for _, enemyGroup in ipairs(waveData.enemies) do
         for i = 1, enemyGroup.count do
@@ -147,6 +156,7 @@ function Enemyupdate(dt)
     if Spawning then
         local waveData = CurrentLevel and CurrentLevel["wave" .. tostring(CurrentWave)]
         local spawnRate = tonumber(waveData.spawnRate)
+
         if spawnRate <= 0 then spawnRate = 0.05 end
 
         EnemyspawnTimer = EnemyspawnTimer + dt

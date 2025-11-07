@@ -11,6 +11,7 @@ utilities = require("InfoStuff")
 TowerLogic = require("TowerLogic")
 
 function love.load()
+    GameState = "menu"
     loadStuff()
     LevelLogic.loadLevel()
 end
@@ -109,6 +110,49 @@ function love.draw()
         LevelLogic.DrawLevelSel()
     end
 
+    if GameState == "menu" then
+        Menu()
+    end
+
+    if Victory then
+        love.graphics.setColor(0, 0, 0, 0.8)
+        love.graphics.rectangle("fill", 0, 0, ww, wh)
+        love.graphics.setColor(0, 1, 0.3, 1)
+
+        local text = "VICTORY!"
+        local textW = FontLarge:getWidth(text)
+        local textH = FontLarge:getHeight(text)
+        love.graphics.print(text, FontLarge, ww/2 - textW/2, wh/2 - textH/2)
+
+        love.graphics.setColor(1, 1, 1, 0.8)
+        local subText = "All waves cleared!"
+        local subW = Font:getWidth(subText)
+        love.graphics.print(subText, Font, ww/2 - subW/2, wh/2 + textH)
+        love.graphics.setColor(1, 1, 1, 1)
+
+        local mx, my = love.mouse.getPosition()
+        local isHovered = mx > VictoryButton.x and mx < VictoryButton.x + VictoryButton.w and my > VictoryButton.y and my < VictoryButton.y + VictoryButton.h
+
+        if isHovered then
+            love.graphics.setColor(0, 0.9, 0.4)
+        else
+            love.graphics.setColor(0, 0.8, 0.15)
+        end
+
+        love.graphics.rectangle("fill", VictoryButton.x, VictoryButton.y, VictoryButton.w, VictoryButton.h, 12, 12)
+        love.graphics.setColor(0, 0.5, 0.1)
+        love.graphics.setLineWidth(3)
+        love.graphics.rectangle("line", VictoryButton.x, VictoryButton.y, VictoryButton.w, VictoryButton.h, 12, 12)
+
+        love.graphics.setColor(0, 0, 0)
+        local btnText = "Return to Menu"
+        local font = love.graphics.getFont()
+        local textHeight = font:getHeight()
+        local textY = VictoryButton.y + (VictoryButton.h - textHeight) / 2
+        love.graphics.printf(btnText, VictoryButton.x, textY, VictoryButton.w, "center")
+        return
+    end
+
     if ShakeAmount > 0 then
         love.graphics.push()
         love.graphics.translate(
@@ -119,10 +163,6 @@ function love.draw()
 
     if GameState == "building" or GameState == "wave" then
         LevelLogic.drawMap()
-    end
-
-    if GameState == "menu" then
-        Menu()
     end
 
     if GameState == "building" then
@@ -198,44 +238,6 @@ function love.draw()
         local textHeight = font:getHeight()
         local textY = GameOverButton.y + (GameOverButton.h - textHeight) / 2
         love.graphics.printf(text2, GameOverButton.x, textY, GameOverButton.w, "center")
-    end
-
-    if GameState == "victory" then
-        love.graphics.setColor(0, 0, 0, 0.8)
-        love.graphics.rectangle("fill", 0, 0, ww, wh)
-        love.graphics.setColor(0, 1, 0.3, 1)
-
-        local text = "VICTORY!"
-        local textW = FontLarge:getWidth(text)
-        local textH = FontLarge:getHeight(text)
-        love.graphics.print(text, FontLarge, ww/2 - textW/2, wh/2 - textH/2)
-
-        love.graphics.setColor(1, 1, 1, 0.8)
-        local subText = "All waves cleared!"
-        local subW = Font:getWidth(subText)
-        love.graphics.print(subText, Font, ww/2 - subW/2, wh/2 + textH)
-        love.graphics.setColor(1, 1, 1, 1)
-
-        local mx, my = love.mouse.getPosition()
-        local isHovered = mx > VictoryScreenButtons.x and mx < VictoryScreenButtons.x + VictoryScreenButtons.w and my > VictoryScreenButtons.y and my < VictoryScreenButtons.y + VictoryScreenButtons.h
-
-        if isHovered then
-            love.graphics.setColor(0, 0.9, 0.4)
-        else
-            love.graphics.setColor(0, 0.8, 0.15)
-        end
-
-        love.graphics.rectangle("fill", VictoryScreenButtons.x, VictoryScreenButtons.y, VictoryScreenButtons.w, VictoryScreenButtons.h, 12, 12)
-        love.graphics.setColor(0, 0.5, 0.1)
-        love.graphics.setLineWidth(3)
-        love.graphics.rectangle("line", VictoryScreenButtons.x, VictoryScreenButtons.y, VictoryScreenButtons.w, VictoryScreenButtons.h, 12, 12)
-
-        love.graphics.setColor(0, 0, 0)
-        local btnText = "Return to Menu"
-        local font = love.graphics.getFont()
-        local textHeight = font:getHeight()
-        local textY = VictoryScreenButtons.y + (VictoryScreenButtons.h - textHeight) / 2
-        love.graphics.printf(btnText, VictoryScreenButtons.x, textY, VictoryScreenButtons.w, "center")
     end
 
     if GameState == "wave" or GameState == "building" then
@@ -330,11 +332,12 @@ function love.mousepressed(x, y, button,istouch,presses)
         end
     end
 
-    if GameState == "victory" then
-        if x >= VictoryScreenButtons.x and x <= VictoryScreenButtons.x + VictoryScreenButtons.w and y >= VictoryScreenButtons.y and y <= VictoryScreenButtons.y + VictoryScreenButtons.h and button == 1 then
+    if Victory then
+        if x >= VictoryButton.x and x <= VictoryButton.x + VictoryButton.w and y >= VictoryButton.y and y <= VictoryButton.y + VictoryButton.h and button == 1 then
+            GameState = "select"
+            Victory = false
             GameStarted = false
             loadStuff()
-            GameState = "select"
         end
     end
 
@@ -347,6 +350,7 @@ end
 
 function UpdateCountdown(dt)
     autoWaveTimer = autoWaveTimer - dt
+
     if autoWaveTimer <= 0 then
         startWave()
     end
