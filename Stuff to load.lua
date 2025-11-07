@@ -14,7 +14,7 @@ function loading()
     TWdata = {}
     Particles = {}
     waveButton = { x = 920, y = 30, w = 200, h = 80 }
-    VictoryScreenButtons = {x = ww/2 - 100, y = wh/2 + 100, w = 200, h = 50}
+    VictoryButton = {x = ww/2 - 100, y = wh/2 + 100, w = 200, h = 50}
     GameOverButton = {x = ww/2 - 100, y = wh/2 + 100, w = 200, h = 50}
 
     SelectedTower = nil
@@ -100,8 +100,7 @@ function loading()
     Timer = 0
     Interval = 0.35
     Money = 50000
-    Health = 100
-    GameState = "menu"
+    Health = 100000
     Placed = false
     Slowness = false
     Font = love.graphics.newFont(25)
