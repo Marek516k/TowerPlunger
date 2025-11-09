@@ -126,12 +126,6 @@ function startWave()
     local waveKey = "wave" .. tostring(CurrentWave)
     local waveData = CurrentLevel[waveKey]
 
-    if waveData == nil then
-        Victory = true
-        CurrentLevel = nil
-        return
-    end
-
     for _, enemyGroup in ipairs(waveData.enemies) do
         for i = 1, enemyGroup.count do
             table.insert(PendingSpawns, {type = enemyGroup.type})
@@ -145,18 +139,27 @@ end
 
 function Enemyupdate(dt)
     if not Spawning and EnemiesAlive == 0 then
-        CurrentWave = CurrentWave + 1
-        WaveTransition = 1
-        GameState = "building"
-        autoWaveTimer = 10
+        local nextWave = CurrentLevel and CurrentLevel["wave" .. tostring(CurrentWave + 1)]
+
+        if not nextWave then
+            Victory = true
+            GameState = "victory"
+            return
+        else
+            CurrentWave = CurrentWave + 1
+            WaveTransition = 1
+            GameState = "building"
+            autoWaveTimer = 10
+        end
     end
 
     if GameState ~= "wave" then return end
 
     if Spawning then
         local waveData = CurrentLevel and CurrentLevel["wave" .. tostring(CurrentWave)]
-        local spawnRate = tonumber(waveData.spawnRate)
+        if not waveData then return end
 
+        local spawnRate = tonumber(waveData.spawnRate or 0.05)
         if spawnRate <= 0 then spawnRate = 0.05 end
 
         EnemyspawnTimer = EnemyspawnTimer + dt
@@ -194,7 +197,7 @@ function Enemyupdate(dt)
         else
             local tx, ty = (f.x - 1) * 64, (f.y - 1) * 64
             local dx, dy = tx - e.x, ty - e.y
-            local dist = math.sqrt(dx*dx + dy*dy)
+            local dist = math.sqrt(dx * dx + dy * dy)
 
             if dist < e.speed * dt then
                 e.x, e.y = tx, ty
@@ -208,8 +211,8 @@ function Enemyupdate(dt)
                     end
                 end
             else
-                e.x = e.x + (dx/dist) * e.speed * dt
-                e.y = e.y + (dy/dist) * e.speed * dt
+                e.x = e.x + (dx / dist) * e.speed * dt
+                e.y = e.y + (dy / dist) * e.speed * dt
             end
         end
     end

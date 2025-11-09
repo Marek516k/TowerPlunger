@@ -317,6 +317,16 @@ function love.keypressed(key,x,y,button)
 end
 
 function love.mousepressed(x, y, button,istouch,presses)
+    if Victory then
+        if x >= VictoryButton.x and x <= VictoryButton.x + VictoryButton.w and y >= VictoryButton.y and y <= VictoryButton.y + VictoryButton.h and button == 1 then
+            GameState = "select"
+            Victory = false
+            GameStarted = false
+            loadStuff()
+            return
+        end
+    end
+
     if GameState == "building" then
         if x >= waveButton.x and x <= waveButton.x + waveButton.w and y >= waveButton.y and y <= waveButton.y + waveButton.h and button == 1 then
             LevelLogic.startWave()
@@ -329,15 +339,6 @@ function love.mousepressed(x, y, button,istouch,presses)
             GameStarted = false
             loadStuff()
             GameState = "menu"
-        end
-    end
-
-    if Victory then
-        if x >= VictoryButton.x and x <= VictoryButton.x + VictoryButton.w and y >= VictoryButton.y and y <= VictoryButton.y + VictoryButton.h and button == 1 then
-            GameState = "select"
-            Victory = false
-            GameStarted = false
-            loadStuff()
         end
     end
 

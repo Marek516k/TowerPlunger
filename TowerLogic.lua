@@ -102,8 +102,6 @@ function createProjectile(startX, startY, targetX, targetY, speed, damage, pierc
     }
 end
 
-
-
 function updateSlowEffects(dt)
     for i = 1, #EnemiesOnMap do
         local enemy = EnemiesOnMap[i]
