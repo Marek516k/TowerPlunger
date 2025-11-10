@@ -1,4 +1,4 @@
-UpgradeLogic = require("UpgradeLogic")
+Ulogic = require("UpgradeLogic").Ulogic
 
 function loading()
     love.window.setMode(1920, 1080, {resizable=false, vsync=true})
@@ -13,6 +13,7 @@ function loading()
     TowersOnMap = {}
     TWdata = {}
     Particles = {}
+    Explosions = {}
     waveButton = { x = 920, y = 30, w = 200, h = 80 }
     VictoryButton = {x = ww/2 - 100, y = wh/2 + 100, w = 200, h = 50}
     GameOverButton = {x = ww/2 - 100, y = wh/2 + 100, w = 200, h = 50}
@@ -83,13 +84,13 @@ function loading()
         table.insert(UpgradeButtons, NewButton(
             "Upgrade Path 1",
             function ()
-                UpgradeLogic(1,TWdata)
+                Ulogic(1,TWdata)
             end))
 
         table.insert(UpgradeButtons, NewButton(
             "Upgrade Path 2",
             function ()
-                UpgradeLogic(2,TWdata)
+                Ulogic(2,TWdata)
             end))
 
     NotPossible = love.audio.newSource("sounds/Nuh-uh.wav", "static")

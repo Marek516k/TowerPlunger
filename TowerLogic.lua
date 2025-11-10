@@ -213,6 +213,7 @@ function processProjectileCollisions(proj)
 
                 if proj.splashRadius > 0 then
                     processSplashDamage(proj, enemy, hasSlow)
+                    createExplosion(proj.x, proj.y, proj.splashRadius)
                 end
             end
 

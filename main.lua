@@ -6,7 +6,7 @@ loadStuff = require("Stuff to load")
 mouse = require("mys")
 LevelLogic = require("LevelLogic")
 Menu = require("Menu")
-DrawTowerUpgrades = require("DrawTowerUpg")
+DrawT_ups = require("UpgradeLogic").DrawT_ups
 utilities = require("InfoStuff")
 TowerLogic = require("TowerLogic")
 
@@ -44,6 +44,18 @@ function love.update(dt)
             p.alpha = p.life / p.maxLife
         end
     end
+
+    for i = #Explosions, 1, -1 do
+        local e = Explosions[i]
+        e.life = e.life - dt
+        if e.life <= 0 then
+            table.remove(Explosions, i)
+        else
+            local t = 1 - (e.life / e.maxLife)
+            e.radius = e.maxRadius * t
+        end
+    end
+
 
     if GameState == "wave" then
         LevelLogic.Enemyupdate(dt)
@@ -95,6 +107,18 @@ function createParticle(x, y, color)
         alpha = 1
     })
 end
+
+function createExplosion(x, y, radius)
+    table.insert(Explosions, {
+        x = x,
+        y = y,
+        radius = 0,
+        maxRadius = radius * 0.9,
+        life = 0.4,
+        maxLife = 0.4,
+    })
+end
+
 
 function DrawCountdown()
     local ww, wh = love.graphics.getWidth(), love.graphics.getHeight()
@@ -164,6 +188,15 @@ function love.draw()
     if GameState == "building" or GameState == "wave" then
         LevelLogic.drawMap()
     end
+
+    for _, e in ipairs(Explosions) do
+        local alpha = e.life / e.maxLife
+        love.graphics.setColor(1, 0.5, 0, alpha * 0.3)
+        love.graphics.circle("fill", e.x, e.y, e.radius)
+        love.graphics.setColor(1, 0.9, 0.4, alpha * 0.4)
+        love.graphics.circle("line", e.x, e.y, e.radius * 0.8)
+    end
+    love.graphics.setColor(1, 1, 1, 1)
 
     if GameState == "building" then
         love.graphics.setColor(0, 0.8, 0.2)
@@ -286,7 +319,7 @@ function love.draw()
     end
 
     if ShowUpgradeUI and TWdata and (GameState == "wave" or GameState == "building") and Bought == false then
-        DrawTowerUpgrades(TWdata)
+        DrawT_ups(TWdata)
     end
 
     if WaveTransition > 0 then
