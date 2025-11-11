@@ -184,6 +184,24 @@ function DrawT_ups(tower)
     end
 
     if hoveredNextLevelData then
+
+        local upgradeCost = hoveredNextLevelData.upgradeCost or 0
+        local costText = "Cost: $" .. tostring(upgradeCost)
+
+        love.graphics.setFont(FontButton)
+        local costW = FontButton:getWidth(costText)
+        local costX = statsX + (statsWidth - costW) / 2
+        local costY = statsY + statsHeight - 30
+
+        if Money < upgradeCost then
+            love.graphics.setColor(1, 0.3, 0.3)
+        else
+            love.graphics.setColor(0.3, 1, 0.3)
+        end
+
+        love.graphics.print(costText, costX, costY)
+        love.graphics.setColor(1, 1, 1)
+
         local nextDmg = hoveredNextLevelData.dmg or 0
         local nextFireRate = hoveredNextLevelData.fireRate or 0
         local nextRange = hoveredNextLevelData.range or 0

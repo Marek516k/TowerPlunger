@@ -305,11 +305,16 @@ function love.draw()
             local mx, my = love.mouse.getPosition()
             local dist = math.sqrt((mx - tw.x)^2 + (my - tw.y)^2)
 
-            if dist < 41 and love.mouse.isDown(1) then
-                TWdata = tw
-                ShowUpgradeUI = true
+            if love.mouse.isDown(1) then
+                if dist < 41 and not ShowUpgradeUI and not AnotherMenuOpen then
+                    TWdata = tw
+                    ShowUpgradeUI = true
+                    AnotherMenuOpen = true
+                end
             elseif love.mouse.isDown(2) then
                 ShowUpgradeUI = false
+                AnotherMenuOpen = false
+                TWdata = nil
             end
         end
     end
@@ -318,8 +323,13 @@ function love.draw()
         LevelLogic.DrawEnemies()
     end
 
-    if ShowUpgradeUI and TWdata and (GameState == "wave" or GameState == "building") and Bought == false then
+    if ShowUpgradeUI and TWdata and (GameState == "wave" or GameState == "building") and not Bought then
+        AnotherMenuOpen = true
         DrawT_ups(TWdata)
+    else
+        if not ShowUpgradeUI then
+            AnotherMenuOpen = false
+        end
     end
 
     if WaveTransition > 0 then
@@ -391,8 +401,7 @@ function UpdateCountdown(dt)
 end
 
 --TODO:
--- make the font correct size for everithing
+-- pictures and sound effects and music
 -- Balancing game difficulty and economy
--- Add sound effects and music
 -- bug fixes if there are any to fix
 -- user feedback stuff
