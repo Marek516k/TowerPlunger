@@ -9,7 +9,7 @@ Enemy = {
     },
     fastZombie = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 250,
+        speed = 200,
         health = 60,
         damage = 20,
         reward = 15,
@@ -89,7 +89,7 @@ Enemy = {
     },
     Fastboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 900,
+        speed = 350,
         health = 2700,
         damage = 25,
         reward = 300,
