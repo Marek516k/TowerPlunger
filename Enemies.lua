@@ -1,7 +1,7 @@
 Enemy = {
     zombie = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 8000,
+        speed = 80,
         health = 100,
         damage = 10,
         reward = 10,
@@ -25,7 +25,7 @@ Enemy = {
     },
     hidden = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 7500,
+        speed = 75,
         health = 120,
         damage = 15,
         reward = 30,
@@ -89,7 +89,7 @@ Enemy = {
     },
     Fastboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 1150,
+        speed = 900,
         health = 2700,
         damage = 25,
         reward = 300,
