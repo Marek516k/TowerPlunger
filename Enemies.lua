@@ -53,7 +53,7 @@ Enemy = {
         health = 160,
         damage = 20,
         reward = 45,
-        traits = "hidden,armored"
+        traits = "hidden", "armored"
     },
     slime = {
         image = love.graphics.newImage("Images/Cannon.png"),
@@ -117,7 +117,7 @@ Enemy = {
         health = 7067,
         damage = 67,
         reward = 1067,
-        traits = "hidden,armored"
+        traits = "hidden", "armored"
     },
     Destroyer = {
         image = love.graphics.newImage("Images/Cannon.png"),
@@ -141,7 +141,7 @@ Enemy = {
         health = 50000,
         damage = 500,
         reward = 4000,
-        traits = "hidden,armored"
+        traits = "hidden", "armored"
     },
     YourNightmare = {
         image = love.graphics.newImage("Images/Cannon.png"),
