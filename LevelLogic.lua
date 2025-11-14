@@ -3,16 +3,14 @@ local Enemy = require("Enemies")
 
 local Buttons = {}
 local ButtonRects = {}
-
 Grass = {}
 Path = {}
 Flags = {}
+EnemiesOnMap = {}
+PendingSpawns = {}
 
 CurrentWave = 1
 CurrentLevel = nil
-
-EnemiesOnMap = {}
-PendingSpawns = {}
 
 Victory = false
 Spawning = false
@@ -150,6 +148,7 @@ function Enemyupdate(dt)
             WaveTransition = 1
             GameState = "building"
             autoWaveTimer = 10
+            Money = Money + CurrentLevel["wave" .. tostring(CurrentWave)].reward
         end
     end
 
