@@ -150,7 +150,7 @@ function applySlowEffect(enemy)
     if not enemy.originalSpeed then
         enemy.originalSpeed = enemy.speed
     end
-    enemy.speed = enemy.originalSpeed * 0.8
+    enemy.speed = enemy.originalSpeed * 0.7
     enemy.slowDuration = 3.0
 end
 
