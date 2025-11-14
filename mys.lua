@@ -18,7 +18,6 @@ function mys(x, y, button)
             local tH = t.tower.image:getHeight()
             local tX = t.x - tW / 2
             local tY = t.y - tH / 2
-
             if newX < tX + tW and newX + towerW > tX and newY < tY + tH and newY + towerH > tY then
                 love.audio.play(NotPossible)
                 canPlace = false
