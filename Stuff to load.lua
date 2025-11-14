@@ -100,8 +100,8 @@ function loading()
     Bought = false
     Timer = 0
     Interval = 0.35
-    Money = 50000
-    Health = 100000
+    Money = 500
+    Health = 150
     Placed = false
     Slowness = false
     Font = love.graphics.newFont(25)
