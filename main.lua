@@ -401,6 +401,7 @@ function UpdateCountdown(dt)
 end
 
 --TODO:
+-- fix tower hitting hidden enemies when they shouldn't be able to, wave button appearing after u close menu is a mistake
 -- pictures and sound effects and music
 -- Balancing game difficulty and economy
 -- bug fixes if there are any to fix

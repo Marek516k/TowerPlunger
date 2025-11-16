@@ -1,6 +1,6 @@
 Enemy = {
     zombie = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/zombie.png"),
         speed = 80,
         health = 100,
         damage = 10,
@@ -8,7 +8,7 @@ Enemy = {
         traits = "none"
     },
     fastZombie = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/fastZombie.png"),
         speed = 200,
         health = 60,
         damage = 20,
@@ -16,7 +16,7 @@ Enemy = {
         traits = "none"
     },
     tank = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/tank.png"),
         speed = 55,
         health = 380,
         damage = 20,
@@ -24,7 +24,7 @@ Enemy = {
         traits = "armored"
     },
     hidden = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/hidden.png"),
         speed = 75,
         health = 120,
         damage = 15,
@@ -81,7 +81,7 @@ Enemy = {
     },
     Normalboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 50,
+        speed = 70,
         health = 1600,
         damage = 20,
         reward = 150,
@@ -97,7 +97,7 @@ Enemy = {
     },
     Tankboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 35,
+        speed = 55,
         health = 6000,
         damage = 50,
         reward = 400,
@@ -105,7 +105,7 @@ Enemy = {
     },
     Hiddenboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 70,
+        speed = 85,
         health = 1100,
         damage = 40,
         reward = 600,
@@ -161,7 +161,7 @@ Enemy = {
     },
     Ultimateboss = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 150,
+        speed = 130,
         health = 100000,
         damage = 500,
         reward = 1000,
