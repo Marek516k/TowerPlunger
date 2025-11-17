@@ -2,6 +2,15 @@ local FontTitle = love.graphics.newFont(20, "light")
 local FontStats = love.graphics.newFont(14, "light")
 local FontButton = love.graphics.newFont(16, "light")
 
+function towerHasTrait(tower, trait)
+    if type(tower.traits) == "table" then
+        for _, t in ipairs(tower.traits) do
+            if t == trait then return true end
+        end
+    end
+    return false
+end
+
 function Ulogic(PathNumber, TWdata)
     if not TWdata.upgradePath then
         TWdata.upgradePath = 0
@@ -80,13 +89,13 @@ function Ulogic(PathNumber, TWdata)
     end
 
     if nextLevelData.traits then
-        if not TWdata.tower.traits then
-            TWdata.tower.traits = {}
-        end
+        if not TWdata.tower.traits then TWdata.tower.traits = {} end
 
         for _, trait in ipairs(nextLevelData.traits) do
             table.insert(TWdata.tower.traits, trait)
         end
+
+        TWdata.canDetectHidden = towerHasTrait(TWdata.tower, "detection")
     end
 end
 

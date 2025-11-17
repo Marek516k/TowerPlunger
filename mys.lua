@@ -1,3 +1,12 @@
+function towerHasTrait(tower, trait)
+    if type(tower.traits) == "table" then
+        for _, t in ipairs(tower.traits) do
+            if t == trait then return true end
+        end
+    end
+    return false
+end
+
 function mys(x, y, button)
     if button == 1 and Bought and SelectedTower then
         local canPlace = true
@@ -53,10 +62,12 @@ function mys(x, y, button)
                 upgraded = false,
                 upgradePath = 0,
                 upgradeLevel = 0,
-                shootFlash = 0
+                shootFlash = 0,
+                canDetectHidden = towerHasTrait(towerCopy, "detection")
             })
             Bought = false
             Placed = true
+
             for i = 1, 10 do
                 createParticle(x, y, {0.3, 0.7, 1, 1})
             end

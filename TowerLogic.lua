@@ -5,17 +5,21 @@ function findNearestTargetForTower(tower)
     local ty = tower.y
 
     for _, enemy in ipairs(EnemiesOnMap) do
-        local enemyWidth = enemy.image:getWidth()
-        local enemyHeight = enemy.image:getHeight()
-        local ex = enemy.x + enemyWidth / 2
-        local ey = enemy.y + enemyHeight / 2
-        local dx = ex - tx
-        local dy = ey - ty
-        local dist = math.sqrt(dx*dx + dy*dy)
+        if (enemyHasTrait(enemy, "hidden") and not tower.canDetectHidden) then
+            return
+        else
+            local enemyWidth = enemy.image:getWidth()
+            local enemyHeight = enemy.image:getHeight()
+            local ex = enemy.x + enemyWidth / 2
+            local ey = enemy.y + enemyHeight / 2
+            local dx = ex - tx
+            local dy = ey - ty
+            local dist = math.sqrt(dx*dx + dy*dy)
 
-        if dist <= (tower.range) and dist < bestDist then
-            bestDist = dist
-            bestEnemy = {x = ex, y = ey, enemy = enemy}
+            if dist <= tower.range and dist < bestDist then
+                bestDist = dist
+                bestEnemy = {x = ex, y = ey, enemy = enemy}
+            end
         end
     end
 
@@ -53,9 +57,9 @@ function hasProjectileTrait(proj, trait)
 end
 
 function calculateDamage(proj, enemy, canDetectHidden)
-    if enemy.traits == "hidden" and not canDetectHidden then
+    if enemyHasTrait(enemy, "hidden") and not canDetectHidden then
         return 0
-    elseif enemy.traits == "armored" then
+    elseif enemyHasTrait(enemy, "armored") then
         return proj.damage * 0.85
     else
         return proj.damage
@@ -187,6 +191,19 @@ function processSplashDamage(proj, targetEnemy, hasSlow)
             end
         end
     end
+end
+
+function enemyHasTrait(enemy, trait)
+    if type(enemy.traits) == "table" then
+        for _, t in ipairs(enemy.traits) do
+            if t == trait then
+                return true
+            end
+        end
+    elseif type(enemy.traits) == "string" then
+        return enemy.traits == trait
+    end
+    return false
 end
 
 function processProjectileCollisions(proj)
