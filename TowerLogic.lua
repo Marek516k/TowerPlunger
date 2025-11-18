@@ -5,8 +5,7 @@ function findNearestTargetForTower(tower)
     local ty = tower.y
 
     for _, enemy in ipairs(EnemiesOnMap) do
-        if (enemyHasTrait(enemy, "hidden") and not tower.canDetectHidden) then
-            return
+        if enemyHasTrait(enemy, "hidden") and not tower.canDetectHidden then
         else
             local enemyWidth = enemy.image:getWidth()
             local enemyHeight = enemy.image:getHeight()
@@ -48,6 +47,8 @@ function deepCopyTower(original)
 end
 
 function hasProjectileTrait(proj, trait)
+    if not proj.traits then return false end
+
     for i = 1, #proj.traits do
         if proj.traits[i] == trait then
             return true
@@ -56,11 +57,26 @@ function hasProjectileTrait(proj, trait)
     return false
 end
 
+function enemyHasTrait(enemy, trait)
+    if not enemy.traits then return false end
+
+    if type(enemy.traits) == "table" then
+        for _, t in ipairs(enemy.traits) do
+            if t == trait then
+                return true
+            end
+        end
+    elseif type(enemy.traits) == "string" then
+        return enemy.traits == trait
+    end
+    return false
+end
+
 function calculateDamage(proj, enemy, canDetectHidden)
     if enemyHasTrait(enemy, "hidden") and not canDetectHidden then
         return 0
     elseif enemyHasTrait(enemy, "armored") then
-        return proj.damage * 0.85
+        return proj.damage * 0.75
     else
         return proj.damage
     end
@@ -79,7 +95,7 @@ function checkProjectileHit(proj, enemy)
     return distance <= hitRadius
 end
 
-function createProjectile(startX, startY, targetX, targetY, speed, damage, pierce, splashRadius,traits)
+function createProjectile(startX, startY, targetX, targetY, speed, damage, pierce, splashRadius, traits)
     local dx = targetX - startX
     local dy = targetY - startY
     local distance = math.sqrt(dx * dx + dy * dy)
@@ -102,7 +118,7 @@ function createProjectile(startX, startY, targetX, targetY, speed, damage, pierc
         pierce = pierce,
         hitCount = 0,
         splashRadius = splashRadius,
-        traits = traits
+        traits = traits or {}
     }
 end
 
@@ -177,33 +193,25 @@ function processSplashDamage(proj, targetEnemy, hasSlow)
             local distance = math.sqrt(dx * dx + dy * dy)
 
             if distance <= proj.splashRadius then
-                splashEnemy.health = splashEnemy.health - proj.damage
+                local canDetectHidden = hasProjectileTrait(proj, "detection")
+                local splashDamage = calculateDamage(proj, splashEnemy, canDetectHidden)
 
-                if hasSlow then
-                    applySlowEffect(splashEnemy)
-                end
+                if splashDamage > 0 then
+                    splashEnemy.health = splashEnemy.health - splashDamage
 
-                if splashEnemy.health <= 0 then
-                    Money = Money + splashEnemy.reward
-                    EnemiesAlive = math.max(0, EnemiesAlive - 1)
-                    table.remove(EnemiesOnMap, k)
+                    if hasSlow then
+                        applySlowEffect(splashEnemy)
+                    end
+
+                    if splashEnemy.health <= 0 then
+                        Money = Money + splashEnemy.reward
+                        EnemiesAlive = math.max(0, EnemiesAlive - 1)
+                        table.remove(EnemiesOnMap, k)
+                    end
                 end
             end
         end
     end
-end
-
-function enemyHasTrait(enemy, trait)
-    if type(enemy.traits) == "table" then
-        for _, t in ipairs(enemy.traits) do
-            if t == trait then
-                return true
-            end
-        end
-    elseif type(enemy.traits) == "string" then
-        return enemy.traits == trait
-    end
-    return false
 end
 
 function processProjectileCollisions(proj)

@@ -167,6 +167,8 @@ function Enemyupdate(dt)
             local pending = table.remove(PendingSpawns, 1)
             local eData = Enemy[pending.type]
             if eData and Flags[1] then
+                local enemyTraits = eData.traits or {}
+
                 table.insert(EnemiesOnMap, {
                     type = pending.type,
                     image = eData.image,
@@ -175,6 +177,7 @@ function Enemyupdate(dt)
                     maxHealth = eData.health,
                     damage = eData.damage,
                     reward = eData.reward,
+                    traits = enemyTraits,
                     x = (Flags[1].x - 1) * 64,
                     y = (Flags[1].y - 1) * 64,
                     flagIndex = 2

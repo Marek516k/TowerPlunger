@@ -1,7 +1,8 @@
 Level1 = {
     wave1 = {
         enemies = {
-            {type = "zombie", count = 8}
+            {type = "zombie", count = 7},
+            {type = "fastZombie", count = 1}
         },
         spawnRate = 0.5,
         reward = 80
@@ -16,7 +17,7 @@ Level1 = {
     },
     wave3 = {
         enemies = {
-            {type = "tank", count = 3},
+            {type = "tank", count = 4},
             {type = "hidden", count = 2}
         },
         spawnRate = 0.5,

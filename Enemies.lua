@@ -1,15 +1,15 @@
 Enemy = {
     zombie = {
         image = love.graphics.newImage("Images/zombie.png"),
-        speed = 80,
+        speed = 85,
         health = 100,
         damage = 10,
         reward = 10,
-        traits = {"hidden", "armored"}
+        traits = {}
     },
     fastZombie = {
         image = love.graphics.newImage("Images/fastZombie.png"),
-        speed = 200,
+        speed = 225,
         health = 60,
         damage = 20,
         reward = 15,
@@ -25,31 +25,31 @@ Enemy = {
     },
     hidden = {
         image = love.graphics.newImage("Images/hidden.png"),
-        speed = 75,
+        speed = 80,
         health = 120,
         damage = 15,
         reward = 30,
         traits = {"hidden"}
     },
     skeleton = {
-        image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 95,
+        image = love.graphics.newImage("Images/skeleton.png"),
+        speed = 100,
         health = 70,
         damage = 7,
         reward = 8,
         traits = {}
     },
     armoredSkeleton = {
-        image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 50,
+        image = love.graphics.newImage("Images/armoredSkeleton.png"),
+        speed = 55,
         health = 500,
         damage = 25,
         reward = 35,
         traits = {"armored"}
     },
     boneReaper = {
-        image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 70,
+        image = love.graphics.newImage("Images/boneReaper.png"),
+        speed = 75,
         health = 160,
         damage = 20,
         reward = 45,
@@ -57,7 +57,7 @@ Enemy = {
     },
     slime = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 70,
+        speed = 90,
         health = 120,
         damage = 12,
         reward = 12,
@@ -65,7 +65,7 @@ Enemy = {
     },
     bigSlime = {
         image = love.graphics.newImage("Images/Cannon.png"),
-        speed = 50,
+        speed = 60,
         health = 500,
         damage = 25,
         reward = 35,
