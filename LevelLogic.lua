@@ -121,6 +121,8 @@ function CheckLevelSelectorClick(x, y, button)
 end
 
 function startWave()
+    if WaveReady == false then return end
+
     local waveKey = "wave" .. tostring(CurrentWave)
     local waveData = CurrentLevel[waveKey]
 
@@ -147,6 +149,7 @@ function Enemyupdate(dt)
             CurrentWave = CurrentWave + 1
             WaveTransition = 1
             GameState = "building"
+            WaveReady = true
             autoWaveTimer = 10
             Money = Money + CurrentLevel["wave" .. tostring(CurrentWave)].reward
         end
@@ -155,6 +158,7 @@ function Enemyupdate(dt)
     if GameState ~= "wave" then return end
 
     if Spawning then
+        WaveReady = false
         local waveData = CurrentLevel and CurrentLevel["wave" .. tostring(CurrentWave)]
         if not waveData then return end
 
