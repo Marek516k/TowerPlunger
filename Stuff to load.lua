@@ -104,6 +104,7 @@ function loading()
     Health = 150
     Placed = false
     Slowness = false
+    WaveReady = true
     Font = love.graphics.newFont(25)
     FontLarge = love.graphics.newFont(48)
     FontSmall = love.graphics.newFont(18)
