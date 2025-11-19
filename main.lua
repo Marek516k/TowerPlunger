@@ -356,6 +356,10 @@ function love.keypressed(key,x,y,button)
         GameState = "menu"
         ShowUpgradeUI = false
         TWdata = nil
+
+        if GameStarted then
+            WaveReady = false
+        end
     end
 end
 
@@ -401,7 +405,7 @@ function UpdateCountdown(dt)
 end
 
 --TODO:
--- fix tower hitting hidden enemies when they shouldn't be able to, wave button appearing after u close menu is a mistake
+-- enemies not visible after game pause
 -- pictures and sound effects and music
 -- Balancing game difficulty and economy
 -- bug fixes if there are any to fix
