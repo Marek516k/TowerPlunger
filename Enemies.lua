@@ -56,7 +56,7 @@ Enemy = {
         traits = {"hidden", "armored"}
     },
     slime = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/slime.png"),
         speed = 90,
         health = 120,
         damage = 12,
@@ -72,7 +72,7 @@ Enemy = {
         traits = {"armored"}
     },
     skeletonKing = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/skeletonKing.png"),
         speed = 65,
         health = 3000,
         damage = 30,
@@ -88,7 +88,7 @@ Enemy = {
         traits = {}
     },
     Fastboss = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/Fastboss.png"),
         speed = 350,
         health = 2700,
         damage = 25,
@@ -104,7 +104,7 @@ Enemy = {
         traits = {"armored"}
     },
     Hiddenboss = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/Hiddenboss.png"),
         speed = 85,
         health = 1100,
         damage = 40,
@@ -136,7 +136,7 @@ Enemy = {
         traits = {"armored"}
     },
     GhostPhantasm = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/GhostPhantasm.png"),
         speed = 150,
         health = 50000,
         damage = 500,

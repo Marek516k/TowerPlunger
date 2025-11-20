@@ -406,7 +406,7 @@ end
 
 --TODO:
 -- enemies not visible after game pause
--- pictures and sound effects and music
--- Balancing game difficulty and economy
+-- pictures and sound effects/music (better music xdd)
+-- Balancing game difficulty and economy some more
 -- bug fixes if there are any to fix
 -- user feedback stuff
