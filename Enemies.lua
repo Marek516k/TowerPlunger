@@ -96,7 +96,7 @@ Enemy = {
         traits ={}
     },
     Tankboss = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/Tankboss.png"),
         speed = 55,
         health = 6000,
         damage = 50,
@@ -120,7 +120,7 @@ Enemy = {
         traits = {"hidden", "armored"}
     },
     Destroyer = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/Destroyer.png"),
         speed = 180,
         health = 10000,
         damage = 500,
@@ -128,7 +128,7 @@ Enemy = {
         traits = {"armored"}
     },
     Gravedigger = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/Gravedigger.png"),
         speed = 35,
         health = 35000,
         damage = 100,
@@ -144,7 +144,7 @@ Enemy = {
         traits = {"hidden", "armored"}
     },
     YourNightmare = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/YourNightmare.png"),
         speed = 40,
         health = 70000,
         damage = 500,
@@ -152,7 +152,7 @@ Enemy = {
         traits = {}
     },
     ScreenMuncher = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/ScreenMuncher.png"),
         speed = 200,
         health = 80000,
         damage = 500,
@@ -160,7 +160,7 @@ Enemy = {
         traits = {"armored"}
     },
     Ultimateboss = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/ultimateboss.png"),
         speed = 130,
         health = 100000,
         damage = 500,
@@ -168,7 +168,7 @@ Enemy = {
         traits = {"armored"}
     },
     TheONE = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/TheONE.png"),
         speed = 75,
         health = 900000,
         damage = 500,
