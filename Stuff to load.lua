@@ -94,7 +94,7 @@ function loading()
             end))
 
     NotPossible = love.audio.newSource("sounds/Nuh-uh.wav", "static")
-    Song = love.audio.newSource("sounds/Song.mp3", "static")
+    Song = nil --love.audio.newSource("sounds/Song.mp3", "static")
     SongState = false
     ShowUpgradeUI = false
     Bought = false
