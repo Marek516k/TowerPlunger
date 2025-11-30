@@ -63,8 +63,8 @@ Enemy = {
         reward = 12,
         traits = {}
     },
-    bigSlime = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+    pinkSlime = {
+        image = love.graphics.newImage("Images/pinkSlime.png"),
         speed = 60,
         health = 500,
         damage = 25,
@@ -80,7 +80,7 @@ Enemy = {
         traits = {"armored"}
     },
     Normalboss = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/Normalboss.png"),
         speed = 70,
         health = 1600,
         damage = 20,
@@ -112,7 +112,7 @@ Enemy = {
         traits = {"hidden"}
     },
     hiddenBrainrot = {
-        image = love.graphics.newImage("Images/Cannon.png"),
+        image = love.graphics.newImage("Images/hiddenBrairot.png"),
         speed = 67,
         health = 7067,
         damage = 67,

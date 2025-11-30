@@ -56,7 +56,7 @@ Level8 = {
     },
     wave8 = {
         enemies = {
-            {type = "bigSlime", count = 2},
+            {type = "pinkSlime", count = 2},
             {type = "slime", count = 10}
         },
         spawnRate = 0.4,
@@ -88,7 +88,7 @@ Level8 = {
     },
     wave12 = {
         enemies = {
-            {type = "bigSlime", count = 3},
+            {type = "pinkSlime", count = 3},
             {type = "fastZombie", count = 5}
         },
         spawnRate = 0.4,
@@ -112,7 +112,7 @@ Level8 = {
     },
     wave15 = {
         enemies = {
-            {type = "bigSlime", count = 4},
+            {type = "pinkSlime", count = 4},
             {type = "armoredSkeleton", count = 2}
         },
         spawnRate = 0.38,
@@ -136,7 +136,7 @@ Level8 = {
     },
     wave18 = {
         enemies = {
-            {type = "bigSlime", count = 5},
+            {type = "pinkSlime", count = 5},
             {type = "tank", count = 3}
         },
         spawnRate = 0.4,
@@ -153,7 +153,7 @@ Level8 = {
     wave20 = {
         enemies = {
             {type = "skeletonKing", count = 1},
-            {type = "bigSlime", count = 4}
+            {type = "pinkSlime", count = 4}
         },
         spawnRate = 0.45,
         reward = 420
@@ -170,7 +170,7 @@ Level8 = {
     wave22 = {
         enemies = {
             {type = "boneReaper", count = 4},
-            {type = "bigSlime", count = 4}
+            {type = "pinkSlime", count = 4}
         },
         spawnRate = 0.38,
         reward = 460
@@ -202,7 +202,7 @@ Level8 = {
     wave26 = {
         enemies = {
             {type = "tank", count = 5},
-            {type = "bigSlime", count = 4}
+            {type = "pinkSlime", count = 4}
         },
         spawnRate = 0.35,
         reward = 540
@@ -226,7 +226,7 @@ Level8 = {
     },
     wave29 = {
         enemies = {
-            {type = "bigSlime", count = 6},
+            {type = "pinkSlime", count = 6},
             {type = "tank", count = 5}
         },
         spawnRate = 0.35,
@@ -243,7 +243,7 @@ Level8 = {
     wave31 = {
         enemies = {
             {type = "tank", count = 6},
-            {type = "bigSlime", count = 6}
+            {type = "pinkSlime", count = 6}
         },
         spawnRate = 0.35,
         reward = 700
@@ -282,7 +282,7 @@ Level8 = {
     },
     wave36 = {
         enemies = {
-            {type = "bigSlime", count = 8},
+            {type = "pinkSlime", count = 8},
             {type = "tank", count = 4},
             {type = "armoredSkeleton", count = 4}
         },

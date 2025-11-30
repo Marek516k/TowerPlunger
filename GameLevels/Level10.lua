@@ -2,7 +2,7 @@ Level10 = {
     wave1 = {
         enemies = {
             {type = "tank", count = 6},
-            {type = "bigSlime", count = 4}
+            {type = "pinkSlime", count = 4}
         },
         spawnRate = 0.5,
         reward = 300
@@ -17,7 +17,7 @@ Level10 = {
     },
     wave3 = {
         enemies = {
-            {type = "bigSlime", count = 6},
+            {type = "pinkSlime", count = 6},
             {type = "tank", count = 3},
             {type = "skeleton", count = 6}
         },
@@ -42,7 +42,7 @@ Level10 = {
     },
     wave6 = {
         enemies = {
-            {type = "bigSlime", count = 8},
+            {type = "pinkSlime", count = 8},
             {type = "tank", count = 6}
         },
         spawnRate = 0.4,
@@ -59,7 +59,7 @@ Level10 = {
     wave8 = {
         enemies = {
             {type = "Tankboss", count = 1},
-            {type = "bigSlime", count = 8}
+            {type = "pinkSlime", count = 8}
         },
         spawnRate = 0.55,
         reward = 850
@@ -85,7 +85,7 @@ Level10 = {
         enemies = {
             {type = "skeletonKing", count = 2},
             {type = "Tankboss", count = 1},
-            {type = "bigSlime", count = 6}
+            {type = "pinkSlime", count = 6}
         },
         spawnRate = 0.45,
         reward = 1300
@@ -109,7 +109,7 @@ Level10 = {
     wave14 = {
         enemies = {
             {type = "Tankboss", count = 2},
-            {type = "bigSlime", count = 8}
+            {type = "pinkSlime", count = 8}
         },
         spawnRate = 0.5,
         reward = 1800

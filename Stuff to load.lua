@@ -100,7 +100,7 @@ function loading()
     Bought = false
     Timer = 0
     Interval = 0.35
-    Money = 500
+    Money = 50000
     Health = 150
     Placed = false
     Slowness = false

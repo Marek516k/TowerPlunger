@@ -57,7 +57,7 @@ Level9 = {
     wave8 = {
         enemies = {
             {type = "boneReaper", count = 5},
-            {type = "bigSlime", count = 2}
+            {type = "pinkSlime", count = 2}
         },
         spawnRate = 0.4,
         reward = 300
@@ -121,7 +121,7 @@ Level9 = {
     wave16 = {
         enemies = {
             {type = "hidden", count = 8},
-            {type = "bigSlime", count = 4},
+            {type = "pinkSlime", count = 4},
             {type = "tank", count = 2}
         },
         spawnRate = 0.35,
