@@ -1,7 +1,7 @@
 Ulogic = require("UpgradeLogic").Ulogic
 
 function loading()
-    love.window.setMode(1920, 1080, {resizable=false, vsync=true})
+    love.window.setMode(1920, 1080, {resizable=true, vsync=true})
     ww = love.graphics.getWidth()
     wh = love.graphics.getHeight()
 
@@ -14,7 +14,7 @@ function loading()
     TWdata = {}
     Particles = {}
     Explosions = {}
-    waveButton = { x = 920, y = 30, w = 200, h = 80 }
+    waveButton = { x = ww/2 - 100, y = wh/2 - 450, w = 200, h = 80 }
     VictoryButton = {x = ww/2 - 100, y = wh/2 + 100, w = 200, h = 50}
     GameOverButton = {x = ww/2 - 100, y = wh/2 + 100, w = 200, h = 50}
 
@@ -45,6 +45,7 @@ function loading()
                     SelectedTowerName = self.towerName
                     Bought = true
                     Placed = false
+                    love.audio.play(BoughtSound)
                 else
                     love.audio.play(NotPossible)
                 end
@@ -94,6 +95,9 @@ function loading()
             end))
 
     NotPossible = love.audio.newSource("sounds/Nuh-uh.wav", "static")
+    BoughtSound = love.audio.newSource("sounds/Bought.wav", "static")
+    StartWaveSound = love.audio.newSource("sounds/gamestart.wav", "static")
+    EnemyDeathSound = love.audio.newSource("sounds/enemydeath.wav", "static")
     Song = nil --love.audio.newSource("sounds/Song.mp3", "static")
     SongState = false
     ShowUpgradeUI = false

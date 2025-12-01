@@ -53,6 +53,7 @@ function Ulogic(PathNumber, TWdata)
         return
     else
         Money = Money - upgradeCost
+        love.audio.play(BoughtSound)
         for i = 1, 15 do
             createParticle(TWdata.x, TWdata.y, {0.2, 1, 0.3, 1})
         end

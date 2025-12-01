@@ -119,12 +119,12 @@ function createExplosion(x, y, radius)
     })
 end
 
-
 function DrawCountdown()
     local ww, wh = love.graphics.getWidth(), love.graphics.getHeight()
     local secondsLeft = math.ceil(autoWaveTimer)
-    love.graphics.setColor(0, 0, 0)
+    love.graphics.setColor(0.9, 0, 0)
     love.graphics.printf("The wave starts in " .. secondsLeft, 0, wh/2 - 40, ww, "center")
+    love.graphics.setColor(1, 1, 1)
 end
 
 function love.draw()
@@ -197,17 +197,6 @@ function love.draw()
         love.graphics.circle("line", e.x, e.y, e.radius * 0.8)
     end
     love.graphics.setColor(1, 1, 1, 1)
-
-    if GameState == "building" then
-        love.graphics.setColor(0, 0.8, 0.2)
-        love.graphics.rectangle("fill", waveButton.x, waveButton.y, waveButton.w, waveButton.h, 12)
-        love.graphics.setColor(0, 0, 0)
-        love.graphics.printf("Start Wave", waveButton.x, waveButton.y + 25, waveButton.w, "center")
-
-        if autoWaveTimer < 5 then
-            DrawCountdown()
-        end
-    end
 
     if GameState == "building" or GameState == "wave" then
         utilities()
@@ -349,6 +338,18 @@ function love.draw()
     if ShakeAmount > 0 then
         love.graphics.pop()
     end
+
+    if GameState == "building" then
+        love.graphics.setColor(0, 0.8, 0.2)
+        love.graphics.rectangle("fill", waveButton.x, waveButton.y, waveButton.w, waveButton.h, 12)
+        love.graphics.setColor(0, 0, 0)
+        love.graphics.printf("Start Wave", waveButton.x, waveButton.y + 25, waveButton.w, "center")
+        love.graphics.setColor(1, 1, 1)
+
+        if autoWaveTimer < 5 then
+            DrawCountdown()
+        end
+    end
 end
 
 function love.keypressed(key,x,y,button)
@@ -405,8 +406,9 @@ function UpdateCountdown(dt)
 end
 
 --TODO:
--- enemies not visible after game pause
--- pictures and sound effects/music (better music xdd)
+-- hidden Enemies take pierce shots even if the tower can't see them
+-- gameover and win, base took dmg sounds
+-- music (better music xdd)
+-- readme
 -- Balancing game difficulty and economy some more
--- bug fixes if there are any to fix
 -- user feedback stuff

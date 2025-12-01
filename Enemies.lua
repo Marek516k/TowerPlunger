@@ -112,7 +112,7 @@ Enemy = {
         traits = {"hidden"}
     },
     hiddenBrainrot = {
-        image = love.graphics.newImage("Images/hiddenBrairot.png"),
+        image = love.graphics.newImage("Images/hiddenBrainrot.png"),
         speed = 67,
         health = 7067,
         damage = 67,

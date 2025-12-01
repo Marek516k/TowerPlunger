@@ -123,6 +123,7 @@ end
 function startWave()
     if WaveReady == false then return end
 
+    love.audio.play(StartWaveSound)
     local waveKey = "wave" .. tostring(CurrentWave)
     local waveData = CurrentLevel[waveKey]
 
@@ -263,17 +264,15 @@ function DrawEnemies()
         if Edist < 30 then
             love.graphics.setColor(0.1, 0.1, 0.2, 0.95)
             love.graphics.rectangle("fill", mx + 10, my - 25, 140, 50, 5, 5)
-            love.graphics.setColor(0.3, 0.7, 1, 1)
+            love.graphics.setColor(0.3, 0.7, 1)
 
             love.graphics.setLineWidth(2)
             love.graphics.rectangle("line", mx + 10, my - 25, 140, 50, 5, 5)
 
-            love.graphics.setColor(1, 1, 1, 1)
+            love.graphics.setColor(1, 1, 1)
 
             love.graphics.print(enemy.type or "Enemy", FontSmall, mx + 15, my - 20)
             love.graphics.print("HP: " .. math.floor(enemy.health or 0) .. "/" .. (maxHealth or 0), FontSmall, mx + 15, my - 2)
-
-            love.graphics.setColor(1, 1, 1, 1)
         end
     end
 end

@@ -9,6 +9,7 @@ end
 
 function mys(x, y, button)
     if button == 1 and Bought and SelectedTower then
+        ShowUpgradeUI = false
         local canPlace = true
         local towerW = SelectedTower.image:getWidth()
         local towerH = SelectedTower.image:getHeight()

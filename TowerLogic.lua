@@ -1,3 +1,11 @@
+local soundPool = {}
+
+function playSFX(file)
+    local s = love.audio.newSource(file, "static")
+    table.insert(soundPool, s)
+    s:play()
+end
+
 function findNearestTargetForTower(tower)
     local bestEnemy = nil
     local bestDist = math.huge
@@ -249,6 +257,7 @@ function processProjectileCollisions(proj)
                     createParticle(enemy.x + 32, enemy.y + 32, {1, 1, 0.3, 1})
                 end
                 table.remove(EnemiesOnMap, j)
+                playSFX("sounds/enemydeath.wav")
             end
             break
         end
