@@ -407,7 +407,6 @@ end
 
 --TODO:
 -- hidden Enemies take pierce shots even if the tower can't see them
--- gameover and win, base took dmg sounds
 -- music (better music xdd)
 -- readme
 -- Balancing game difficulty and economy some more

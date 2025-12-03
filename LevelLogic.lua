@@ -144,6 +144,7 @@ function Enemyupdate(dt)
 
         if not nextWave then
             Victory = true
+            love.audio.play(VictorySound)
             GameState = "victory"
             return
         else
@@ -213,7 +214,9 @@ function Enemyupdate(dt)
                     Health = Health - (e.damage or 1)
                     table.remove(EnemiesOnMap, i)
                     EnemiesAlive = math.max(0, EnemiesAlive - 1)
+                    love.audio.play(BaseHitSound)
                     if Health <= 0 then
+                        love.audio.play(GameOverSound)
                         GameState = "gameover"
                     end
                 end

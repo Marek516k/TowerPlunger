@@ -98,6 +98,9 @@ function loading()
     BoughtSound = love.audio.newSource("sounds/Bought.wav", "static")
     StartWaveSound = love.audio.newSource("sounds/gamestart.wav", "static")
     EnemyDeathSound = love.audio.newSource("sounds/enemydeath.wav", "static")
+    GameOverSound = love.audio.newSource("sounds/gameover.wav", "static")
+    BaseHitSound = love.audio.newSource("sounds/basehit.wav", "static")
+    VictorySound = love.audio.newSource("sounds/Victory.wav", "static")
     Song = nil --love.audio.newSource("sounds/Song.mp3", "static")
     SongState = false
     ShowUpgradeUI = false
