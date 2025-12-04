@@ -3,7 +3,7 @@
 Hello and welcome to my tower defence game its pretty simple and should be quite easy to play but dont expect it to be a walk in the park because its kinda hard to test and balance on my own
   so in that sence some levels might be a alot harder then they should be also im not doing any animations or game saves cuz like why for a game of this size, below you will also find information
   about the towers, upgrades, enemies and some level details.
-### Reminder 👍
+## Reminder 👍
   - This game was made purely for fun and learning purposes do not expect to be "blown away" enjoy the simplicity and stay tuned for my next
   projects in the future, who knows maybe its gonna be somethink decent this time that i did not take so long to do for not that big of a result.
 
@@ -16,7 +16,7 @@ Hello and welcome to my tower defence game its pretty simple and should be quite
       license or newly installed aps for obvious security reasons.
   - once its starts up select a level, once you do you will have 10s to place a tower and upgrade it if you want, expect the level to be like 5-15m long.
 
-# Towers
+## Towers
   ### Cannon
   ![Logo](./Images/Cannon.png)
   - basic tower thats meant to be placed at the start and replaced later
@@ -46,7 +46,7 @@ Hello and welcome to my tower defence game its pretty simple and should be quite
   - first path increases explosion radius and damage, becoming a heavy AOE nuker
   - second path focuses on faster firing and wider splash zones, turning into a rapid-fire crowd clearer
 
-#Enemies
+## Enemies
   ### Zombie
   ![Logo](./Images/zombie.png)
   
