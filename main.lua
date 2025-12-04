@@ -407,6 +407,7 @@ end
 
 --TODO:
 -- hidden Enemies take pierce shots even if the tower can't see them
+-- dont show startWave button if wave in progress (after pausing)
 -- music (better music xdd)
 -- readme
 -- Balancing game difficulty and economy some more
